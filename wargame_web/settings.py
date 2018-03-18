@@ -20,6 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# TODO: move this to an env var
 SECRET_KEY = 'j0s5#e@upiqv=anz8brrdwp&*1&s&z@i-usvdwo=m$kk!t3j8!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -119,3 +120,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Substitute user model with our own
+AUTH_USER_MODEL = 'wargame.User'
