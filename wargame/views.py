@@ -20,6 +20,13 @@ class RulesView(TemplateView):
 class AboutUsView(TemplateView):
     template_name = 'about_us.html'
 
+    def get_people(self):
+        names = ['Szász Márton', 'Márki-Zay Ferenc', 'Schulcz Ferenc',
+                 'Madarász Bence', 'Hegyi Zsolt', 'Kovács Bence',
+                 'Barkaszi Richárd', 'Bakos Ádám']
+        names.sort()
+        return names
+
 
 class LinksView(TemplateView):
     template_name = 'links.html'

@@ -1,4 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>About us</h1>
+    <h1 class="mb-4">About us</h1>
+    <table class="table table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Staff</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for name in view.get_people %}
+                <tr>
+                    <td>{{ name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
