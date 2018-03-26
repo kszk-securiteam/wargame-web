@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <div class="row flex-column-reverse flex-lg-row">
+        <div class="col-lg-6">
+            <form method="post" action="" class="form">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% buttons %}
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                {% endbuttons %}
+            </form>
+        </div>
+
+        <div class="col-lg-6">
+            <p>Voluptate voluptatibus repudiandae voluptatem ipsam corrupti quibusdam. Iste non deleniti voluptas omnis ex quasi sunt sed. Ducimus impedit ex fugiat est saepe ex minima dolorum. Nemo ullam porro modi aut.</p>
+
+            <p>Non libero adipisci quibusdam modi laudantium et esse quis. Iusto eaque et pariatur adipisci sed voluptatem molestiae. Impedit sed tempora sit omnis odit. Ratione molestiae neque aut delectus sit est excepturi. Eos ut rerum consequuntur quis voluptatem. Incidunt quis quia dolores autem dolor laboriosam nesciunt.</p>
+
+            <p>Similique assumenda quia quia et dolorem et exercitationem earum. Blanditiis nisi magni expedita in sed dolorem. Consequuntur sit illum provident consequuntur facere odit. Aut dicta rem qui aut alias. Est optio nulla est officia rerum voluptate iusto.</p>
+
+            <p>Quam fuga dolores quia. Non animi vel occaecati. Ea pariatur adipisci id sed. Velit est perspiciatis sunt id natus et. Inventore in aut placeat possimus nulla qui voluptatem.</p>
+
+            <p>Id facilis autem magni dolore. Perspiciatis cupiditate voluptate optio sit et temporibus consequuntur cum. Et iure sunt aut reiciendis est. Praesentium blanditiis ullam eos. Dicta velit aut doloremque error non pariatur.</p>
+        </div>
+    </div>
+{% endblock %}

@@ -5,7 +5,11 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class User(AbstractUser):
-    pass
+    def get_score_string(self):
+        return self.username + " - $" + str(self.get_score())
+
+    def get_score(self):
+        return 0
 
 
 class File(models.Model):

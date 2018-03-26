@@ -1,7 +1,9 @@
 {% extends 'bootstrap4/bootstrap4.html' %}
 {% load bootstrap4 %}
 
-{% block bootstrap4_title %}{% block title %}SecurITeam wargame{% endblock %}{% endblock %}
+{% block bootstrap4_extra_head %}
+    <title>SecurITeam wargame</title>
+{% endblock %}
 
 {% block bootstrap4_content %}
     <div class="container mb-3 mt-3">
@@ -14,5 +16,7 @@
     </div>
 {% endblock %}
 
-{% block bootstrap4_extra_script %}
+{# This is required, because django-bootstrap does not include jquery by default and the setting to include it does not work #}
+{% block bootstrap4_after_content %}
+    {% bootstrap_jquery %}
 {% endblock %}

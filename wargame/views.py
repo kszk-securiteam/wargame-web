@@ -1,11 +1,15 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from registration.backends.simple.views import RegistrationView
+
+from forms import UserRegistrationForm
 
 
 class IndexView(TemplateView):
     template_name = 'index.html'
 
 
-class ChallengesView(TemplateView):
+class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'challenges.html'
 
 
@@ -30,3 +34,8 @@ class AboutUsView(TemplateView):
 
 class LinksView(TemplateView):
     template_name = 'links.html'
+
+
+class UserRegistrationView(RegistrationView):
+    form_class = UserRegistrationForm
+    template_name = 'registration.html'
