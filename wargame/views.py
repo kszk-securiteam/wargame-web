@@ -3,7 +3,8 @@ from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
 from wargame import models
 
-from forms import UserRegistrationForm
+from wargame.forms import UserRegistrationForm
+from wargame.models import Challenge, Tag
 
 
 class IndexView(TemplateView):
@@ -41,3 +42,10 @@ class LinksView(TemplateView):
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
     template_name = 'registration.html'
+
+
+class ChallengeDetailsView(TemplateView):
+    template_name = 'challenge_details.html'
+
+    def challenge(self):
+        return Challenge.objects.get(pk=self.kwargs['id'])

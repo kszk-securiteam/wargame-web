@@ -4,7 +4,7 @@
 
     <section id="challenge-list">
     {% for challenge in view.challenges %}
-        <a class="card" href="{#{% url 'challenge-details' id=challenge.id %}#}">
+        <a class="card" href="{% url 'challenge-details' id=challenge.id %}">
             <div class="card-body row">
                 <div class="col-sm-8">
                     <h4 class="card-title">{{ challenge.title }}</h4>
