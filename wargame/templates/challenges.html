@@ -1,4 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Challenges</h1>
+    <h1>Challenges</h1>
+
+    <section id="challenge-list">
+    {% for challenge in view.challenges %}
+        <a class="card" href="{#{% url 'challenge-details' id=challenge.id %}#}">
+            <div class="card-body row">
+                <div class="col-sm-8">
+                    <h4 class="card-title">{{ challenge.title }}</h4>
+                    <p>
+                        {{ challenge.description|truncatechars:70 }}
+                    </p>
+                </div>
+                <div class="col-sm-4 challenge-points-container">
+                    <span>${{ challenge.points }}</span>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+    </section>
 {% endblock %}

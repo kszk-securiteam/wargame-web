@@ -1,8 +1,10 @@
 {% extends 'bootstrap4/bootstrap4.html' %}
+{% load static %}
 {% load bootstrap4 %}
 
 {% block bootstrap4_extra_head %}
     <title>SecurITeam wargame</title>
+    <link type="text/css" rel="stylesheet" href="{% static "style.css" %}"/>
 {% endblock %}
 
 {% block bootstrap4_content %}

@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
+from wargame import models
 
 from forms import UserRegistrationForm
 
@@ -11,6 +12,7 @@ class IndexView(TemplateView):
 
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'challenges.html'
+    challenges = models.Challenge.objects.all()
 
 
 class ScoreboardView(TemplateView):

@@ -32,6 +32,9 @@ class Challenge(models.Model):
     hint = models.CharField(max_length=8192, null=True)
     tags = models.ManyToManyField(Tag)
 
+    def __str__(self):
+        return self.title
+
 
 class UserChallenge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
