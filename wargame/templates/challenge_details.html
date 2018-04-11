@@ -10,21 +10,16 @@
         <!-- TODO -->
         Attached files:
         <ul>
-            <li>File 1</li>
+            <li>{{ view.test }}</li>
             <li>File 2</li>
         </ul>
     </div>
-    <div>
-        <form class="form-horizontal row">
-            <div class="form-group col-sm-11">
-                <label class="control-label col-sm-2" for="flag">Flag:</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="flag"/>
-                </div>
-            </div>
-            <div class="col-sm-1">
-                <input type="submit" class="btn btn-primary"/>
-            </div>
-        </form>
-    </div>
+    <form class="form-inline d-flex" method="post">
+        {% csrf_token %}
+        <div class="form-group" style="flex-grow: 1">
+            <label for="flag">Flag:</label>
+            <input id="flag" type="text" class="form-control m-3" style="flex-grow: 1"/>
+        </div>
+        <button class="btn btn-primary col-sm col-sm-auto" type="submit">Submit</button>
+    </form>
 {% endblock %}

@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
 from wargame import models
@@ -49,3 +51,7 @@ class ChallengeDetailsView(TemplateView):
 
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['id'])
+
+    def post(self, *args, **kwargs):
+        # TODO: Process submission
+        return HttpResponseRedirect(self.request.path + "?submit=true")
