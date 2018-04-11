@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
+{% load wargame_tags %}
+
 {% block content %}
     <h1>{{ view.challenge.title }}</h1>
-    <div class="bg-light">
-        <pre>{{ view.challenge.description }}</pre>
+    <div class="bg-light px-5 py-1 my-3">
+        <p>{{ view.challenge.description|markdown }}</p>
     </div>
     <div>
         <!-- TODO -->

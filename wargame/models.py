@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import F, Sum
 from django.db.models.functions import Coalesce
 from django.contrib.auth.models import AbstractUser
+from markdownx.models import MarkdownxField
 
 
 class User(AbstractUser):
@@ -32,7 +33,7 @@ class Tag(models.Model):
 class Challenge(models.Model):
     title = models.CharField(max_length=256)
     creation_dt = models.DateTimeField(auto_now_add=True)
-    description = models.CharField(max_length=8192)
+    description = MarkdownxField()
     level = models.IntegerField()
     flag_qpa = models.CharField(max_length=256, null=True)
     flag_hacktivity = models.CharField(max_length=256, null=True)

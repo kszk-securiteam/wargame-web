@@ -105,3 +105,6 @@ ENV/
 # IntelliJ IDEA
 .idea/
 *.iml
+
+# Ignore collected static files
+/static/
