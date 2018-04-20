@@ -1,6 +1,6 @@
 #challenge-list a.card:hover {
     text-decoration: none;
-    background: #fafafa;
+    background-color: #fafafa;
 }
 
 #challenge-list .challenge-points-container {
@@ -11,4 +11,18 @@
     font-size: 2em;
     line-height: 2.5em;
     vertical-align: middle;
+}
+
+.challenge-title-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.challenge-card {
+    background-color: #f0fff0;
+}
+
+#challenge-list a.challenge-card:hover {
+    background-color: #e8ffe8;
 }

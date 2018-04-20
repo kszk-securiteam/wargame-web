@@ -2,7 +2,12 @@
 {% load wargame_tags %}
 
 {% block content %}
-    <h1>{{ view.challenge.title }}</h1>
+    <div class="challenge-title-box">
+        <h1>{{ view.challenge.title }}</h1>
+        {% if view.userchallenge.solved %}
+            <i class="fas fa-check text-success" style="font-size: 48px"></i>
+        {% endif %}
+    </div>
     <div class="bg-light px-5 py-1 my-3">
         <p>{{ view.challenge.description|markdown }}</p>
     </div>
@@ -14,12 +19,14 @@
             <li>File 2</li>
         </ul>
     </div>
-    <form class="form-inline d-flex" method="post">
-        {% csrf_token %}
-        <div class="form-group" style="flex-grow: 1">
-            <label for="flag">Flag:</label>
-            <input id="flag" type="text" name="flag" class="form-control m-3" style="flex-grow: 1"/>
-        </div>
-        <button class="btn btn-primary col-sm col-sm-auto" type="submit">Submit</button>
-    </form>
+    {% if not view.userchallenge.solved %}
+        <form class="form-inline d-flex" method="post">
+            {% csrf_token %}
+            <div class="form-group" style="flex-grow: 1">
+                <label for="flag">Flag:</label>
+                <input id="flag" type="text" name="flag" class="form-control m-3" style="flex-grow: 1"/>
+            </div>
+            <button class="btn btn-primary col-sm col-sm-auto" type="submit">Submit</button>
+        </form>
+    {% endif %}
 {% endblock %}

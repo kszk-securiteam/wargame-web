@@ -16,7 +16,6 @@ class IndexView(TemplateView):
 
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'challenges.html'
-    challenges = models.Challenge.objects.all()
 
 
 class ScoreboardView(TemplateView):
