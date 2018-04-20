@@ -21,6 +21,7 @@ class ChallengesView(LoginRequiredMixin, TemplateView):
 
 class ScoreboardView(TemplateView):
     template_name = 'scoreboard.html'
+    scores = models.User.get_top_40_by_score()
 
 
 class RulesView(TemplateView):

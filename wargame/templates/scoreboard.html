@@ -1,4 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
     <h1>Scoreboard</h1>
+
+    <table class="table table-striped">
+    <thead>
+    <tr>
+        <th style="width: 50px;">#</th>
+        <th>Name</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for score in view.scores %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ score.username }}</td>
+        <td>{{ score.total_points }}</td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
 {% endblock %}
