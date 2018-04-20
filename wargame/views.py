@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models.expressions import F
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
-from wargame import models
 
+from wargame import models
 from wargame.forms import UserRegistrationForm
-from wargame.models import Challenge, Tag, UserChallenge, Submission
+from wargame.models import Challenge, UserChallenge, Submission
 
 
 class IndexView(TemplateView):
@@ -31,11 +31,7 @@ class AboutUsView(TemplateView):
     template_name = 'about_us.html'
 
     def get_people(self):
-        names = ['Szász Márton', 'Márki-Zay Ferenc', 'Schulcz Ferenc',
-                 'Madarász Bence', 'Hegyi Zsolt', 'Kovács Bence',
-                 'Barkaszi Richárd', 'Bakos Ádám']
-        names.sort()
-        return names
+        return models.StaffMember.objects.order_by(F('name')).all()
 
 
 class LinksView(TemplateView):
