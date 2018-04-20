@@ -24,6 +24,13 @@ class User(AbstractUser):
             .only('points_with_hint') \
             .aggregate(total_points=Coalesce(Sum('points_with_hint'), 0))['total_points']
 
+    @staticmethod
+    def get_top_40_by_score():
+        return User.objects.filter(userchallenge__submission__value=F('userchallenge__challenge__flag_qpa')) \
+            .values('username')\
+            .annotate(total_points=Coalesce(Sum(ExpressionWrapper(F('userchallenge__challenge__points') - (F('userchallenge__hint_used') * F('userchallenge__challenge__points')) * 0.5, output_field=IntegerField())), 0))\
+            .order_by('-total_points')[:40]
+
 
 class File(models.Model):
     path = models.CharField(max_length=512)
@@ -82,3 +89,10 @@ class Submission(models.Model):
     creation_dt = models.DateTimeField(auto_now_add=True)
     value = models.CharField(max_length=256)
     user_challenge = models.ForeignKey(UserChallenge, on_delete=models.CASCADE)
+
+
+class StaffMember(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
