@@ -44,6 +44,10 @@ class Challenge(models.Model):
     def __str__(self):
         return self.title
 
+    def get_flag(self):
+        # TODO: QPA-Hacktivity switch
+        return self.flag_qpa
+
 
 class UserChallenge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -52,6 +56,21 @@ class UserChallenge(models.Model):
 
     class Meta:
         unique_together = (('user', 'challenge'),)
+
+    @staticmethod
+    def get_or_create(user, challenge):
+        try:
+            ret = UserChallenge.objects.get(user=user, challenge=challenge)
+        except UserChallenge.DoesNotExist:
+            ret = UserChallenge()
+            ret.user = user
+            ret.challenge = challenge
+            ret.save()
+
+        return ret
+
+    def solved(self):
+        return self.submission_set.filter(value=self.challenge.get_flag()).count() == 1
 
 
 class Submission(models.Model):

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -6,7 +7,7 @@ from registration.backends.simple.views import RegistrationView
 from wargame import models
 
 from wargame.forms import UserRegistrationForm
-from wargame.models import Challenge, Tag
+from wargame.models import Challenge, Tag, UserChallenge, Submission
 
 
 class IndexView(TemplateView):
@@ -52,6 +53,26 @@ class ChallengeDetailsView(TemplateView):
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['id'])
 
+    def userchallenge(self):
+        return UserChallenge.get_or_create(self.request.user, self.challenge())
+
     def post(self, *args, **kwargs):
-        # TODO: Process submission
-        return HttpResponseRedirect(self.request.path + "?submit=true")
+        userchallenge = self.userchallenge()
+        if userchallenge.solved():
+            return HttpResponseRedirect(self.request.path)
+
+        submission = Submission()
+        submission.user_challenge = userchallenge
+        submission.value = self.request.POST.get('flag')
+
+        if submission.value is None:
+            return HttpResponseRedirect(self.request.path)
+
+        submission.save()
+
+        if userchallenge.solved():
+            messages.success(self.request, 'Congratulations! You have successfully solved this challenge!')
+        else:
+            messages.error(self.request, 'Your answer was incorrect. Try again!')
+
+        return HttpResponseRedirect(self.request.path)

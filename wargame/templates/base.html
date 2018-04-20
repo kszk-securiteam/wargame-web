@@ -5,14 +5,15 @@
 {% block bootstrap4_extra_head %}
     <title>SecurITeam wargame</title>
     <link type="text/css" rel="stylesheet" href="{% static "style.css" %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static "fontawesome-all.min.css" %}" />
 {% endblock %}
 
 {% block bootstrap4_content %}
     <div class="container mb-3 mt-3">
         {% include 'module/nav.html' %}
-        {% bootstrap_messages %}
     </div>
     <div class="container">
+        {% bootstrap_messages %}
         {% block content %}
         {% endblock %}
     </div>
