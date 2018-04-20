@@ -38,6 +38,7 @@ class Challenge(models.Model):
     title = models.CharField(max_length=256)
     creation_dt = models.DateTimeField(auto_now_add=True)
     description = MarkdownxField()
+    short_description = models.CharField(max_length=512, default="")
     level = models.IntegerField()
     flag_qpa = models.CharField(max_length=256, null=True)
     flag_hacktivity = models.CharField(max_length=256, null=True)
