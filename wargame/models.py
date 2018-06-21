@@ -18,11 +18,19 @@ class User(AbstractUser):
         # WHERE ((meta_config.is_qpa = '1' AND submission.value = challenge.flag_qpa)
         #       OR (meta_config.is_hacktivity = '1' AND submission.value = challenge.flag_hacktivity))
         #   AND user_challenge.user_id = {self.id}
-        return UserChallenge.objects \
-            .filter(user=self, submission__value=F('challenge__flag_qpa')) \
-            .annotate(points_with_hint=ExpressionWrapper(F('challenge__points') - (F('hint_used') * F('challenge__points') * 0.5), output_field=IntegerField())) \
-            .only('points_with_hint') \
-            .aggregate(total_points=Coalesce(Sum('points_with_hint'), 0))['total_points']
+        return UserChallenge.objects.filter(
+                user=self,
+                submission__value=F('challenge__flag_qpa')
+            ).annotate(
+                points_with_hint=ExpressionWrapper(
+                    F('challenge__points') - (F('hint_used') * F('challenge__points') * 0.5),
+                    output_field=IntegerField()
+                )
+            ).only(
+                'points_with_hint'
+            ).aggregate(
+                total_points=Coalesce(Sum('points_with_hint'), 0)
+            ).get('total_points')
 
     @staticmethod
     def get_top_40_by_score():
