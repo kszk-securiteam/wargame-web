@@ -9,7 +9,6 @@ from markdownx.models import MarkdownxField
 
 class User(AbstractUser):
     def get_score(self):
-        # TODO: qpa/hacktivity switch
         # SELECT SUM(challenge.points)
         # FROM user_challenge
         #   JOIN challenge ON(challenge.id = user_challenge.challenge_id)
@@ -18,26 +17,45 @@ class User(AbstractUser):
         # WHERE ((meta_config.is_qpa = '1' AND submission.value = challenge.flag_qpa)
         #       OR (meta_config.is_hacktivity = '1' AND submission.value = challenge.flag_hacktivity))
         #   AND user_challenge.user_id = {self.id}
+
+        # noinspection PyUnreachableCode
+        if True:  # TODO: QPA/Hacktivity switch
+            flag_field = F('challenge__flag_qpa')
+        else:
+            flag_field = F('challenge__flag_hacktivity')
+
+        challenge_points = F('challenge__points')
+        hint_used = F('hint_used')
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
+
         return UserChallenge.objects.filter(
-                user=self,
-                submission__value=F('challenge__flag_qpa')
-            ).annotate(
-                points_with_hint=ExpressionWrapper(
-                    F('challenge__points') - (F('hint_used') * F('challenge__points') * 0.5),
-                    output_field=IntegerField()
-                )
-            ).only(
-                'points_with_hint'
-            ).aggregate(
-                total_points=Coalesce(Sum('points_with_hint'), 0)
-            ).get('total_points')
+            user=self,
+            submission__value=flag_field
+        ).annotate(
+            points_with_hint=user_points
+        ).aggregate(
+            total_points=Coalesce(Sum('points_with_hint'), 0)
+        ).get('total_points')
 
     @staticmethod
     def get_top_40_by_score():
-        return User.objects.filter(userchallenge__submission__value=F('userchallenge__challenge__flag_qpa')) \
-            .values('username')\
-            .annotate(total_points=Coalesce(Sum(ExpressionWrapper(F('userchallenge__challenge__points') - (F('userchallenge__hint_used') * F('userchallenge__challenge__points')) * 0.5, output_field=IntegerField())), 0))\
-            .order_by('-total_points')[:40]
+        # noinspection PyUnreachableCode
+        if True:  # TODO: QPA/Hacktivity switch
+            flag_field = F('userchallenge__challenge__flag_qpa')
+        else:
+            flag_field = F('userchallenge__challenge__flag_hacktivity')
+
+        challenge_points = F('userchallenge__challenge__points')
+        hint_used = F('userchallenge__hint_used')
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
+
+        return User.objects.filter(
+            userchallenge__submission__value=flag_field
+        ).values(
+            'username'
+        ).annotate(
+            total_points=Coalesce(Sum(user_points), 0)
+        ).order_by('-total_points')[:40]
 
 
 class File(models.Model):
