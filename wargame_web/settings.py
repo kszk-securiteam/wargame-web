@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'wargame',
     'markdownx',
+    'wargame_admin',
 ]
 
 MIDDLEWARE = [

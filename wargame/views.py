@@ -11,11 +11,11 @@ from wargame.models import Challenge, UserChallenge, Submission
 
 
 class IndexView(TemplateView):
-    template_name = 'index.html'
+    template_name = 'wargame/index.html'
 
 
 class ChallengesView(LoginRequiredMixin, TemplateView):
-    template_name = 'challenges.html'
+    template_name = 'wargame/challenges.html'
 
     # TODO: Replace with query for available challenges
     def userchallenges(self):
@@ -23,23 +23,23 @@ class ChallengesView(LoginRequiredMixin, TemplateView):
 
 
 class ScoreboardView(TemplateView):
-    template_name = 'scoreboard.html'
+    template_name = 'wargame/scoreboard.html'
     scores = models.User.get_top_40_by_score()
 
 
 class RulesView(TemplateView):
-    template_name = 'rules.html'
+    template_name = 'wargame/rules.html'
 
 
 class AboutUsView(TemplateView):
-    template_name = 'about_us.html'
+    template_name = 'wargame/about_us.html'
 
     def get_people(self):
         return models.StaffMember.objects.order_by(F('name')).all()
 
 
 class LinksView(TemplateView):
-    template_name = 'links.html'
+    template_name = 'wargame/links.html'
 
 
 class UserRegistrationView(RegistrationView):
@@ -48,7 +48,7 @@ class UserRegistrationView(RegistrationView):
 
 
 class ChallengeDetailsView(TemplateView):
-    template_name = 'challenge_details.html'
+    template_name = 'wargame/challenge_details.html'
 
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['id'])

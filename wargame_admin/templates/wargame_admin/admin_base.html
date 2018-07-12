@@ -1,0 +1,24 @@
+{% extends 'bootstrap4/bootstrap4.html' %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block bootstrap4_extra_head %}
+    <title>Wargame admin</title>
+    <link type="text/css" rel="stylesheet" href="{% static "webfonts/fontawesome-all.min.css" %}" />
+{% endblock %}
+
+{% block bootstrap4_content %}
+    <div class="container mb-3 mt-3">
+        {% include 'wargame_admin/module/admin_nav.html' %}
+    </div>
+    <div class="container">
+        {% bootstrap_messages %}
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{# This is required, because django-bootstrap does not include jquery by default and the setting to include it does not work #}
+{% block bootstrap4_after_content %}
+    {% bootstrap_jquery %}
+{% endblock %}

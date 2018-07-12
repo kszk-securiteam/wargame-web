@@ -19,6 +19,7 @@ from markdownx import urls as markdownx_urls
 
 urlpatterns = [
     path('', include('wargame.urls')),
-    path('admin/', admin.site.urls),
-    path('markdownx/', include(markdownx_urls))
+    path('django-admin/', admin.site.urls, name='django-admin'),
+    path('markdownx/', include(markdownx_urls)),
+    path('admin/', include('wargame_admin.urls'))
 ]

@@ -1,9 +1,9 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import F, Sum, Q, Exists, OuterRef
+from django.db.models import F, Sum
 from django.db.models.expressions import ExpressionWrapper
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
-from django.contrib.auth.models import AbstractUser
 from markdownx.models import MarkdownxField
 
 

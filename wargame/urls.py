@@ -13,8 +13,8 @@ urlpatterns = [
     path('about_us/', views.AboutUsView.as_view(), name='about-us'),
     path('links/', views.LinksView.as_view(), name='links'),
     path('logout/', LogoutView.as_view(next_page=reverse_lazy('index')), name='logout'),
-    path('login/', LoginView.as_view(template_name='login_form.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='wargame/login_form.html'), name='login'),
     path('register/', views.UserRegistrationView.as_view(), name='register'),
-    path('registration-disallowed/', TemplateView.as_view(template_name='registration_disallowed.html'), name='registration_disallowed')
+    path('registration-disallowed/', TemplateView.as_view(template_name='wargame/registration_disallowed.html'), name='registration_disallowed')
 ]
 
