@@ -1,4 +1,25 @@
 {% extends 'wargame_admin/admin_base.html' %}
+{% load wargame_tags %}
 {% block content %}
-    <h1>TODO: Challenge details</h1>
+    <h1 class="admin-header">
+        <span>{{ view.challenge.title }}</span>
+        <button class="btn btn-primary">Edit</button>
+        <button class="btn btn-danger">Delete</button>
+    </h1>
+    <div class="bg-light px-5 py-1 my-3">
+        <p>{{ view.challenge.description|markdown }}</p>
+    </div>
+    <hr />
+    <h3>Properties</h3>
+    <b>Created:</b> {{ view.challenge.creation_dt }}<br/>
+    <b>Short description:</b> {{ view.challenge.short_description }}<br/>
+    <b>Level:</b> {{ view.challenge.level }}<br/>
+    <b>Flag (QPA):</b> {{ view.challenge.flag_qpa }}<br/>
+    <b>Flag (Hacktivity):</b> {{ view.challenge.flag_hacktivity }}<br/>
+    <b>Points:</b> {{ view.challenge.points }}<br/>
+    <b>Hint:</b> {{ view.challenge.hint }}<br/>
+    <hr/>
+    <h3>Files</h3>
+    <p>TODO</p>
+    <hr/>
 {% endblock %}

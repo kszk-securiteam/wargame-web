@@ -44,7 +44,7 @@ class LinksView(TemplateView):
 
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
-    template_name = 'registration.html'
+    template_name = 'wargame/registration.html'
 
 
 class ChallengeDetailsView(TemplateView):

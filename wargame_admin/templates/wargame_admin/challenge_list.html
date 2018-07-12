@@ -1,4 +1,22 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% block content %}
-    <h1>TODO: Challenge list</h1>
+    <h1 class="admin-header">
+        <span>Challenges</span>
+        <button class="btn btn-success">New challenge</button>
+    </h1>
+    <section>
+        {% for challenge in view.challenges %}
+            <!-- TODO: solved function in view -->
+            <a class="card" href="{% url 'wargame-admin:challenge-details' id=challenge.id %}">
+                <div class="card-body row">
+                    <div class="col-sm-8">
+                        <h4 class="card-title">{{ challenge.title }}</h4>
+                        <p>
+                            {{ challenge.short_description }}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        {% endfor %}
+    </section>
 {% endblock %}

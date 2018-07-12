@@ -1,12 +1,20 @@
 from django.views.generic import TemplateView
 
+from wargame.models import Challenge
+
 
 class ChallengeListView(TemplateView):
     template_name = "wargame_admin/challenge_list.html"
 
+    def challenges(self):
+        return Challenge.objects.all().order_by('level')
+
 
 class ChallengeDetailsView(TemplateView):
-    template_name = "wargame/challenge_details.html"
+    template_name = "wargame_admin/challenge_details.html"
+
+    def challenge(self):
+        return Challenge.objects.get(pk=self.kwargs['id'])
 
 
 class ChallengeEditView(TemplateView):
