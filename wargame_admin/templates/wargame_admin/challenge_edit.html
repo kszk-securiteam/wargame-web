@@ -1,4 +1,11 @@
 {% extends 'wargame_admin/admin_base.html' %}
+{% load bootstrap4 %}
 {% block content %}
-    <h1>TODO: Challenge edit</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <input type="submit" value="Save" class="btn btn-primary float-right" />
+        {% endbuttons %}
+    </form>
 {% endblock %}

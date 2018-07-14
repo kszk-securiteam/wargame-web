@@ -2,12 +2,12 @@
 {% block content %}
     <h1 class="admin-header">
         <span>Challenges</span>
-        <button class="btn btn-success">New challenge</button>
+        <a href="{% url 'wargame-admin:challenge-create' %}" class="btn btn-success">New challenge</a>
     </h1>
     <section>
         {% for challenge in view.challenges %}
             <!-- TODO: solved function in view -->
-            <a class="card" href="{% url 'wargame-admin:challenge-details' id=challenge.id %}">
+            <a class="card" href="{% url 'wargame-admin:challenge-details' challenge.id %}">
                 <div class="card-body row">
                     <div class="col-sm-8">
                         <h4 class="card-title">{{ challenge.title }}</h4>
