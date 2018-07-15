@@ -1,4 +1,7 @@
 # wargame-web
+
+[![Build Status](https://travis-ci.org/kszk-securiteam/wargame-web.svg?branch=master)](https://travis-ci.org/kszk-securiteam/wargame-web)
+
 Wargame web application
 
 ## Preparing the development environment

@@ -101,6 +101,7 @@ ENV/
 .mypy_cache/
 
 /db.sqlite3
+/db*.sqlite*
 
 # IntelliJ IDEA
 .idea/
