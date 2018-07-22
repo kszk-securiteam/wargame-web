@@ -109,3 +109,6 @@ ENV/
 
 # Ignore collected static files
 /static/
+
+# Ignore uploaded files
+/media/

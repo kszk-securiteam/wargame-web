@@ -26,7 +26,8 @@ class User(AbstractUser):
 
         challenge_points = F('challenge__points')
         hint_used = F('hint_used')
-        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5),
+                                        output_field=IntegerField())
 
         return UserChallenge.objects.filter(
             user=self,
@@ -47,7 +48,8 @@ class User(AbstractUser):
 
         challenge_points = F('userchallenge__challenge__points')
         hint_used = F('userchallenge__hint_used')
-        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5),
+                                        output_field=IntegerField())
 
         return User.objects.filter(
             userchallenge__submission__value=flag_field
@@ -56,11 +58,6 @@ class User(AbstractUser):
         ).annotate(
             total_points=Coalesce(Sum(user_points), 0)
         ).order_by('-total_points')[:40]
-
-
-class File(models.Model):
-    path = models.CharField(max_length=512)
-    private = models.BooleanField(default=False)
 
 
 class Tag(models.Model):
@@ -85,6 +82,13 @@ class Challenge(models.Model):
     def get_flag(self):
         # TODO: QPA-Hacktivity switch
         return self.flag_qpa
+
+
+class File(models.Model):
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='files')
+    file = models.FileField(upload_to='challenge-files/')
+    display_name = models.CharField(max_length=256)
+    private = models.BooleanField(default=False)
 
 
 class UserChallenge(models.Model):

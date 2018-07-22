@@ -1,0 +1,22 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+    <h3>Files</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ view.formset.management_form }}
+        <table>
+            {% for form in view.formset %}
+                {{ form }}
+            {% endfor %}
+        </table>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+    <hr />
+    <h3>Upload new file</h3>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ view.file_upload_form }}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+{% endblock %}

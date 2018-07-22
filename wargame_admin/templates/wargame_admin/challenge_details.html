@@ -19,7 +19,12 @@
     <b>Points:</b> {{ view.challenge.points }}<br/>
     <b>Hint:</b> {{ view.challenge.hint }}<br/>
     <hr/>
-    <h3>Files</h3>
-    <p>TODO</p>
+    <h3 class="admin-header">
+        <span>Files</span>
+        <a href="{% url 'wargame-admin:challenge-files' view.challenge.id %}" class="btn btn-primary">Manage files</a>
+    </h3>
+    {% for file in view.challenge.files.all %}
+        <a href="{{ file.file.url }}">{{ file.display_name }}</a>
+    {% endfor %}
     <hr/>
 {% endblock %}
