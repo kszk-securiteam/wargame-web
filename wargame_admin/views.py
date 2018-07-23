@@ -56,6 +56,7 @@ class ChallengeFilesView(TemplateView):
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['pk'])
 
+    # noinspection PyMethodMayBeStatic
     def file_upload_form(self):
         return FileUploadForm()
 

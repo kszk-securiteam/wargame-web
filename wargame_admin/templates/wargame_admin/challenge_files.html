@@ -1,22 +1,29 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% load bootstrap4 %}
+{% load wargame_admin_tags %}
 {% block content %}
     <h3>Files</h3>
     <form method="post">
         {% csrf_token %}
         {{ view.formset.management_form }}
-        <table>
+        <div class="row">
             {% for form in view.formset %}
-                {{ form }}
+                <div class="card col-sm-5 m-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ form.instance.file.name|filename }}</h5>
+                        {% bootstrap_form form %}
+                        <a href="#" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
             {% endfor %}
-        </table>
+        </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
     <hr />
     <h3>Upload new file</h3>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="form">
         {% csrf_token %}
-        {{ view.file_upload_form }}
+        {% bootstrap_form view.file_upload_form %}
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
 {% endblock %}
