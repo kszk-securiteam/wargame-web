@@ -81,6 +81,14 @@ class ChallengeFilesView(TemplateView):
         return HttpResponseRedirect(self.request.path_info)  # Redirect to the same page
 
 
+class ChallengeFileDeleteView(DeleteView):
+    template_name = 'wargame_admin/challenge_file_delete.html'
+    model = File
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
+
+
 class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
 

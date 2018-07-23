@@ -12,7 +12,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ form.instance.file.name|filename }}</h5>
                         {% bootstrap_form form %}
-                        <a href="#" class="btn btn-danger">Delete</a>
+                        <a href="{% url 'wargame-admin:challenge-file-delete' form.instance.id %}" class="btn btn-danger">Delete</a>
                     </div>
                 </div>
             {% endfor %}

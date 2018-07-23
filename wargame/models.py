@@ -1,9 +1,12 @@
+import os
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import F, Sum
 from django.db.models.expressions import ExpressionWrapper
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
+from django.dispatch import receiver
 from markdownx.models import MarkdownxField
 
 
@@ -89,6 +92,14 @@ class File(models.Model):
     file = models.FileField(upload_to='challenge-files/')
     display_name = models.CharField(max_length=256)
     private = models.BooleanField(default=False)
+
+
+# Deletes file from filesystem when File object is deleted.
+@receiver(models.signals.post_delete, sender=File)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
 
 
 class UserChallenge(models.Model):

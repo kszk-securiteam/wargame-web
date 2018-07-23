@@ -1,0 +1,10 @@
+{% extends "wargame_admin/admin_base.html" %}
+{% load wargame_admin_tags %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete the file {{ object.file.name|filename }} from the challenge {{ object.challenge.title }}?</p>
+        <button type="submit" class="btn btn-danger">Confirm</button>
+        <a class="btn btn-default" href="{% url 'wargame-admin:challenge-files' object.challenge.id %}">Cancel</a>
+    </form>
+{% endblock %}

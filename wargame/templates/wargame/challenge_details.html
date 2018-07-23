@@ -12,12 +12,10 @@
         <p>{{ view.challenge.description|markdown }}</p>
     </div>
     <div>
-        <!-- TODO -->
-        Attached files:
-        <ul>
-            <li>{{ view.test }}</li>
-            <li>File 2</li>
-        </ul>
+        <h4>Attached files</h4>
+        {% for file in view.files %}
+            <a href="{{ file.file.url }}">{{ file.display_name }}</a><br/>
+        {% endfor %}
     </div>
     {% if not view.userchallenge.solved %}
         <form class="form-inline d-flex" method="post">

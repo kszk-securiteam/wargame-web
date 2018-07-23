@@ -53,6 +53,9 @@ class ChallengeDetailsView(TemplateView):
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['id'])
 
+    def files(self):
+        return self.challenge().files.filter(private=False).all()
+
     def userchallenge(self):
         return UserChallenge.get_or_create(self.request.user, self.challenge())
 
