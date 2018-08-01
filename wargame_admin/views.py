@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm
-from wargame.models import Challenge, File
+from wargame.models import Challenge, File, Submission, UserChallenge, User
 
 
 class ChallengeListView(TemplateView):
@@ -93,8 +93,32 @@ class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
 
 
-class SubmissionAdminView(TemplateView):
-    template_name = "wargame_admin/submission_admin.html"
+class ChallengeSubmissions(TemplateView):
+    template_name = "wargame_admin/challenge_submissions.html"
+
+    # noinspection PyMethodMayBeStatic
+    def challenges(self):
+        return Challenge.objects.values_list('id', 'title').all()
+
+    def challenge_id(self):
+        return int(self.request.GET['id'])
+
+    def userchallenges(self):
+        return UserChallenge.objects.filter(challenge_id=self.challenge_id()).all()
+
+
+class UserSubmissions(TemplateView):
+    template_name = "wargame_admin/user_submissions.html"
+
+    # noinspection PyMethodMayBeStatic
+    def users(self):
+        return User.objects.values_list('id', 'username').all()
+
+    def user_id(self):
+        return int(self.request.GET['id'])
+
+    def userchallenges(self):
+        return UserChallenge.objects.filter(user_id=self.user_id()).all()
 
 
 class ConfigEditorView(TemplateView):

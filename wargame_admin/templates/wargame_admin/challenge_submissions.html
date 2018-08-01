@@ -1,0 +1,23 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% block content %}
+    <h1>Submissions</h1>
+    <form method="get" class="form-inline">
+        <select name="id" class="form-control m-2">
+            {% for challenge in view.challenges %}
+                <option value="{{ challenge.0 }}" {% if challenge.0 == view.challenge_id %} selected {% endif %}>{{ challenge.1 }}</option>
+            {% endfor%}
+        </select>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <hr/>
+    {% for userchallenge in view.userchallenges %}
+        <h3>{{ userchallenge.user.username }}</h3>
+        <!-- TODO: Reset hint button -->
+        <!-- TODO: Clear submissions button -->
+        <ul>
+            {% for submission in userchallenge.submission_set.all %}
+                <li>{{ submission.value }}</li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}
