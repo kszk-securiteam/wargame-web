@@ -92,6 +92,10 @@ class ChallengeFileDeleteView(DeleteView):
 class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
 
+    # noinspection PyMethodMayBeStatic
+    def users(self):
+        return User.objects.order_by('-is_staff').all()
+
 
 class ChallengeSubmissions(TemplateView):
     template_name = "wargame_admin/challenge_submissions.html"

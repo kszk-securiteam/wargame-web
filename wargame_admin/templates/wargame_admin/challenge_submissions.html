@@ -9,6 +9,8 @@
         </select>
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
+    <!-- TODO: Reset hints for all button -->
+    <!-- TODO: Clear submissions for all button -->
     <hr/>
     {% for userchallenge in view.userchallenges %}
         <h3>{{ userchallenge.user.username }}</h3>

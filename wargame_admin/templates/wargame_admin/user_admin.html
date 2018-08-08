@@ -1,4 +1,28 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% block content %}
-    <h1>TODO: User admin</h1>
+    <h1>Users</h1>
+    {# TODO: Sortable table #}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Scoreboard visibility</th>
+                <th>Staff</th>
+                <th>Submissions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in view.users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.get_score }}</td>
+                {# TODO: Buttons #}
+                <td>Hide/Show</td>
+                <td>Grant/revoke staff</td>
+                <td>Submissions</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
