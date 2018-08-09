@@ -98,31 +98,39 @@ class UserAdminView(TemplateView):
 
 
 class ChallengeSubmissions(TemplateView):
-    template_name = "wargame_admin/challenge_submissions.html"
+    template_name = "wargame_admin/submissions.html"
 
     # noinspection PyMethodMayBeStatic
-    def challenges(self):
+    def list(self):
         return Challenge.objects.values_list('id', 'title').all()
 
-    def challenge_id(self):
+    def selected_id(self):
         return int(self.request.GET['id'])
 
     def userchallenges(self):
-        return UserChallenge.objects.filter(challenge_id=self.challenge_id()).all()
+        return UserChallenge.objects.filter(challenge_id=self.selected_id()).all()
+
+    # noinspection PyMethodMayBeStatic
+    def get_userchallenge_text(self, userchallenge):
+        return userchallenge.challenge.title
 
 
 class UserSubmissions(TemplateView):
-    template_name = "wargame_admin/user_submissions.html"
+    template_name = "wargame_admin/submissions.html"
 
     # noinspection PyMethodMayBeStatic
-    def users(self):
+    def list(self):
         return User.objects.values_list('id', 'username').all()
 
-    def user_id(self):
+    def selected_id(self):
         return int(self.request.GET['id'])
 
     def userchallenges(self):
-        return UserChallenge.objects.filter(user_id=self.user_id()).all()
+        return UserChallenge.objects.filter(user_id=self.selected_id()).all()
+
+    # noinspection PyMethodMayBeStatic
+    def get_userchallenge_text(self, userchallenge):
+        return userchallenge.user.username
 
 
 class ConfigEditorView(TemplateView):
