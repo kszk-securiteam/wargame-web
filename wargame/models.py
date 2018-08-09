@@ -11,6 +11,8 @@ from markdownx.models import MarkdownxField
 
 
 class User(AbstractUser):
+    hidden = models.BooleanField(default=False)
+
     def get_score(self):
         # SELECT SUM(challenge.points)
         # FROM user_challenge

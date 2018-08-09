@@ -13,3 +13,8 @@
     margin-top: 3px;
     margin-bottom: 3px;
 }
+
+/*Bootstrap workaround: a tags with btn classes do not change text color on hover*/
+a.btn:hover {
+    color: white !important;
+}

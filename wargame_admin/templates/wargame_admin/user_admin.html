@@ -18,9 +18,21 @@
                 <td>{{ user.username }}</td>
                 <td>{{ user.get_score }}</td>
                 {# TODO: Buttons #}
-                <td>Hide/Show</td>
-                <td>Grant/revoke staff</td>
-                <td>Submissions</td>
+                <td>
+                    {% if user.hidden %}
+                        <a class="btn btn-outline-dark">Show user on scoreboard</a>
+                    {% else %}
+                        <a class="btn btn-outline-dark">Hide user from scoreboard</a>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.is_staff %}
+                        <a class="btn btn-outline-danger">Revoke staff privileges</a>
+                    {% else %}
+                        <a class="btn btn-outline-success">Grant staff privileges</a>
+                    {% endif %}
+                </td>
+                <td><a class="btn btn-link" href="{% url 'wargame-admin:user-submissions' %}?id={{ user.id }}">Submissions</a> </td>
             </tr>
         {% endfor %}
         </tbody>

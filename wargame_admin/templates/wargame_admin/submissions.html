@@ -2,6 +2,7 @@
 {% load wargame_admin_tags %}
 {% block content %}
     <h1>Submissions</h1>
+    {# TODO: Add all option -> handle empty query parameter #}
     <form method="get" class="form-inline">
         <select name="id" class="form-control m-2">
             {% for item in view.list %}
