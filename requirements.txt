@@ -3,3 +3,4 @@ django-bootstrap4==0.0.6
 django-markdownx==2.0.22
 django-registration==2.4.1
 pytz==2018.3
+django-search-views==0.3.1

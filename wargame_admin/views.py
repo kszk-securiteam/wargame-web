@@ -3,8 +3,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
+from search_views.views import SearchListView
 
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm
+from filters import UserFilter
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm
 from wargame.models import Challenge, File, Submission, UserChallenge, User
 
 
@@ -89,8 +91,12 @@ class ChallengeFileDeleteView(DeleteView):
         return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
 
 
-class UserAdminView(TemplateView):
+class UserAdminView(SearchListView):
     template_name = "wargame_admin/user_admin.html"
+    model = User
+    paginate_by = 30
+    form_class = UserSearchForm
+    filter_class = UserFilter
 
     # noinspection PyMethodMayBeStatic
     def users(self):

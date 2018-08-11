@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form, CharField, TextInput
 
 from wargame.models import File, Challenge
 
@@ -19,3 +19,7 @@ class ChallengeForm(ModelForm):
     class Meta:
         model = Challenge
         fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint']
+
+
+class UserSearchForm(Form):
+    name = CharField(required=False, label='', widget=TextInput(attrs={'placeholder': 'Username'}))

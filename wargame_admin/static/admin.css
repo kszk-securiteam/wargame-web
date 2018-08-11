@@ -15,6 +15,6 @@
 }
 
 /*Bootstrap workaround: a tags with btn classes do not change text color on hover*/
-a.btn:hover {
+a.btn:not(.btn-link):hover {
     color: white !important;
 }
