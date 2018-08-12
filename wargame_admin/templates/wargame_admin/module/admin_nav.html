@@ -19,9 +19,9 @@
             </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            {% if user.is_authenticated %}
+            {% if request.user.is_authenticated %}
                 <span class="navbar-text font-weight-bold">
-                    {{ user.username }} - ${{ user.get_score }}
+                    {{ request.user.username }} - ${{ request.user.get_score }}
                 </span>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Logout</a>

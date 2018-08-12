@@ -1,6 +1,6 @@
 from django.forms import ModelForm, Form, CharField, TextInput
 
-from wargame.models import File, Challenge
+from wargame.models import File, Challenge, User
 
 
 class FileForm(ModelForm):
@@ -23,3 +23,9 @@ class ChallengeForm(ModelForm):
 
 class UserSearchForm(Form):
     name = CharField(required=False, label='', widget=TextInput(attrs={'placeholder': 'Username'}))
+
+
+class UserEditForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['is_staff', 'hidden']

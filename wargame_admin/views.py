@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, UpdateView, CreateView, DeleteVie
 from search_views.views import SearchListView
 
 from filters import UserFilter
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
 from wargame.models import Challenge, File, Submission, UserChallenge, User
 
 
@@ -137,6 +137,15 @@ class UserSubmissions(TemplateView):
     # noinspection PyMethodMayBeStatic
     def get_userchallenge_text(self, userchallenge):
         return userchallenge.user.username
+
+
+class UserEdit(UpdateView):
+    template_name = "wargame_admin/user_edit.html"
+    model = User
+    form_class = UserEditForm
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:users')
 
 
 class ConfigEditorView(TemplateView):

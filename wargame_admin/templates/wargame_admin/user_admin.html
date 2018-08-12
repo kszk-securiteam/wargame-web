@@ -14,6 +14,7 @@
                 <th>Score</th>
                 <th>Scoreboard visibility</th>
                 <th>Staff</th>
+                <th>Edit</th>
                 <th>Submissions</th>
             </tr>
         </thead>
@@ -22,21 +23,21 @@
             <tr>
                 <td>{{ user.username }}</td>
                 <td>{{ user.get_score }}</td>
-                {# TODO: Buttons #}
                 <td>
                     {% if user.hidden %}
-                        <a class="btn btn-outline-dark">Show user on scoreboard</a>
+                        Hidden from scoreboard
                     {% else %}
-                        <a class="btn btn-outline-dark">Hide user from scoreboard</a>
+                        Visible on scoreboard
                     {% endif %}
                 </td>
                 <td>
                     {% if user.is_staff %}
-                        <a class="btn btn-outline-danger">Revoke staff privileges</a>
+                        Staff
                     {% else %}
-                        <a class="btn btn-outline-success">Grant staff privileges</a>
+                        Not staff
                     {% endif %}
                 </td>
+                <td><a class="btn btn-link" href="{% url 'wargame-admin:user-edit' user.id %}">Edit user</a></td>
                 <td><a class="btn btn-link" href="{% url 'wargame-admin:user-submissions' %}?id={{ user.id }}">Submissions</a> </td>
             </tr>
         {% endfor %}
