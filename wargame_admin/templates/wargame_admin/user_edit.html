@@ -3,9 +3,7 @@
 {% block content %}
     <h3>{{ object.username }} - ${{ object.get_score }}</h3>
     <div>
-        {# TODO #}
-        <a class="btn btn-info text-white">Reset password</a>
-        <a class="btn btn-danger text-white">Delete user</a>
+        <a class="btn btn-info text-white" href="{% url 'admin:auth_user_password_change' object.id %}">Change password</a>
     </div>
     <hr />
     <form method="post">

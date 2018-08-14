@@ -1,6 +1,6 @@
 import os
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 from django.db.models import F, Sum
 from django.db.models.expressions import ExpressionWrapper
@@ -12,6 +12,21 @@ from markdownx.models import MarkdownxField
 
 class User(AbstractUser):
     hidden = models.BooleanField(default=False)
+
+    def admin_str(self):
+        if self.is_superuser:
+            return "Admin"
+        return "Not admin"
+
+    def hidden_str(self):
+        if self.hidden:
+            return "Hidden from scoreboard"
+        return "Visible on scoreboard"
+
+    def active_str(self):
+        if self.is_active:
+            return "Active"
+        return "Not active"
 
     def get_score(self):
         # SELECT SUM(challenge.points)

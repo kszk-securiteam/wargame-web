@@ -145,6 +145,8 @@ class UserEdit(UpdateView):
     form_class = UserEditForm
 
     def get_success_url(self):
+        self.object.is_staff = self.object.is_superuser
+        self.object.save()
         return reverse_lazy('wargame-admin:users')
 
 
