@@ -118,7 +118,7 @@ class ChallengeSubmissions(TemplateView):
 
     # noinspection PyMethodMayBeStatic
     def get_userchallenge_text(self, userchallenge):
-        return userchallenge.challenge.title
+        return userchallenge.user.username
 
 
 class UserSubmissions(TemplateView):
@@ -136,7 +136,7 @@ class UserSubmissions(TemplateView):
 
     # noinspection PyMethodMayBeStatic
     def get_userchallenge_text(self, userchallenge):
-        return userchallenge.user.username
+        return userchallenge.challenge.title
 
 
 class UserEdit(UpdateView):

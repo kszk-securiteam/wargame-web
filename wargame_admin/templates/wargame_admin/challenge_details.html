@@ -3,6 +3,7 @@
 {% block content %}
     <h1 class="admin-header">
         <span>{{ view.challenge.title }}</span>
+        <a href="{% url 'wargame-admin:challenge-submissions' %}?id={{ view.challenge.id }}" class="btn btn-link">Submissions</a>
         <a href="{% url 'wargame-admin:challenge-edit' view.challenge.id %}" class="btn btn-primary">Edit</a>
         <a href="{% url 'wargame-admin:challenge-delete' view.challenge.id %}" class="btn btn-danger">Delete</a>
     </h1>
