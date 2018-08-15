@@ -17,6 +17,15 @@
             <a href="{{ file.file.url }}">{{ file.display_name }}</a><br/>
         {% endfor %}
     </div>
+    <div class="my-3">
+        <h4>Hint</h4>
+        {% if view.userchallenge.hint_used %}
+            <p>{{ view.challenge.hint }}</p>
+        {% else %}
+            Showing the hint will halve the number of points available for this challenge.<br />
+            <a class="btn btn-info text-white" href="{% url 'challenge-hint' view.challenge.id %}">Show hint</a>
+        {% endif %}
+    </div>
     {% if not view.userchallenge.solved %}
         <form class="form-inline d-flex" method="post">
             {% csrf_token %}

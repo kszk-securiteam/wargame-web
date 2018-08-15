@@ -1,7 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.expressions import F
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
 
@@ -47,7 +49,7 @@ class UserRegistrationView(RegistrationView):
     template_name = 'wargame/registration.html'
 
 
-class ChallengeDetailsView(TemplateView):
+class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
     template_name = 'wargame/challenge_details.html'
 
     def challenge(self):
@@ -79,3 +81,12 @@ class ChallengeDetailsView(TemplateView):
             messages.error(self.request, 'Your answer was incorrect. Try again!')
 
         return HttpResponseRedirect(self.request.path)
+
+
+@login_required()
+def reveal_hint(request, challenge_id):
+    challenge = Challenge.objects.get(pk=challenge_id)
+    userchallenge = UserChallenge.get_or_create(request.user, challenge)
+    userchallenge.hint_used = True
+    userchallenge.save()
+    return HttpResponseRedirect(reverse_lazy('challenge-details', kwargs={'id': challenge_id}))
