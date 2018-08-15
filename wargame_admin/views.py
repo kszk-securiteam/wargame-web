@@ -1,13 +1,13 @@
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
 
 from filters import UserFilter
+from wargame.models import Challenge, File, UserChallenge, User
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
-from wargame.models import Challenge, File, Submission, UserChallenge, User
+from wargame_admin.models import Config
 
 
 class ChallengeListView(TemplateView):
@@ -152,3 +152,16 @@ class UserEdit(UpdateView):
 
 class ConfigEditorView(TemplateView):
     template_name = "wargame_admin/config_editor.html"
+
+    # noinspection PyMethodMayBeStatic
+    def configs(self):
+        return Config.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        for key, value in request.POST.dict().items():
+            if key == 'csrfmiddlewaretoken':
+                continue
+            config = Config.objects.get(key=key)
+            config.value = value
+            config.save()
+        return HttpResponseRedirect(self.request.path_info)

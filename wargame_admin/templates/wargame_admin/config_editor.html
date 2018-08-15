@@ -1,4 +1,29 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% block content %}
-    <h1>TODO: Config editor</h1>
+    <h1>Config editor</h1>
+    <form method="post">
+        {% csrf_token %}
+        <table class="table">
+            {% for config in view.configs %}
+                <tr>
+                    <td>
+                        <h4>{{ config.display_name }}</h4>
+                        <p>{{ config.description }}</p>
+                    </td>
+                    <td>
+                        {% if config.get_possible_values is not None %}
+                            <select class="form-control" name="{{ config.key }}">
+                                {% for value in config.get_possible_values %}
+                                    <option {% if config.value == value %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <input type="text" class="form-control" value="{{ config.value }}" name="{{ config.key }}" />
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" class="btn btn-primary" style="float:right" value="Save"/>
+    </form>
 {% endblock %}

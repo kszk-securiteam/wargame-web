@@ -9,6 +9,8 @@ from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
 
+from wargame_admin.models import Config
+
 
 class User(AbstractUser):
     hidden = models.BooleanField(default=False)
@@ -38,8 +40,7 @@ class User(AbstractUser):
         #       OR (meta_config.is_hacktivity = '1' AND submission.value = challenge.flag_hacktivity))
         #   AND user_challenge.user_id = {self.id}
 
-        # noinspection PyUnreachableCode
-        if True:  # TODO: QPA/Hacktivity switch
+        if Config.objects.get(key='qpa_hack').value == 'qpa':
             flag_field = F('challenge__flag_qpa')
         else:
             flag_field = F('challenge__flag_hacktivity')
@@ -60,8 +61,7 @@ class User(AbstractUser):
 
     @staticmethod
     def get_top_40_by_score():
-        # noinspection PyUnreachableCode
-        if True:  # TODO: QPA/Hacktivity switch
+        if Config.objects.get(key='qpa_hack').value == 'qpa':
             flag_field = F('userchallenge__challenge__flag_qpa')
         else:
             flag_field = F('userchallenge__challenge__flag_hacktivity')
@@ -100,8 +100,10 @@ class Challenge(models.Model):
         return self.title
 
     def get_flag(self):
-        # TODO: QPA-Hacktivity switch
-        return self.flag_qpa
+        if Config.objects.get(key='qpa_hack').value == 'qpa':
+            return self.flag_qpa
+        else:
+            return self.flag_hacktivity
 
 
 class File(models.Model):

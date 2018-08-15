@@ -36,6 +36,7 @@ class RulesView(TemplateView):
 class AboutUsView(TemplateView):
     template_name = 'wargame/about_us.html'
 
+    # noinspection PyMethodMayBeStatic
     def get_people(self):
         return models.StaffMember.objects.order_by(F('name')).all()
 
