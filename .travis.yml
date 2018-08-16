@@ -2,6 +2,6 @@ language: python
 python: [ "3.6" ]
 install:
         - pip install -r requirements.txt
-        - python manage.py migrate
+        - PYTHONPATH=`pwd`/wargame_web python manage.py migrate
 script:
-        - python manage.py test
+        - PYTHONPATH=`pwd`/wargame_web python manage.py test
