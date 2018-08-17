@@ -1,0 +1,21 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% block content %}
+    Are you sure you want to {{ view.action_string }} for
+    {% if view.challenge is not None %}
+        {{ view.challenge.title }}
+    {% else %}
+        all challenges
+    {% endif %}
+    for
+    {% if view.user is not None %}
+        {{ view.user.username }}
+    {% else %}
+        all users
+    {% endif %}
+    ?
+    <form method="post" class="my-3">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Reset</button>
+        <a class="btn btn-link" href="{{ view.return_url }}">Cancel</a>
+    </form>
+{% endblock %}

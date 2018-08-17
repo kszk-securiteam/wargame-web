@@ -1,5 +1,7 @@
+from abc import ABCMeta, abstractmethod
+
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
@@ -120,6 +122,16 @@ class ChallengeSubmissions(TemplateView):
     def get_userchallenge_text(self, userchallenge):
         return userchallenge.user.username
 
+    def reset_hint_url(self):
+        return f"{reverse_lazy('wargame-admin:submission-reset-hint')}?return=challenges&challenge_id={self.selected_id()}"
+
+    def clear_submissions_url(self):
+        return f"{reverse_lazy('wargame-admin:submission-clear')}?return=challenges&challenge_id={self.selected_id()}"
+
+    # noinspection PyMethodMayBeStatic
+    def get_userchallenge_id_string(self, userchallenge):
+        return f"&user_id={userchallenge.user_id}"
+
 
 class UserSubmissions(TemplateView):
     template_name = "wargame_admin/submissions.html"
@@ -137,6 +149,80 @@ class UserSubmissions(TemplateView):
     # noinspection PyMethodMayBeStatic
     def get_userchallenge_text(self, userchallenge):
         return userchallenge.challenge.title
+
+    def reset_hint_url(self):
+        return f"{reverse_lazy('wargame-admin:submission-reset-hint')}?return=users&user_id={self.selected_id()}"
+
+    def clear_submissions_url(self):
+        return f"{reverse_lazy('wargame-admin:submission-clear')}?return=users&user_id={self.selected_id()}"
+
+    # noinspection PyMethodMayBeStatic
+    def get_userchallenge_id_string(self, userchallenge):
+        return f"&challenge_id={userchallenge.challenge_id}"
+
+
+class SubmissionActionView(TemplateView, metaclass=ABCMeta):
+    template_name = "wargame_admin/submissions_action.html"
+
+    def user(self):
+        user_id = self.request.GET.get("user_id")
+        if user_id is None:
+            return None
+        return User.objects.get(pk=user_id)
+
+    def challenge(self):
+        challenge_id = self.request.GET.get("challenge_id")
+        if challenge_id is None:
+            return None
+        return Challenge.objects.get(pk=challenge_id)
+
+    def return_url(self):
+        if self.request.GET.get('return') == 'challenges':
+            return f"{reverse_lazy('wargame-admin:challenge-submissions')}?id={self.challenge().id.__str__()}"
+        if self.request.GET.get('return') == 'users':
+            return f"{reverse_lazy('wargame-admin:user-submissions')}?id={self.user().id.__str__()}"
+
+    def userchallenges(self):
+        if self.challenge() is None:
+            return self.user().userchallenge_set.all()
+        if self.user() is None:
+            return self.challenge().userchallenge_set.all()
+        return [UserChallenge.get_or_create(self.user(), self.challenge())]
+
+    def get(self, request, *args, **kwargs):
+        if (self.user() is None and self.challenge() is None) or self.request.GET.get('return') is None:
+            return HttpResponseBadRequest()
+        return super().get(request, *args, **kwargs)
+
+    @abstractmethod
+    def action_string(self):
+        pass
+
+    @abstractmethod
+    def do_action(self, userchallenge):
+        pass
+
+    def post(self, request, *args, **kwargs):
+        for userchallenge in self.userchallenges():
+            self.do_action(userchallenge)
+            userchallenge.save()
+        return HttpResponseRedirect(self.return_url())
+
+
+class ResetHintsView(SubmissionActionView):
+    def do_action(self, userchallenge):
+        userchallenge.hint_used = False
+
+    def action_string(self):
+        return "reset hints"
+
+
+class ClearSubmissionsView(SubmissionActionView):
+    def do_action(self, userchallenge):
+        userchallenge.submission_set.all().delete()
+
+    def action_string(self):
+        return "clear submissions"
 
 
 class UserEdit(UpdateView):

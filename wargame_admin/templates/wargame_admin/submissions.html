@@ -1,8 +1,12 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% load wargame_admin_tags %}
 {% block content %}
-    <h1>Submissions</h1>
+    <h1 xmlns="http://www.w3.org/1999/html">Submissions</h1>
     {# TODO: Add all option -> handle empty query parameter #}
+    <div class="float-right">
+        <a class="btn btn-info text-white" href="{{ view.reset_hint_url }}">Reset hint for all</a>
+        <a class="btn btn-danger text-white" href="{{ view.clear_submissions_url }}">Clear submissions for all</a>
+    </div>
     <form method="get" class="form-inline">
         <select name="id" class="form-control m-2">
             {% for item in view.list %}
@@ -12,16 +16,22 @@
         <button type="submit" class="btn btn-primary">Search</button>
     </form>
     <hr/>
-    <!-- TODO: Reset hints for all button -->
-    <!-- TODO: Clear submissions for all button -->
     {% for userchallenge in view.userchallenges %}
+        <div class="float-right">
+            {% if userchallenge.hint_used %}
+                <a class="btn btn-info text-white" href="{% append_url view.reset_hint_url view userchallenge %}">Reset hint</a>
+            {% endif %}
+            <a class="btn btn-danger text-white" href="{% append_url view.clear_submissions_url view userchallenge %}">Clear submissions</a>
+        </div>
         <h3>{% submission_name view userchallenge %}</h3>
-        <!-- TODO: Reset hint button -->
-        <!-- TODO: Clear submissions button -->
+        <span><b>Hint used: </b>{{ userchallenge.hint_used }}</span><br />
+        <span><b>Solved: </b>{{ userchallenge.solved }}</span><br />
+        <span><b>Submitted guesses:</b></span>
         <ul>
             {% for submission in userchallenge.submission_set.all %}
                 <li>{{ submission.value }}</li>
             {% endfor %}
         </ul>
+        <hr />
     {% endfor %}
 {% endblock %}

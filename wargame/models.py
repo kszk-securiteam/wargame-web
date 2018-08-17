@@ -144,6 +144,9 @@ class UserChallenge(models.Model):
     def solved(self):
         return self.submission_set.filter(value=self.challenge.get_flag()).count() == 1
 
+    def clear_submissions(self):
+        self.submission_set.all().delete()
+
 
 class Submission(models.Model):
     creation_dt = models.DateTimeField(auto_now_add=True)

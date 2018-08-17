@@ -4,6 +4,6 @@
         {% csrf_token %}
         <p>Are you sure you want to delete {{ object.title }}?</p>
         <button type="submit" class="btn btn-danger">Confirm</button>
-        <a class="btn btn-default" href="{% url 'wargame-admin:challenge-details' object.id %}">Cancel</a>
+        <a class="btn btn-link" href="{% url 'wargame-admin:challenge-details' object.id %}">Cancel</a>
     </form>
 {% endblock %}
