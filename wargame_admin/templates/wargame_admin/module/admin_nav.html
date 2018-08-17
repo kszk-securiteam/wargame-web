@@ -11,6 +11,16 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'wargame-admin:users' %}">Users</a>
             </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="submissionDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Submissions
+                </a>
+                <div class="dropdown-menu" aria-labelledby="submissionDropdown">
+                    <a class="dropdown-item" href="{% url 'wargame-admin:challenge-submissions' %}">By challenge</a>
+                    <a class="dropdown-item" href="{% url 'wargame-admin:user-submissions' %}">By user</a>
+                </div>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'wargame-admin:config' %}">Configuration</a>
             </li>
