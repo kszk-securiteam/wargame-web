@@ -105,15 +105,42 @@ class UserAdminView(SearchListView):
         return User.objects.order_by('-is_staff').all()
 
 
-class ChallengeSubmissions(TemplateView):
+class SubmissionsView(TemplateView, metaclass=ABCMeta):
     template_name = "wargame_admin/submissions.html"
+
+    @abstractmethod
+    def list(self):
+        pass
+
+    def selected_id(self):
+        return int(self.request.GET['id'])
+
+    @abstractmethod
+    def userchallenges(self):
+        pass
+
+    @abstractmethod
+    def get_userchallenge_text(self, userchallenge):
+        pass
+
+    @abstractmethod
+    def reset_hint_url(self):
+        pass
+
+    @abstractmethod
+    def clear_submissions_url(self):
+        pass
+
+    @abstractmethod
+    def get_userchallenge_id_string(self, userchallenge):
+        pass
+
+
+class ChallengeSubmissions(SubmissionsView):
 
     # noinspection PyMethodMayBeStatic
     def list(self):
         return Challenge.objects.values_list('id', 'title').all()
-
-    def selected_id(self):
-        return int(self.request.GET['id'])
 
     def userchallenges(self):
         return UserChallenge.objects.filter(challenge_id=self.selected_id()).all()
@@ -133,15 +160,12 @@ class ChallengeSubmissions(TemplateView):
         return f"&user_id={userchallenge.user_id}"
 
 
-class UserSubmissions(TemplateView):
+class UserSubmissions(SubmissionsView):
     template_name = "wargame_admin/submissions.html"
 
     # noinspection PyMethodMayBeStatic
     def list(self):
         return User.objects.values_list('id', 'username').all()
-
-    def selected_id(self):
-        return int(self.request.GET['id'])
 
     def userchallenges(self):
         return UserChallenge.objects.filter(user_id=self.selected_id()).all()
