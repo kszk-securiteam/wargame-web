@@ -113,7 +113,10 @@ class SubmissionsView(TemplateView, metaclass=ABCMeta):
         pass
 
     def selected_id(self):
-        return int(self.request.GET['id'])
+        arg = self.request.GET.get('id')
+        if arg is None:
+            return None
+        return int(arg)
 
     @abstractmethod
     def userchallenges(self):
