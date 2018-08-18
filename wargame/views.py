@@ -19,9 +19,8 @@ class IndexView(TemplateView):
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'wargame/challenges.html'
 
-    # TODO: Replace with query for available challenges
-    def userchallenges(self):
-        return self.request.user.userchallenge_set.all()
+    def challenges(self):
+        return self.request.user.get_visible_challenges()
 
 
 class ScoreboardView(TemplateView):

@@ -2,9 +2,9 @@ import os
 
 from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
-from django.db.models import F, Sum
-from django.db.models.expressions import ExpressionWrapper
-from django.db.models.fields import IntegerField
+from django.db.models import F, Sum, Max
+from django.db.models.expressions import ExpressionWrapper, Value
+from django.db.models.fields import IntegerField, BooleanField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
@@ -78,6 +78,31 @@ class User(AbstractUser):
         ).annotate(
             total_points=Coalesce(Sum(user_points), 0)
         ).order_by('-total_points')[:40]
+
+    def get_visible_challenges(self):
+        if Config.objects.get(key='qpa_hack').value == 'qpa':
+            flag_field = F('challenge__flag_qpa')
+        else:
+            flag_field = F('challenge__flag_hacktivity')
+
+        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))['max_level']
+        solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
+                                                                      user=self,
+                                                                      submission__value=flag_field
+                                                                      ).count()
+
+        if solved_challenges_at_max_level >= Config.objects.get(key="stage_tasks").get_int():
+            user_max_level += 1
+
+        return self.get_challenges_for_level(user_max_level)
+
+    def get_challenges_for_level(self, level):
+        query = """SELECT challenge.*, submission.value IS NOT NULL AS solved
+                   FROM wargame_challenge challenge
+                   LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
+                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND submission.value == challenge.flag_qpa
+                   WHERE challenge.level <= %s"""
+        return Challenge.objects.raw(query, [self.id, level])
 
 
 class Tag(models.Model):

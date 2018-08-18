@@ -3,18 +3,18 @@
     <h1>Challenges</h1>
 
     <section id="challenge-list">
-    {% for userchallenge in view.userchallenges %}
+    {% for challenge in view.challenges %}
         <!-- TODO: solved function in view -->
-        <a class="card {% if userchallenge.solved %}challenge-card{% endif %}" href="{% url 'challenge-details' id=userchallenge.challenge.id %}">
+        <a class="card {% if challenge.solved %}challenge-card{% endif %}" href="{% url 'challenge-details' id=challenge.id %}">
             <div class="card-body row">
                 <div class="col-sm-8">
-                    <h4 class="card-title">{{ userchallenge.challenge.title }}</h4>
+                    <h4 class="card-title">{{ challenge.title }}</h4>
                     <p>
-                        {{ userchallenge.challenge.short_description }}
+                        {{ challenge.short_description }}
                     </p>
                 </div>
                 <div class="col-sm-4 challenge-points-container">
-                    <span>${{ userchallenge.challenge.points }}</span>
+                    <span>${{ challenge.points }}</span>
                 </div>
             </div>
         </a>
