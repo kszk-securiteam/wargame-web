@@ -1,0 +1,9 @@
+{% extends "wargame_admin/admin_base.html" %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to remove {{ object }} from the staff members list?</p>
+        <button type="submit" class="btn btn-danger">Confirm</button>
+        <a class="btn btn-link" href="{% url 'wargame-admin:staff-admin' %}">Cancel</a>
+    </form>
+{% endblock %}

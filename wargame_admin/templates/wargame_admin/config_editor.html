@@ -8,9 +8,9 @@
                 <tr>
                     <td>
                         <h4>{{ config.display_name }}</h4>
-                        <p>{{ config.description }}</p>
+                        <small>{{ config.description }}</small>
                     </td>
-                    <td>
+                    <td class="align-middle">
                         {% if config.get_possible_values is not None %}
                             <select class="form-control" name="{{ config.key }}">
                                 {% for value in config.get_possible_values %}

@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, UpdateView, CreateView, DeleteVie
 from search_views.views import SearchListView
 
 from filters import UserFilter
-from wargame.models import Challenge, File, UserChallenge, User
+from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
 from wargame_admin.models import Config
 
@@ -28,7 +28,7 @@ class ChallengeDetailsView(TemplateView):
 
 
 class ChallengeEditView(UpdateView):
-    template_name = "wargame_admin/challenge_edit.html"
+    template_name = "wargame_admin/edit_form.html"
     model = Challenge
     form_class = ChallengeForm
 
@@ -37,7 +37,7 @@ class ChallengeEditView(UpdateView):
 
 
 class ChallengeCreateView(CreateView):
-    template_name = "wargame_admin/challenge_edit.html"
+    template_name = "wargame_admin/edit_form.html"
     model = Challenge
     form_class = ChallengeForm
 
@@ -278,3 +278,37 @@ class ConfigEditorView(TemplateView):
             config.value = value
             config.save()
         return HttpResponseRedirect(self.request.path_info)
+
+
+class StaffMemberAdmin(TemplateView):
+    template_name = 'wargame_admin/staff_admin.html'
+
+    # noinspection PyMethodMayBeStatic
+    def staff_members(self):
+        return StaffMember.objects.all()
+
+
+class StaffEditView(UpdateView):
+    template_name = "wargame_admin/edit_form.html"
+    fields = ('name', )
+    model = StaffMember
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:staff-admin')
+
+
+class StaffCreateView(CreateView):
+    template_name = "wargame_admin/edit_form.html"
+    fields = ('name', )
+    model = StaffMember
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:staff-admin')
+
+
+class StaffDeleteView(DeleteView):
+    template_name = "wargame_admin/staff_delete.html"
+    model = StaffMember
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:staff-admin')

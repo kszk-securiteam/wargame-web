@@ -1,0 +1,16 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% block content %}
+    <h1 class="admin-header">
+        <span>Staff members</span>
+        <a href="{% url 'wargame-admin:staff-create' %}" class="btn btn-success">Add new staff member</a>
+    </h1>
+    <table class="table">
+        {% for staff in view.staff_members %}
+            <tr>
+                <td class="align-middle">{{ staff }}</td>
+                <td><a class="btn btn-link" href="{% url 'wargame-admin:staff-edit' staff.id %}">Edit</a></td>
+                <td><a class="btn btn-danger" href="{% url 'wargame-admin:staff-delete' staff.id %}">Delete</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

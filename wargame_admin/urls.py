@@ -4,7 +4,8 @@ from django.views.generic import RedirectView
 
 from wargame_admin.views import ChallengeListView, ChallengeDetailsView, ChallengeEditView, UserAdminView, \
     ConfigEditorView, ChallengeCreateView, ChallengeDeleteView, ChallengeFilesView, \
-    ChallengeFileDeleteView, ChallengeSubmissions, UserSubmissions, UserEdit, ResetHintsView, ClearSubmissionsView
+    ChallengeFileDeleteView, ChallengeSubmissions, UserSubmissions, UserEdit, ResetHintsView, ClearSubmissionsView, \
+    StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView
 
 app_name = 'wargame-admin'
 urlpatterns = [
@@ -22,5 +23,9 @@ urlpatterns = [
     path('challenges/new', staff_member_required(ChallengeCreateView.as_view()), name='challenge-create'),
     path('users/', staff_member_required(UserAdminView.as_view()), name='users'),
     path('users/<int:pk>/', staff_member_required(UserEdit.as_view()), name='user-edit'),
-    path('config/', staff_member_required(ConfigEditorView.as_view()), name='config')
+    path('config/', staff_member_required(ConfigEditorView.as_view()), name='config'),
+    path('staff/', staff_member_required(StaffMemberAdmin.as_view()), name='staff-admin'),
+    path('staff/<int:pk>/', staff_member_required(StaffEditView.as_view()), name='staff-edit'),
+    path('staff/new', staff_member_required(StaffCreateView.as_view()), name='staff-create'),
+    path('staff/<int:pk>/delete', staff_member_required(StaffDeleteView.as_view()), name='staff-delete'),
 ]
