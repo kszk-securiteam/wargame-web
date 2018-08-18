@@ -20,3 +20,11 @@ class Config(Model):
 
     def set_possible_values(self, values):
         self.possible_values = json.dumps(values)
+
+    @staticmethod
+    def is_qpa():
+        return Config.objects.get(key='qpa_hack').value == 'qpa'
+
+    @staticmethod
+    def stage_tasks():
+        Config.objects.get(key="stage_tasks").get_int()

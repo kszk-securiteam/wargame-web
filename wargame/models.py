@@ -3,8 +3,8 @@ import os
 from django.contrib.auth.models import AbstractUser, Permission
 from django.db import models
 from django.db.models import F, Sum, Max
-from django.db.models.expressions import ExpressionWrapper, Value
-from django.db.models.fields import IntegerField, BooleanField
+from django.db.models.expressions import ExpressionWrapper
+from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
@@ -61,7 +61,7 @@ class User(AbstractUser):
 
     @staticmethod
     def get_top_40_by_score():
-        if Config.objects.get(key='qpa_hack').value == 'qpa':
+        if Config.is_qpa():
             flag_field = F('userchallenge__challenge__flag_qpa')
         else:
             flag_field = F('userchallenge__challenge__flag_hacktivity')
@@ -80,7 +80,7 @@ class User(AbstractUser):
         ).order_by('-total_points')[:40]
 
     def get_visible_challenges(self):
-        if Config.objects.get(key='qpa_hack').value == 'qpa':
+        if Config.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
             flag_field = F('challenge__flag_hacktivity')
@@ -91,7 +91,7 @@ class User(AbstractUser):
                                                                       submission__value=flag_field
                                                                       ).count()
 
-        if solved_challenges_at_max_level >= Config.objects.get(key="stage_tasks").get_int():
+        if solved_challenges_at_max_level >= Config.stage_tasks():
             user_max_level += 1
 
         return self.get_challenges_for_level(user_max_level)
@@ -125,7 +125,7 @@ class Challenge(models.Model):
         return self.title
 
     def get_flag(self):
-        if Config.objects.get(key='qpa_hack').value == 'qpa':
+        if Config.is_qpa():
             return self.flag_qpa
         else:
             return self.flag_hacktivity
@@ -167,10 +167,7 @@ class UserChallenge(models.Model):
         return ret
 
     def solved(self):
-        return self.submission_set.filter(value=self.challenge.get_flag()).count() == 1
-
-    def clear_submissions(self):
-        self.submission_set.all().delete()
+        return self.submission_set.filter(value=self.challenge.get_flag()).exists()
 
 
 class Submission(models.Model):
