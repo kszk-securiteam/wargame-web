@@ -88,6 +88,7 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
 def reveal_hint(request, challenge_id):
     challenge = Challenge.objects.get(pk=challenge_id)
     userchallenge = UserChallenge.get_or_create(request.user, challenge)
-    userchallenge.hint_used = True
-    userchallenge.save()
+    if not userchallenge.solved():
+        userchallenge.hint_used = True
+        userchallenge.save()
     return HttpResponseRedirect(reverse_lazy('challenge-details', kwargs={'id': challenge_id}))
