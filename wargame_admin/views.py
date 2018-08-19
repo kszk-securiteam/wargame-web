@@ -232,7 +232,10 @@ class SubmissionActionView(TemplateView, metaclass=ABCMeta):
     def post(self, request, *args, **kwargs):
         for userchallenge in self.userchallenges():
             self.do_action(userchallenge)
-            userchallenge.save()
+            if not userchallenge.hint_used and not userchallenge.submission_set.exists():
+                userchallenge.delete()
+            else:
+                userchallenge.save()
         return HttpResponseRedirect(self.return_url())
 
 

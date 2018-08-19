@@ -59,10 +59,20 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
         return self.challenge().files.filter(private=False).all()
 
     def userchallenge(self):
-        return UserChallenge.get_or_create(self.request.user, self.challenge())
+        return UserChallenge.objects.get(user=self.request.user, challenge=self.challenge())
+
+    def hint_used(self):
+        if self.userchallenge() is None:
+            return False
+        return self.userchallenge().hint_used
+
+    def solved(self):
+        if self.userchallenge() is None:
+            return False
+        return self.userchallenge().solved()
 
     def post(self, *args, **kwargs):
-        userchallenge = self.userchallenge()
+        userchallenge = UserChallenge.get_or_create(self.request.user, self.challenge())
         if userchallenge.solved():
             return HttpResponseRedirect(self.request.path)
 

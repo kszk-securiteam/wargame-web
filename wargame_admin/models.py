@@ -27,4 +27,4 @@ class Config(Model):
 
     @staticmethod
     def stage_tasks():
-        Config.objects.get(key="stage_tasks").get_int()
+        return Config.objects.get(key="stage_tasks").get_int()

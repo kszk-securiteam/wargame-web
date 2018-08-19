@@ -4,7 +4,7 @@
 {% block content %}
     <div class="challenge-title-box">
         <h1>{{ view.challenge.title }}</h1>
-        {% if view.userchallenge.solved %}
+        {% if view.solved %}
             <i class="fas fa-check text-success" style="font-size: 48px"></i>
         {% endif %}
     </div>
@@ -19,14 +19,14 @@
     </div>
     <div class="my-3">
         <h4>Hint</h4>
-        {% if view.userchallenge.hint_used %}
+        {% if view.hint_used %}
             <p>{{ view.challenge.hint }}</p>
         {% else %}
             Showing the hint will halve the number of points available for this challenge.<br />
-            <a class="btn btn-info text-white {% if view.userchallenge.solved %}disabled{% endif %}" href="{% url 'challenge-hint' view.challenge.id %}">Show hint</a>
+            <a class="btn btn-info text-white {% if view.solved %}disabled{% endif %}" href="{% url 'challenge-hint' view.challenge.id %}">Show hint</a>
         {% endif %}
     </div>
-    {% if not view.userchallenge.solved %}
+    {% if not view.solved %}
         <form class="form-inline d-flex" method="post">
             {% csrf_token %}
             <div class="form-group" style="flex-grow: 1">
