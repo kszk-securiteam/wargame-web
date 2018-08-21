@@ -61,7 +61,7 @@ class User(AbstractUser):
 
     @staticmethod
     def get_top_40_by_score():
-        if Config.is_qpa():
+        if Config.objects.is_qpa():
             flag_field = F('userchallenge__challenge__flag_qpa')
         else:
             flag_field = F('userchallenge__challenge__flag_hacktivity')
@@ -80,7 +80,7 @@ class User(AbstractUser):
         ).order_by('-total_points')[:40]
 
     def get_visible_challenges(self):
-        if Config.is_qpa():
+        if Config.objects.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
             flag_field = F('challenge__flag_hacktivity')
@@ -91,7 +91,7 @@ class User(AbstractUser):
                                                                       submission__value=flag_field
                                                                       ).count()
 
-        if solved_challenges_at_max_level >= Config.stage_tasks():
+        if solved_challenges_at_max_level >= Config.objects.stage_tasks():
             user_max_level += 1
 
         return self.get_challenges_for_level(user_max_level)
@@ -125,7 +125,7 @@ class Challenge(models.Model):
         return self.title
 
     def get_flag(self):
-        if Config.is_qpa():
+        if Config.objects.is_qpa():
             return self.flag_qpa
         else:
             return self.flag_hacktivity
