@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput, BooleanField, CheckboxInput
+from django.forms import ModelForm, Form, CharField, TextInput
 
 from wargame.models import File, Challenge, User
 

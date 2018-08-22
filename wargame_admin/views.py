@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
 
-from filters import UserFilter
+from wargame_admin.filters import UserFilter
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
 from wargame_admin.models import Config
