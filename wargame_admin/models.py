@@ -2,12 +2,14 @@ import json
 
 from django.db.models import Model, CharField, Manager
 
+
 class ConfigManager(Manager):
     def is_qpa(self):
         return Config.objects.get(key='qpa_hack').value == 'qpa'
 
-    def stage_tasks():
+    def stage_tasks(self):
         return Config.objects.get(key='stage_tasks').get_int()
+
 
 class Config(Model):
     key = CharField(max_length=255, primary_key=True)

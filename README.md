@@ -6,18 +6,15 @@ Wargame web application
 
 ## Preparing the development environment
 
-We use virtualenvwrapper to work in a separated environment. See the link:
-```
-https://virtualenvwrapper.readthedocs.io/en/latest/index.html
-```
+Project dependencies are managed using pipenv, which can be installed using pip.
 
-You will need to create a new virtual environment and `workon` that.
+```pipenv install --skip-lock --dev```
 
+The skip lock option is required, because django-registration does not officially support Django 2.0, which means pipenv can't resolve which version of Django to get. The pipenv file specifies >= 2.1.
 
-The project uses the Django web framework. Install django and other dependencies:
-```
-pip install -r requirements.txt --upgrade
-```
+Run manage.py commands using pipenv:
+
+```pipenv run manage.py migrate```
 
 ## Development
 The main 'app' is wargame, thus the module sources are in the wargame directory.

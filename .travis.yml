@@ -1,7 +1,8 @@
 language: python
 python: [ "3.6" ]
 install:
-        - pip install -r requirements.txt
-        - PYTHONPATH=`pwd`/wargame_web python manage.py migrate
+        - pip install pipenv
+        - pipenv install --skip-lock --dev
+        - pipenv run ./manage.py migrate
 script:
-        - PYTHONPATH=`pwd`/wargame_web python manage.py test
+        - pipenv run ./manage.py test

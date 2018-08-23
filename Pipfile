@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django-bootstrap4 = "*"
+django-markdownx = "*"
+pytz = "*"
+django-search-views = "*"
+Django = ">=2.1"
+django-registration = "*"
+
+[dev-packages]
+django-debug-toolbar = "*"
+
+[requires]
+python_version = "3.7"
