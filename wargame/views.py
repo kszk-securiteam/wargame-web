@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.expressions import F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
@@ -97,6 +97,9 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
 
 @login_required()
 def reveal_hint(request, challenge_id):
+    if request.method != 'POST':
+        return HttpResponseBadRequest()
+
     challenge = Challenge.objects.get(pk=challenge_id)
     userchallenge = UserChallenge.get_or_create(request.user, challenge)
     if not userchallenge.solved():
