@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'wargame',
     'markdownx',
     'wargame_admin',
-    'debug_toolbar'
+    'debug_toolbar',
+    'django_registration'
 ]
 
 MIDDLEWARE = [

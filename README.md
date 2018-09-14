@@ -8,9 +8,8 @@ Wargame web application
 
 Project dependencies are managed using pipenv, which can be installed using pip.
 
-```pipenv install --skip-lock --dev```
+```pipenv sync --dev```
 
-The skip lock option is required, because django-registration does not officially support Django 2.0, which means pipenv can't resolve which version of Django to get. The pipenv file specifies >= 2.1.
 
 Run manage.py commands using pipenv:
 

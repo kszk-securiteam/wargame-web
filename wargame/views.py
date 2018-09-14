@@ -5,7 +5,8 @@ from django.db.models.expressions import F
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from registration.backends.simple.views import RegistrationView
+from django_registration.backends.one_step.views import RegistrationView
+
 
 from wargame import models
 from wargame.forms import UserRegistrationForm
@@ -49,6 +50,9 @@ class LinksView(TemplateView):
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
     template_name = 'wargame/registration.html'
+
+    def get_success_url(self, user=None):
+        return reverse_lazy('index')
 
 
 class ChallengeDetailsView(LoginRequiredMixin, TemplateView):

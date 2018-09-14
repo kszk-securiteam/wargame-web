@@ -1,12 +1,14 @@
-from registration.forms import RegistrationForm
+from django.contrib.auth.forms import UserCreationForm
 
 from wargame.models import User
 
 
-class UserRegistrationForm(RegistrationForm):
+class UserRegistrationForm(UserCreationForm):
     email = None
+    error_css_class = 'error'
+    required_css_class = 'required'
 
-    class Meta(RegistrationForm.Meta):
+    class Meta(UserCreationForm.Meta):
         model = User
         fields = ['username', 'password1', 'password2']
 
