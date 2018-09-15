@@ -79,7 +79,7 @@ class User(AbstractUser):
             total_points=Coalesce(Sum(user_points), 0)
         ).order_by('-total_points')[:40]
 
-    def get_visible_challenges(self):
+    def get_visible_level(self):
         if Config.objects.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
@@ -94,7 +94,10 @@ class User(AbstractUser):
         if solved_challenges_at_max_level >= Config.objects.stage_tasks():
             user_max_level += 1
 
-        return self.get_challenges_for_level(user_max_level)
+        return user_max_level
+
+    def get_visible_challenges(self):
+        return self.get_challenges_for_level(self.get_visible_level())
 
     def get_challenges_for_level(self, level):
         query = """SELECT challenge.*, submission.value IS NOT NULL AS solved
@@ -103,6 +106,9 @@ class User(AbstractUser):
                    LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND submission.value == challenge.flag_qpa
                    WHERE challenge.level <= %s"""
         return Challenge.objects.raw(query, [self.id, level])
+
+    def is_challenge_visible(self, challenge):
+        return challenge.level <= self.get_visible_level()
 
 
 class Tag(models.Model):

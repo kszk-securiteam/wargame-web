@@ -77,6 +77,11 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
             return False
         return self.userchallenge().solved()
 
+    def get(self, request, *args, **kwargs):
+        if not self.request.user.is_challenge_visible(self.challenge()):
+            return HttpResponseRedirect(reverse_lazy('challenges'))
+        return super(ChallengeDetailsView, self).get(request, args, kwargs)
+
     def post(self, *args, **kwargs):
         userchallenge = UserChallenge.get_or_create(self.request.user, self.challenge())
         if userchallenge.solved():
