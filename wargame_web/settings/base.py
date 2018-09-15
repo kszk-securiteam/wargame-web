@@ -14,19 +14,13 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.contrib import messages
-from django.urls import reverse_lazy
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEBUG = None
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# TODO: move this to an env var
-SECRET_KEY = 'j0s5#e@upiqv=anz8brrdwp&*1&s&z@i-usvdwo=m$kk!t3j8!'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -43,12 +37,10 @@ INSTALLED_APPS = [
     'wargame',
     'markdownx',
     'wargame_admin',
-    'debug_toolbar',
-    'django_registration'
+    'django_registration',
 ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -132,4 +124,3 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-INTERNAL_IPS = ['127.0.0.1']

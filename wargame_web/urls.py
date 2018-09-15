@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from markdownx import urls as markdownx_urls
 
-import wargame_web.settings as settings
+import wargame_web.settings.base as settings
 
 urlpatterns = [
     path('', include('wargame.urls')),
