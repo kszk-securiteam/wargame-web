@@ -117,7 +117,7 @@ class User(AbstractUser):
 @receiver(models.signals.post_save, sender=User)
 def generate_vpn_key(sender, instance, created, *args, **kwargs):
     if created and not settings.DEBUG:
-        os.system(F"getcert.sh {instance.username}")
+        os.system(F"sudo getcert.sh {instance.username}")
 
 
 class Tag(models.Model):
