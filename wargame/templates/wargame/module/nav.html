@@ -24,6 +24,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'links' %}">Links</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'vpn-info' %}">VPN</a>
+            </li>
             {% if user.is_staff %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'wargame-admin:index' %}">Admin</a>

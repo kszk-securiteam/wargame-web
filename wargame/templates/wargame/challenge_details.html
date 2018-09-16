@@ -14,7 +14,7 @@
     <div>
         <h4>Attached files</h4>
         {% for file in view.files %}
-            <a href="{{ file.file.url }}">{{ file.display_name }}</a><br/>
+            <a href="{% url 'challenge-file' file.id %}">{{ file.display_name }}</a><br/>
         {% endfor %}
     </div>
     <div class="my-3">

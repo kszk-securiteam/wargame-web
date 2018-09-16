@@ -1,16 +1,18 @@
+from os.path import basename
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.expressions import F
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django_registration.backends.one_step.views import RegistrationView
 
-
+from utils.serve_file import serve_file
 from wargame import models
 from wargame.forms import UserRegistrationForm
-from wargame.models import Challenge, UserChallenge, Submission
+from wargame.models import Challenge, UserChallenge, Submission, File
 
 
 class IndexView(TemplateView):
@@ -115,3 +117,23 @@ def reveal_hint(request, challenge_id):
         userchallenge.hint_used = True
         userchallenge.save()
     return HttpResponseRedirect(reverse_lazy('challenge-details', kwargs={'id': challenge_id}))
+
+
+class VPNView(LoginRequiredMixin, TemplateView):
+    template_name = "wargame/vpn.html"
+
+
+@login_required()
+def download_vpn_key(request):
+    return serve_file(request, "vpn-keys", F"{request.user.username}.zip")
+
+
+@login_required()
+def download_challenge_file(request, file_id):
+    file = File.objects.get(pk=file_id)
+
+    if not request.user.is_staff:
+        if file.private or not request.user.is_challenge_visible(file.challenge):
+            return HttpResponseForbidden()
+
+    return serve_file(request, 'challenge-files', basename(file.file.name))

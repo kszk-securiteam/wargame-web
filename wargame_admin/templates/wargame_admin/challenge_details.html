@@ -25,7 +25,7 @@
         <a href="{% url 'wargame-admin:challenge-files' view.challenge.id %}" class="btn btn-primary">Manage files</a>
     </h3>
     {% for file in view.challenge.files.all %}
-        <a href="{{ file.file.url }}">{{ file.display_name }}</a><br/>
+        <a href="{% url 'challenge-file' file.id %}">{{ file.display_name }}</a><br/>
     {% endfor %}
     <hr/>
 {% endblock %}
