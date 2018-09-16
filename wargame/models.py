@@ -8,6 +8,8 @@ from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
+import wargame_web.settings.base as settings
+
 
 from wargame_admin.models import Config
 
@@ -109,6 +111,13 @@ class User(AbstractUser):
 
     def is_challenge_visible(self, challenge):
         return challenge.level <= self.get_visible_level()
+
+
+
+@receiver(models.signals.post_save, sender=User)
+def generate_vpn_key(sender, instance, created, *args, **kwargs):
+    if created and not settings.DEBUG:
+        os.system(F"getcert.sh {instance.username}")
 
 
 class Tag(models.Model):
