@@ -113,7 +113,6 @@ class User(AbstractUser):
         return challenge.level <= self.get_visible_level()
 
 
-
 @receiver(models.signals.post_save, sender=User)
 def generate_vpn_key(sender, instance, created, *args, **kwargs):
     if created and not settings.DEBUG:

@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput
+from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput
 
 from wargame.models import File, Challenge, User
 
@@ -36,3 +36,7 @@ class UserEditForm(ModelForm):
             'is_superuser': 'Allows the user to access the admin site and edit all objects in the django admin interface',
             'hidden': 'Hides the user from the scoreboard'
         }
+
+
+class ImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}))

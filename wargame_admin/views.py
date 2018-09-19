@@ -6,9 +6,10 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
 
+from challenge_import import do_challenge_import
 from wargame_admin.filters import UserFilter
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm
 from wargame_admin.models import Config
 
 
@@ -315,3 +316,21 @@ class StaffDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('wargame-admin:staff-admin')
+
+
+class ImportView(TemplateView):
+    template_name = "wargame_admin/import.html"
+    import_messages = []
+
+    def messages(self):
+        return self.import_messages
+
+    def form(self):
+        return ImportForm()
+
+    def post(self, request, *args, **kwargs):
+        form = ImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            self.import_messages = do_challenge_import(form.files['file'])
+
+        return super().get(request, *args, **kwargs)
