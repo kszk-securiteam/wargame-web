@@ -135,6 +135,9 @@ class Challenge(models.Model):
     points = models.IntegerField()
     hint = models.CharField(max_length=8192, null=True)
     tags = models.ManyToManyField(Tag)
+    solution = models.CharField(max_length=8192, null=True)
+    setup = models.CharField(max_length=8192, null=True)
+    import_name = models.CharField(max_length=64, null=True)
 
     def __str__(self):
         return self.title
