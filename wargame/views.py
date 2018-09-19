@@ -13,6 +13,7 @@ from utils.serve_file import serve_file
 from wargame import models
 from wargame.forms import UserRegistrationForm
 from wargame.models import Challenge, UserChallenge, Submission, File
+from wargame_admin.models import Config
 
 
 class IndexView(TemplateView):
@@ -52,6 +53,9 @@ class LinksView(TemplateView):
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
     template_name = 'wargame/registration.html'
+
+    def registration_allowed(self):
+        return not Config.objects.registration_disabled()
 
     def get_success_url(self, user=None):
         return reverse_lazy('index')

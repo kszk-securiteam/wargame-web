@@ -10,6 +10,9 @@ class ConfigManager(Manager):
     def stage_tasks(self):
         return Config.objects.get(key='stage_tasks').get_int()
 
+    def registration_disabled(self):
+        return Config.objects.get(key='disable_registration').get_bool()
+
 
 class Config(Model):
     key = CharField(max_length=255, primary_key=True)
@@ -21,6 +24,9 @@ class Config(Model):
 
     def get_int(self):
         return int(self.value)
+
+    def get_bool(self):
+        return self.value == "True"
 
     def get_possible_values(self):
         if self.possible_values is "":
