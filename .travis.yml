@@ -3,6 +3,6 @@ python: [ "3.6" ]
 install:
         - pip install pipenv
         - pipenv install --skip-lock --dev
-        - pipenv run ./manage.py migrate
+        - pipenv run migrate
 script:
-        - pipenv run ./manage.py test
+        - pipenv run test

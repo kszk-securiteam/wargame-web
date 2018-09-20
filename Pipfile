@@ -14,5 +14,9 @@ django-registration = "*"
 [dev-packages]
 django-debug-toolbar = "*"
 
+[scripts]
+migrate = "python manage.py migrate"
+test = "python manage.py test"
+
 [requires]
 python_version = "3.7"
