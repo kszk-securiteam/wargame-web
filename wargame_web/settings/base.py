@@ -118,7 +118,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'wargame.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
-REGISTRATION_OPEN = True
 APPEND_SLASH = True
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 

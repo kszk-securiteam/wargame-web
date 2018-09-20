@@ -4,7 +4,8 @@ import shutil
 from enum import Enum
 from zipfile import ZipFile
 
-from django.core.files.uploadedfile import TemporaryUploadedFile
+from django.core.files import File
+from django.db import transaction
 
 from wargame.models import Challenge, Tag, File as ChallengeFile
 from wargame_web.settings.base import MEDIA_ROOT
@@ -39,7 +40,8 @@ def do_challenge_import(file):
     for challenge_name in challenge_names:
         # noinspection PyBroadException
         try:
-            import_challenge(challenge_dir, challenge_name)
+            with transaction.atomic():
+                import_challenge(challenge_dir, challenge_name)
         except Exception as e:
             messages.append((MessageType.ERROR, F"Exception during challenge import: {e}"))
 
@@ -60,33 +62,46 @@ def import_challenge(challenge_dir, challenge_name):
     challenge = Challenge()
     challenge.import_name = challenge_name
 
-    with open(os.path.join(challenge_path, "challenge.txt")) as file:
-        if not import_challenge_txt(file, challenge):
+    with open(os.path.join(challenge_path, "challenge.txt"), encoding='utf-8-sig') as file:
+        success, tag_list = import_challenge_txt(file, challenge)
+        if not success:
             return
 
-    with open(os.path.join(challenge_path, "description.md")) as file:
+    with open(os.path.join(challenge_path, "description.md"), encoding='utf-8-sig') as file:
         challenge.description = file.read()
 
-    with open(os.path.join(challenge_path, "solution.txt")) as file:
+    with open(os.path.join(challenge_path, "solution.txt"), encoding='utf-8-sig') as file:
         challenge.solution = file.read()
 
     if import_setup:
-        with open(os.path.join(challenge_path, "setup.txt")) as file:
+        with open(os.path.join(challenge_path, "setup.txt"), encoding='utf-8-sig') as file:
             challenge.setup = file.read()
 
     challenge.save()
-    import_files(challenge, challenge_path, public_files, True)
-    import_files(challenge, challenge_path, private_files, False)
+    import_files(challenge, challenge_path, public_files, private=False)
+    import_files(challenge, challenge_path, private_files, private=True)
+    save_tags(challenge, tag_list)
     messages.append((MessageType.SUCCESS, F"Challenge imported: {challenge_name}"))
 
 
+def save_tags(challenge, tag_list):
+    for tag in tag_list:
+        challenge.tags.add(tag)
+    challenge.save()
+
+
 def import_files(challenge, challenge_path, file_names, private):
+    if private:
+        challenge_path = os.path.join(challenge_path, "private")
+
     for file in file_names:
-        with open(os.path.join(challenge_path, file)) as fp:
+        with open(os.path.join(challenge_path, file), 'rb') as fp:
             challenge_file = ChallengeFile()
             challenge_file.challenge = challenge
             challenge_file.private = private
-            challenge_file.file.save(file, fp)
+            challenge_file.display_name = file
+            challenge_file.file.save(file, File(fp))
+            challenge_file.save()
 
 
 def validate_challenge(challenge_path):
@@ -108,7 +123,7 @@ def validate_challenge(challenge_path):
                 messages.append((MessageType.ERROR, "Challenge directory contains directory other than private"))
                 valid = False
             else:
-                _, private_directories, private_files = os.walk(os.path.join(challenge_path, private_dir))
+                _, private_directories, private_files = os.walk(os.path.join(challenge_path, private_dir)).__next__()
                 if private_directories:
                     messages.append((MessageType.ERROR, "Private files directory cannot contain directories"))
                     valid = False
@@ -143,11 +158,16 @@ def validate_challenge(challenge_path):
 
 
 def import_challenge_txt(file, challenge):
+    tag_list = []
     for line in file:
-        m = re.match("(\w+): (\S.*)", line)
+        if line.isspace():
+            continue
+        line = line.strip()
+
+        m = re.match(r"(\w+): (\S.*)", line)
         if not m:
             messages.append((MessageType.ERROR, F'Cannot parse line "{line}" in challenge.txt'))
-            return False
+            return False, None
 
         if m.group(1) == "Title":
             challenge.title = m.group(2)
@@ -156,7 +176,7 @@ def import_challenge_txt(file, challenge):
                 challenge.level = int(m.group(2))
             except ValueError:
                 messages.append((MessageType.ERROR, "Could not parse level in challenge.txt"))
-                return False
+                return False, None
         elif m.group(1) == "Flag":
             challenge.flag_qpa = m.group(2)
         elif m.group(1) == "Points":
@@ -164,22 +184,22 @@ def import_challenge_txt(file, challenge):
                 challenge.points = int(m.group(2))
             except ValueError:
                 messages.append((MessageType.ERROR, "Could not parse points in challenge.txt"))
-                return False
+                return False, None
         elif m.group(1) == "Hint":
             challenge.hint = m.group(2)
         elif m.group(1) == "Tags":
             for s in m.group(2).split(','):
                 tag, created = Tag.objects.get_or_create(name=s.strip())
                 if created:
-                    messages.append((MessageType.SUCCESS, F"Created new tag: {tag}"))
+                    messages.append((MessageType.SUCCESS, F"Created new tag: {tag.name}"))
                     tag.save()
-                challenge.tags.add(tag)
+                tag_list.append(tag)
         elif m.group(1) == "ShortDesc":
             challenge.short_description = m.group(2)
         else:
             messages.append((MessageType.ERROR, F"Unrecognized variable in challenge.txt: {m.group(1)}"))
-            return False
-    return True
+            return False, None
+    return True, tag_list
 
 
 def remove_imported(challenge_names):
