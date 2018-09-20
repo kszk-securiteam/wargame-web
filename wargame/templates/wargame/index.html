@@ -1,9 +1,18 @@
 {% extends 'wargame/base.html' %}
+{% load static %}
 {% block content %}
-    <h1>Securiteam wargame 2018</h1>
-    <p>Welcome everyone on this year's wargame!</p>
-    <p>Every new stage is unlocked by solving 3 challenges on the previous stage!</p>
-    <p>The solution of every assignment is a 32 characters long MD5 hash wrapped into "SECURITEAM{...}" (e.g. "SECURITEAM{0123456789abcdef0123456789abcdef}"). If you find the hash without the pre- and postfixes, then you should wrap it in yourself.</p>
-    <p>You can use the hint button on any challenge for a 50% penalty in points!</p>
-    <p style="text-align: center">Questions/info: securiteam[at]sch[dot]bme[dot]hu!</p>
+    <h1>SecurITeam Wargame 2018</h1>
+
+    <div class="row">
+    <div class="col-lg-6">
+        <img style="width: 80%" class="p-3 mx-auto d-block" src="{% static "securiteam.png" %}" />
+    </div>
+    <div class="col-lg-6">
+        <h3>Welcome every Viking soldier at this year's Wargame!</h3>
+        <p>Every new stage is unlocked by solving 3 challenges on the previous stage. The solution of every assignment is a 32 characters long MD5 hash wrapped into "SECURITEAM{...}" (e.g. "SECURITEAM{0123456789abcdef0123456789abcdef}"). If you find the hash without the pre- and postfixes, then you should wrap it in yourself.</p>
+        <p>The hint button gives you some help but will halve the score of the challenge.</p>
+        <p style="font-weight: bold;">To reach the *.wargame sites, see the instrucions in the VPN menu.</p>
+        <p style="text-align: center">Questions/Info: <code>securiteam[at]sch[dot]bme[dot]hu!</code></p>
+    </div>
+    </div>
 {% endblock %}
