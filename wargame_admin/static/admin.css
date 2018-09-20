@@ -18,3 +18,7 @@
 a.btn:not(.btn-link):hover {
     color: white !important;
 }
+
+.multiline {
+    white-space: pre-wrap;
+}

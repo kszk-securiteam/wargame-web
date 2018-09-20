@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput
+from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
 
 from wargame.models import File, Challenge, User
 
@@ -16,9 +16,13 @@ class FileUploadForm(ModelForm):
 
 
 class ChallengeForm(ModelForm):
+    setup = CharField(widget=Textarea)
+    solution = CharField(widget=Textarea)
+
     class Meta:
         model = Challenge
-        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint']
+        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint',
+                  'setup', 'solution']
 
 
 class UserSearchForm(Form):
