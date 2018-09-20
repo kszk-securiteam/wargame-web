@@ -2,7 +2,7 @@ import os
 
 from django.template import Library
 
-from challenge_import import MessageType
+from utils.challenge_import import MessageType
 
 register = Library()
 
