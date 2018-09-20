@@ -126,7 +126,8 @@ class User(AbstractUser):
                    FROM wargame_challenge challenge
                    LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
                    LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND submission.value == challenge.flag_qpa
-                   WHERE challenge.level <= %s"""
+                   WHERE challenge.level <= %s
+                   ORDER BY level, title"""
         return Challenge.objects.raw(query, [self.id, level])
 
     def is_challenge_visible(self, challenge):

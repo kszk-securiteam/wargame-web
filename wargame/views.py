@@ -1,3 +1,4 @@
+import itertools
 from os.path import basename
 
 from django.contrib import messages
@@ -23,8 +24,12 @@ class IndexView(TemplateView):
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'wargame/challenges.html'
 
-    def challenges(self):
-        return self.request.user.get_visible_challenges()
+    def challenges_by_level(self):
+        challenges = self.request.user.get_visible_challenges()
+        ret = []
+        for key, values in itertools.groupby(challenges, lambda x: x.level):
+            ret.append((key, list(values)))
+        return ret
 
 
 class ScoreboardView(TemplateView):

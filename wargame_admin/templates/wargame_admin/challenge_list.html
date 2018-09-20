@@ -6,8 +6,7 @@
     </h1>
     <section>
         {% for challenge in view.challenges %}
-            <!-- TODO: solved function in view -->
-            <a class="card" href="{% url 'wargame-admin:challenge-details' challenge.id %}">
+            <a class="card my-2" href="{% url 'wargame-admin:challenge-details' challenge.id %}">
                 <div class="card-body row">
                     <div class="col-sm-8">
                         <h4 class="card-title">{{ challenge.title }}</h4>

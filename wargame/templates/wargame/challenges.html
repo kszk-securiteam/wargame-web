@@ -2,22 +2,27 @@
 {% block content %}
     <h1>Challenges</h1>
 
-    <section id="challenge-list">
-    {% for challenge in view.challenges %}
-        <!-- TODO: solved function in view -->
-        <a class="card {% if challenge.solved %}challenge-card{% endif %}" href="{% url 'challenge-details' id=challenge.id %}">
-            <div class="card-body row">
-                <div class="col-sm-8">
-                    <h4 class="card-title">{{ challenge.title }}</h4>
-                    <p>
-                        {{ challenge.short_description }}
-                    </p>
-                </div>
-                <div class="col-sm-4 challenge-points-container">
-                    <span>${{ challenge.points }}</span>
-                </div>
-            </div>
-        </a>
+    {% for level in view.challenges_by_level %}
+        <h3>Level {{ level.0 }}</h3>
+        <hr />
+
+        <section id="challenge-list">
+            {% for challenge in level.1 %}
+                <a class="card {% if challenge.solved %}challenge-card{% endif %} my-2" href="{% url 'challenge-details' id=challenge.id %}">
+                    <div class="card-body row">
+                        <div class="col-sm-8">
+                            <h4 class="card-title">{{ challenge.title }}</h4>
+                            <p>
+                                {{ challenge.short_description }}
+                            </p>
+                        </div>
+                        <div class="col-sm-4 challenge-points-container">
+                            <span>${{ challenge.points }}</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </section>
     {% endfor %}
-    </section>
+
 {% endblock %}
