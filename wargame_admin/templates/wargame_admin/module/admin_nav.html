@@ -27,8 +27,14 @@
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'wargame-admin:staff-admin' %}">Staff members</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'wargame-admin:import' %}">Import</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="importDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Import
+                </a>
+                <div class="dropdown-menu" aria-labelledby="importDropdown">
+                    <a class="dropdown-item" href="{% url 'wargame-admin:import' %}">Challenges</a>
+                    <a class="dropdown-item" href="{% url 'wargame-admin:user-import' %}">Users</a>
+                </div>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'admin:index' %}">Django admin</a>

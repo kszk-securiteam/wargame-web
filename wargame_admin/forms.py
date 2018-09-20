@@ -44,3 +44,7 @@ class UserEditForm(ModelForm):
 
 class ImportForm(Form):
     file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}))
+
+
+class UserImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': '.csv'}))
