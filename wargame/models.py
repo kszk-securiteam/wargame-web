@@ -1,6 +1,8 @@
 import os
 
 from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Sum, Max
 from django.db.models.expressions import ExpressionWrapper
@@ -10,12 +12,29 @@ from django.dispatch import receiver
 from markdownx.models import MarkdownxField
 import wargame_web.settings.base as settings
 
-
 from wargame_admin.models import Config
+
+
+def custom_username_validator(username):
+    message = "Enter a valid username. This value may contain only letters, numbers, and @/+/-/_ characters."
+    if '~' in username or '/' in username or '.' in username:
+        raise ValidationError(message)
+    return UnicodeUsernameValidator(message=message).__call__(username)
 
 
 class User(AbstractUser):
     hidden = models.BooleanField(default=False)
+
+    username = models.CharField(
+        'username',
+        max_length=150,
+        unique=True,
+        help_text='Required. 150 characters or fewer. Letters, digits and @/+/-/_ only.',
+        validators=[custom_username_validator],
+        error_messages={
+            'unique': "A user with that username already exists.",
+        },
+    )
 
     def admin_str(self):
         if self.is_superuser:
@@ -87,7 +106,8 @@ class User(AbstractUser):
         else:
             flag_field = F('challenge__flag_hacktivity')
 
-        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))['max_level']
+        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))[
+            'max_level']
         solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
                                                                       user=self,
                                                                       submission__value=flag_field
