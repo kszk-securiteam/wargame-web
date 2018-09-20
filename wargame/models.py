@@ -184,7 +184,7 @@ class UserChallenge(models.Model):
         return ret
 
     def solved(self):
-        return self.submission_set.filter(value=self.challenge.get_flag()).exists()
+        return self.submission_set.filter(value__iexact=self.challenge.get_flag()).exists()
 
 
 class Submission(models.Model):
