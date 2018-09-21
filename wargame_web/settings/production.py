@@ -7,4 +7,4 @@ base.DEBUG = False
 from .base import *
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
-ALLOWED_HOSTS = ['*.wargame.sch.bme.hu']
+ALLOWED_HOSTS = ['wargame.sch.bme.hu']

@@ -72,7 +72,8 @@ class User(AbstractUser):
                                         output_field=IntegerField())
 
         return User.objects.filter(
-            userchallenge__submission__value=flag_field
+            userchallenge__submission__value=flag_field,
+            hidden=False
         ).values(
             'username'
         ).annotate(
