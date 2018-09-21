@@ -1,5 +1,47 @@
 {% extends 'wargame/base.html' %}
 {% block content %}
-    <h1 class="mb-4">TODO: VPN instructions</h1>
-    <a href="{% url 'vpn-key' %}">Download key</a>
+    <h1 class="mb-4">VPN instructions</h1>
+    <a href="{% url 'vpn-key' %}">Download keys and configuration</a>
+    <p>
+        You need to connect to the wargame network to be able to access our challenge servers. For that you need OpenVPN installed on your computer. On Windows, you can <a href="https://openvpn.net/index.php/download/community-downloads.html" target="_blank">download OpenVPN from here</a>. On Linux, it's most likely provided by your distributions package manager.
+    </p>
+    <p>
+        After you have successfully installed OpenVPN, you need to configure it to connect to our VPN service. We use TLS and we provide a keypair for each user, a certificate for our internal CA which you should trust for the context of the VPN connection, and an example configuration file which you can use with OpenVPN directly. You can download the package <a href="{% url 'vpn-key' %}">here</a>.
+    </p>
+    <p>
+        On Windows you may have to change the extension of the config file to .ovpn to use it with the Windows client.
+    </p>
+    <p>
+        On Linux, you can use the client config file directly, like this:
+    </p>
+    <p><code>
+        openvpn --config client.conf
+    </code></p>
+<p>DNS is not working? Use these IPs instead of domain names:</p>
+<table>
+    <tr>
+        <th>brainfuck.wargame</th>
+        <th>10.13.37.206</th>
+    </tr>
+    <tr>
+        <th>cattags.wargame</th>
+        <th>10.13.37.201</th>
+    </tr>
+    <tr>
+        <th>flagdownloader.wargame</th>
+        <th>10.13.37.203</th>
+    </tr>
+    <tr>
+        <th>logintoken.wargame</th>
+        <th>10.13.37.204</th>
+    </tr>
+    <tr>
+        <th>poloshop.wargame</th>
+        <th>10.13.37.205</th>
+    </tr>
+    <tr>
+        <th>story.wargame</th>
+        <th>10.13.37.202</th>
+    </tr>
+</table>
 {% endblock %}

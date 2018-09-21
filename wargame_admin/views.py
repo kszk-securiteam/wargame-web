@@ -6,9 +6,12 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
 
+from utils.challenge_import import do_challenge_import
+from utils.user_import import do_user_import
 from wargame_admin.filters import UserFilter
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
+    UserImportForm
 from wargame_admin.models import Config
 
 
@@ -96,7 +99,7 @@ class ChallengeFileDeleteView(DeleteView):
 class UserAdminView(SearchListView):
     template_name = "wargame_admin/user_admin.html"
     model = User
-    paginate_by = 30
+    paginate_by = 300
     form_class = UserSearchForm
     filter_class = UserFilter
 
@@ -293,7 +296,7 @@ class StaffMemberAdmin(TemplateView):
 
 class StaffEditView(UpdateView):
     template_name = "wargame_admin/edit_form.html"
-    fields = ('name', )
+    fields = ('name',)
     model = StaffMember
 
     def get_success_url(self):
@@ -302,7 +305,7 @@ class StaffEditView(UpdateView):
 
 class StaffCreateView(CreateView):
     template_name = "wargame_admin/edit_form.html"
-    fields = ('name', )
+    fields = ('name',)
     model = StaffMember
 
     def get_success_url(self):
@@ -315,3 +318,36 @@ class StaffDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('wargame-admin:staff-admin')
+
+
+class ImportView(TemplateView):
+    template_name = "wargame_admin/import.html"
+    import_messages = []
+
+    def messages(self):
+        return self.import_messages
+
+    def form(self):
+        return ImportForm()
+
+    def post(self, request, *args, **kwargs):
+        form = ImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            self.import_messages = do_challenge_import(form.files['file'])
+
+        return super().get(request, *args, **kwargs)
+
+
+class UserImportView(TemplateView):
+    template_name = "wargame_admin/user_import.html"
+
+    # noinspection PyMethodMayBeStatic
+    def form(self):
+        return UserImportForm()
+
+    def post(self, request, *args, **kwargs):
+        form = ImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            do_user_import(form.files['file'])
+
+        return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))

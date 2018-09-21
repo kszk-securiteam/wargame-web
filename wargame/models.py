@@ -1,6 +1,8 @@
 import os
 
 from django.contrib.auth.models import AbstractUser, Permission
+from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Sum, Max
 from django.db.models.expressions import ExpressionWrapper
@@ -8,12 +10,31 @@ from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
+import wargame_web.settings.base as settings
 
 from wargame_admin.models import Config
 
 
+def custom_username_validator(username):
+    message = "Enter a valid username. This value may contain only letters, numbers, and @/+/-/_ characters."
+    if '~' in username or '/' in username or '.' in username:
+        raise ValidationError(message)
+    return UnicodeUsernameValidator(message=message).__call__(username)
+
+
 class User(AbstractUser):
     hidden = models.BooleanField(default=False)
+
+    username = models.CharField(
+        'username',
+        max_length=150,
+        unique=True,
+        help_text='Required. 150 characters or fewer. Letters, digits and @/+/-/_ only.',
+        validators=[custom_username_validator],
+        error_messages={
+            'unique': "A user with that username already exists.",
+        },
+    )
 
     def admin_str(self):
         if self.is_superuser:
@@ -86,7 +107,8 @@ class User(AbstractUser):
         else:
             flag_field = F('challenge__flag_hacktivity')
 
-        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))['max_level']
+        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))[
+            'max_level']
         solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
                                                                       user=self,
                                                                       submission__value=flag_field
@@ -105,11 +127,18 @@ class User(AbstractUser):
                    FROM wargame_challenge challenge
                    LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
                    LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND submission.value == challenge.flag_qpa
-                   WHERE challenge.level <= %s"""
+                   WHERE challenge.level <= %s
+                   ORDER BY level, title"""
         return Challenge.objects.raw(query, [self.id, level])
 
     def is_challenge_visible(self, challenge):
         return challenge.level <= self.get_visible_level()
+
+
+@receiver(models.signals.post_save, sender=User)
+def generate_vpn_key(sender, instance, created, *args, **kwargs):
+    if created and not settings.DEBUG:
+        os.system(F"sudo getcert.sh '{instance.username}'")
 
 
 class Tag(models.Model):
@@ -127,6 +156,9 @@ class Challenge(models.Model):
     points = models.IntegerField()
     hint = models.CharField(max_length=8192, null=True)
     tags = models.ManyToManyField(Tag)
+    solution = models.CharField(max_length=8192, null=True)
+    setup = models.CharField(max_length=8192, null=True)
+    import_name = models.CharField(max_length=64, null=True)
 
     def __str__(self):
         return self.title
@@ -174,7 +206,7 @@ class UserChallenge(models.Model):
         return ret
 
     def solved(self):
-        return self.submission_set.filter(value=self.challenge.get_flag()).exists()
+        return self.submission_set.filter(value__iexact=self.challenge.get_flag()).exists()
 
 
 class Submission(models.Model):

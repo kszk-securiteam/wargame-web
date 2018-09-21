@@ -16,7 +16,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page=reverse_lazy('index')), name='logout'),
     path('login/', LoginView.as_view(template_name='wargame/login_form.html'), name='login'),
     path('register/', views.UserRegistrationView.as_view(), name='register'),
-    path('registration-disallowed/', TemplateView.as_view(template_name='wargame/registration_disallowed.html'), name='registration_disallowed'),
+    path('registration-disallowed/', TemplateView.as_view(template_name='wargame/registration_disallowed.html'), name='django_registration_disallowed'),
     path('vpn/', views.VPNView.as_view(), name='vpn-info'),
     path('vpn/key', views.download_vpn_key, name='vpn-key'),
     path('challenge-files/<int:file_id>', views.download_challenge_file, name='challenge-file'),

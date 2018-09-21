@@ -28,4 +28,12 @@
         <a href="{% url 'challenge-file' file.id %}">{{ file.display_name }}</a><br/>
     {% endfor %}
     <hr/>
+    {% if view.challenge.setup %}
+        <h3>Setup</h3>
+        <div class="multiline">{{ view.challenge.setup }}</div>
+        <hr />
+    {% endif %}
+    <h3>Solution</h3>
+    <div class="multiline">{{ view.challenge.solution }}</div>
+    <hr />
 {% endblock %}

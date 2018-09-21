@@ -1,3 +1,4 @@
+import itertools
 from os.path import basename
 
 from django.contrib import messages
@@ -13,6 +14,7 @@ from utils.serve_file import serve_file
 from wargame import models
 from wargame.forms import UserRegistrationForm
 from wargame.models import Challenge, UserChallenge, Submission, File
+from wargame_admin.models import Config
 
 
 class IndexView(TemplateView):
@@ -22,8 +24,12 @@ class IndexView(TemplateView):
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'wargame/challenges.html'
 
-    def challenges(self):
-        return self.request.user.get_visible_challenges()
+    def challenges_by_level(self):
+        challenges = self.request.user.get_visible_challenges()
+        ret = []
+        for key, values in itertools.groupby(challenges, lambda x: x.level):
+            ret.append((key, list(values)))
+        return ret
 
 
 class ScoreboardView(TemplateView):
@@ -52,6 +58,9 @@ class LinksView(TemplateView):
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
     template_name = 'wargame/registration.html'
+
+    def registration_allowed(self):
+        return not Config.objects.registration_disabled()
 
     def get_success_url(self, user=None):
         return reverse_lazy('index')

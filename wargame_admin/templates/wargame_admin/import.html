@@ -1,0 +1,22 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% load bootstrap4 %}
+{% load wargame_admin_tags %}
+{% block content %}
+    {% if view.messages %}
+        <div class="border p-2 my-4" style="max-height: 500px; overflow: auto">
+            {% for message in view.messages %}
+                {% autoescape off %}
+                    {% render_message message %}
+                {% endautoescape %}
+                <br />
+            {% endfor %}
+        </div>
+        <hr />
+    {% endif %}
+    <h2>Import challenges</h2>
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {% bootstrap_form view.form %}
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+{% endblock %}

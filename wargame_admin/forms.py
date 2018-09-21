@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput
+from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
 
 from wargame.models import File, Challenge, User
 
@@ -16,9 +16,13 @@ class FileUploadForm(ModelForm):
 
 
 class ChallengeForm(ModelForm):
+    setup = CharField(widget=Textarea)
+    solution = CharField(widget=Textarea)
+
     class Meta:
         model = Challenge
-        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint']
+        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint',
+                  'setup', 'solution']
 
 
 class UserSearchForm(Form):
@@ -36,3 +40,11 @@ class UserEditForm(ModelForm):
             'is_superuser': 'Allows the user to access the admin site and edit all objects in the django admin interface',
             'hidden': 'Hides the user from the scoreboard'
         }
+
+
+class ImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}))
+
+
+class UserImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': '.csv'}))

@@ -86,6 +86,11 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
 ]
 
+FILE_UPLOAD_HANDLERS = [
+    # 'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -113,7 +118,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 AUTH_USER_MODEL = 'wargame.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
-REGISTRATION_OPEN = True
 APPEND_SLASH = True
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
 
@@ -124,3 +128,8 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
