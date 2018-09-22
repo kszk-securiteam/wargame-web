@@ -16,5 +16,5 @@ def serve_file(request, file_dir, file_name):
     else:
         response = serve(request, join("/", file_dir, file_name), settings.MEDIA_ROOT)
 
-    response["Content-Disposition"] = F"attachment; filename={file_name}"
+    response["Content-Disposition"] = F"attachment; filename=vpn.zip"
     return response
