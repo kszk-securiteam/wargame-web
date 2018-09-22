@@ -13,7 +13,7 @@ from wargame_web.settings import base as settings
 def serve_file(request, file_dir, file_name):
     if not settings.DEBUG:
         response = HttpResponse()
-        response['X-Accel-Redirect'] = join(settings.MEDIA_URL, file_dir, file_name).encode('utf-8')
+        response['X-Accel-Redirect'] = urlquote(join(settings.MEDIA_URL, file_dir, file_name).encode('utf-8'))
     else:
         response = serve(request, join("/", file_dir, file_name), settings.MEDIA_ROOT)
 
