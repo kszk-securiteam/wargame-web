@@ -5,6 +5,7 @@ system.
 """
 from os.path import join
 from django.http import HttpResponse
+from django.utils.http import urlquote
 from django.views.static import serve
 from wargame_web.settings import base as settings
 
@@ -12,9 +13,9 @@ from wargame_web.settings import base as settings
 def serve_file(request, file_dir, file_name):
     if not settings.DEBUG:
         response = HttpResponse()
-        response['X-Accel-Redirect'] = join(settings.MEDIA_URL, file_dir, file_name)
+        response['X-Accel-Redirect'] = join(settings.MEDIA_URL, file_dir, file_name).encode('utf-8')
     else:
         response = serve(request, join("/", file_dir, file_name), settings.MEDIA_ROOT)
 
-    response["Content-Disposition"] = F"attachment; filename=vpn.zip"
+    response["Content-Disposition"] = F"attachment; filename={file_name.encode('ascii', 'ignore').decode()}; filename*=UTF-8''{urlquote(file_name)}"
     return response
