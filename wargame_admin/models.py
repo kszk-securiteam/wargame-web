@@ -3,6 +3,7 @@ import json
 from django.db.models import Model, CharField, Manager
 
 
+# noinspection PyMethodMayBeStatic
 class ConfigManager(Manager):
     def is_qpa(self):
         return Config.objects.get(key='qpa_hack').value == 'qpa'
@@ -12,6 +13,9 @@ class ConfigManager(Manager):
 
     def registration_disabled(self):
         return Config.objects.get(key='disable_registration').get_bool()
+
+    def wargame_active(self):
+        return Config.objects.get(key='wargame_active').get_bool()
 
 
 class Config(Model):
