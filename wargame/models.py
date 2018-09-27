@@ -73,7 +73,7 @@ class User(AbstractUser):
 
         return UserChallenge.objects.filter(
             user=self,
-            submission__value=flag_field
+            submission__value__iexact=flag_field
         ).annotate(
             points_with_hint=user_points
         ).aggregate(
@@ -93,7 +93,8 @@ class User(AbstractUser):
                                         output_field=IntegerField())
 
         return User.objects.filter(
-            userchallenge__submission__value=flag_field
+            userchallenge__submission__value__iexact=flag_field,
+            hidden=False
         ).values(
             'username'
         ).annotate(
@@ -110,7 +111,7 @@ class User(AbstractUser):
             'max_level']
         solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
                                                                       user=self,
-                                                                      submission__value=flag_field
+                                                                      submission__value__iexact=flag_field
                                                                       ).count()
 
         if solved_challenges_at_max_level >= Config.objects.stage_tasks():
@@ -125,7 +126,7 @@ class User(AbstractUser):
         query = """SELECT challenge.*, submission.value IS NOT NULL AS solved
                    FROM wargame_challenge challenge
                    LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
-                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND submission.value == challenge.flag_qpa
+                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND lower(submission.value) == lower(challenge.flag_qpa)
                    WHERE challenge.level <= %s
                    ORDER BY level, title"""
         return Challenge.objects.raw(query, [self.id, level])
