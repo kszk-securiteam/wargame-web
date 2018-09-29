@@ -1,4 +1,5 @@
 {% extends 'wargame/base.html' %}
+{% load wargame_tags %}
 {% block content %}
     <h1>Scoreboard</h1>
 
@@ -8,6 +9,9 @@
         <th style="width: 50px;">#</th>
         <th>Name</th>
         <th>Score</th>
+        {% if view.show_qpa_points %}
+            <th>QPA points</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
@@ -16,6 +20,9 @@
         <td>{{ forloop.counter }}</td>
         <td>{{ score.username }}</td>
         <td>{{ score.total_points }}</td>
+        {% if view.show_qpa_points %}
+            <td>{{ score.total_points | qpa_mul }}</td>
+        {% endif %}
     </tr>
     {% endfor %}
 

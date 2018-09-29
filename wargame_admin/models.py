@@ -1,4 +1,5 @@
 import json
+from fractions import Fraction
 
 from django.db.models import Model, CharField, Manager
 
@@ -17,6 +18,12 @@ class ConfigManager(Manager):
     def wargame_active(self):
         return Config.objects.get(key='wargame_active').get_bool()
 
+    def show_qpa_points(self):
+        return Config.objects.get(key='show_qpa_points').get_bool()
+
+    def qpa_points_multiplier(self):
+        return Config.objects.get(key='qpa_points_multiplier').get_float()
+
 
 class Config(Model):
     key = CharField(max_length=255, primary_key=True)
@@ -31,6 +38,12 @@ class Config(Model):
 
     def get_bool(self):
         return self.value == "True"
+
+    def get_float(self):
+        try:
+            return float(self.value)
+        except ValueError:
+            return float(Fraction(self.value))
 
     def get_possible_values(self):
         if self.possible_values is "":

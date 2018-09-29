@@ -38,6 +38,9 @@ class ScoreboardView(TemplateView):
     def scores(self):
         return models.User.get_top_40_by_score()
 
+    def show_qpa_points(self):
+        return Config.objects.show_qpa_points()
+
 
 class RulesView(TemplateView):
     template_name = 'wargame/rules.html'
