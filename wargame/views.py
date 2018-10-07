@@ -76,7 +76,7 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
         return Challenge.objects.get(pk=self.kwargs['id'])
 
     def files(self):
-        return self.challenge().files.filter(private=False).all()
+        return self.challenge().get_files().filter(private=False).all()
 
     def userchallenge(self):
         return UserChallenge.objects.get(user=self.request.user, challenge=self.challenge())

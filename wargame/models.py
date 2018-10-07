@@ -1,7 +1,7 @@
 import os
 
 from django.contrib.auth.models import AbstractUser, Permission
-from django.contrib.auth.validators import UnicodeUsernameValidator, ASCIIUsernameValidator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F, Sum, Max
@@ -10,8 +10,8 @@ from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
-import wargame_web.settings.base as settings
 
+import wargame_web.settings.base as settings
 from wargame_admin.models import Config
 
 
@@ -169,12 +169,20 @@ class Challenge(models.Model):
         else:
             return self.flag_hacktivity
 
+    def get_files(self):
+        return self.files.filter(config_name=Config.objects.config_name().value)
+
 
 class File(models.Model):
+    CONFIG_CHOICES = (
+        ('qpa', 'qpa'),
+        ('hacktivity', 'hacktivity')
+    )
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(upload_to='challenge-files/')
     display_name = models.CharField(max_length=256)
     private = models.BooleanField(default=False)
+    config_name = models.CharField(max_length=20, null=False, blank=False, choices=CONFIG_CHOICES)
 
 
 # Deletes file from filesystem when File object is deleted.

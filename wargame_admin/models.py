@@ -9,6 +9,9 @@ class ConfigManager(Manager):
     def is_qpa(self):
         return Config.objects.get(key='qpa_hack').value == 'qpa'
 
+    def config_name(self):
+        return Config.objects.get(key='qpa_hack')
+
     def stage_tasks(self):
         return Config.objects.get(key='stage_tasks').get_int()
 

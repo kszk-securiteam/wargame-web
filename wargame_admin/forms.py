@@ -6,13 +6,25 @@ from wargame.models import File, Challenge, User
 class FileForm(ModelForm):
     class Meta:
         model = File
-        fields = ['display_name', 'private']
+        fields = ['display_name', 'private', 'config_name']
+
+    def __init__(self, *args, **kwargs):
+        super(FileForm, self).__init__(*args, **kwargs)
+        # Remove the blank choice
+        field = self.fields['config_name']
+        field.choices = field.choices[1:]
 
 
 class FileUploadForm(ModelForm):
     class Meta:
         model = File
-        fields = ['file', 'display_name', 'private']
+        fields = ['file', 'display_name', 'private', 'config_name']
+
+    def __init__(self, *args, **kwargs):
+        super(FileUploadForm, self).__init__(*args, **kwargs)
+        # Remove the blank choice
+        field = self.fields['config_name']
+        field.choices = field.choices[1:]
 
 
 class ChallengeForm(ModelForm):

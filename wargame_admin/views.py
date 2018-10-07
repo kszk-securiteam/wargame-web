@@ -8,8 +8,8 @@ from search_views.views import SearchListView
 
 from utils.challenge_import import do_challenge_import
 from utils.user_import import do_user_import
-from wargame_admin.filters import UserFilter
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
+from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
     UserImportForm
 from wargame_admin.models import Config
@@ -28,6 +28,12 @@ class ChallengeDetailsView(TemplateView):
 
     def challenge(self):
         return Challenge.objects.get(pk=self.kwargs['pk'])
+
+    def qpa_files(self):
+        return self.challenge().files.filter(config_name='qpa').all()
+
+    def hacktivity_files(self):
+        return self.challenge().files.filter(config_name='hacktivity').all()
 
 
 class ChallengeEditView(UpdateView):
