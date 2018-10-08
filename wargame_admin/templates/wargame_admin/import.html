@@ -19,4 +19,7 @@
         {% bootstrap_form view.form %}
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+    <hr />
+    <h2>Export challenges</h2>
+    <a href="{% url 'wargame-admin:challenge-export' %}">Export</a>
 {% endblock %}

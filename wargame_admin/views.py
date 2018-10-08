@@ -8,6 +8,8 @@ from search_views.views import SearchListView
 
 from utils.challenge_import import do_challenge_import
 from utils.user_import import do_user_import
+from utils.serve_file import serve_file
+from utils.export_challenges import export_challenges
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
@@ -357,3 +359,8 @@ class UserImportView(TemplateView):
             do_user_import(form.files['file'])
 
         return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
+
+
+def challenge_export_view(request):
+    file_name = export_challenges()
+    return serve_file(request, "", file_name)

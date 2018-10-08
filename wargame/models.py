@@ -129,6 +129,17 @@ class User(AbstractUser):
                    LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND lower(submission.value) == lower(challenge.flag_qpa)
                    WHERE challenge.level <= %s
                    ORDER BY level, title"""
+
+        # Challenge.objects.filter(
+        #     userchallenge__user=self,
+        #     userchallenge__submission__value__iexact=F("flag_qpa"),
+        #     level__lte=level
+        # ).order_by(
+        #     'level', 'title'
+        # ).annotate(
+        #     solved=False
+        # )
+
         return Challenge.objects.raw(query, [self.id, level])
 
     def is_challenge_visible(self, challenge):
