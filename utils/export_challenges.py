@@ -18,7 +18,7 @@ def export_challenges():
     for c in Challenge.objects.all():
         # Calculate directories
         challenge_folder = os.path.join(export_folder, "challenges",
-                                        c.import_name or c.title.replace(" ", "_").encode('ascii', 'ignore'))
+                                        c.import_name or c.title.replace(" ", "_").encode('ascii', 'ignore').decode("ascii"))
 
         qpa_folder = os.path.join(challenge_folder, "qpa-files")
         private_qpa_folder = os.path.join(qpa_folder, "private")
