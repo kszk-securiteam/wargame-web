@@ -4,7 +4,7 @@ import shutil
 import datetime
 import time
 
-from settings import base
+from wargame_web.settings import base
 from wargame.models import Challenge
 
 export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_description"]
