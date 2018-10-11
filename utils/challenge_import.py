@@ -10,7 +10,7 @@ from django.db import transaction
 
 from wargame.models import Challenge, Tag, File as ChallengeFile
 from wargame_web.settings.base import MEDIA_ROOT
-from export_challenges import export_keys
+from utils.export_challenges import export_keys
 
 messages = []
 
