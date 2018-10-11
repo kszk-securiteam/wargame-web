@@ -65,6 +65,8 @@ def import_challenge(challenge_dir, challenge_name):
     except Challenge.DoesNotExist:
         challenge = Challenge()
         challenge.import_name = challenge_name
+        challenge.level = 1
+        challenge.points = 0
 
     with open(os.path.join(challenge_path, "challenge.json"), encoding='utf-8-sig') as file:
         if not import_challenge_json(file, challenge):
