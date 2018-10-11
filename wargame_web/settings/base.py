@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'markdownx',
     'wargame_admin',
     'django_registration',
+    'chunked_upload'
 ]
 
 MIDDLEWARE = [

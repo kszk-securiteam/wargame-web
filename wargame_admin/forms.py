@@ -26,6 +26,9 @@ class FileUploadForm(ModelForm):
         field = self.fields['config_name']
         field.choices = field.choices[1:]
 
+        self.fields['file'].widget.attrs.update({'class': 'hidden'})
+        self.fields['file'].label = ""
+
 
 class ChallengeForm(ModelForm):
     setup = CharField(widget=Textarea)

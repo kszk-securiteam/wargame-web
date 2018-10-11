@@ -6,6 +6,8 @@
     <title>Wargame admin</title>
     <link type="text/css" rel="stylesheet" href="{% static "webfonts/fontawesome-all.min.css" %}" />
     <link type="text/css" rel="stylesheet" href="{% static "admin.css" %}" />
+    {% block extra_head %}
+    {% endblock %}
 {% endblock %}
 
 {% block bootstrap4_content %}
@@ -22,4 +24,6 @@
 {# This is required, because django-bootstrap does not include jquery by default and the setting to include it does not work #}
 {% block bootstrap4_after_content %}
     {% bootstrap_jquery %}
+    {% block extra_scripts %}
+    {% endblock %}
 {% endblock %}

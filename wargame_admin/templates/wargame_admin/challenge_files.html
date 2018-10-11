@@ -1,6 +1,16 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% load bootstrap4 %}
+{% load static %}
 {% load wargame_admin_tags %}
+
+{% block extra_scripts %}
+    <script src="{% static 'jquery.ui.widget.js' %}"></script>
+    <script src="{% static 'spark-md5.min.js' %}"></script>
+    <script src="{% static 'jquery.iframe-transport.js' %}"></script>
+    <script src="{% static 'jquery.fileupload.js' %}"></script>
+    <script src="{% static 'challenge_file_upload.js' %}"></script>
+{% endblock %}
+
 {% block content %}
     <h3>Files</h3>
     <form method="post">
@@ -21,9 +31,18 @@
     </form>
     <hr />
     <h3>Upload new file</h3>
-    <form method="post" enctype="multipart/form-data" class="form">
+    <form method="post" enctype="multipart/form-data" class="form" id="file-upload-form" novalidate>
         {% csrf_token %}
         {% bootstrap_form view.file_upload_form %}
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <h5>Selected file</h5>
+        <button type="button" class="btn btn-default" onclick="document.getElementById('id_file').click();">Browse</button>
+        <p><b>Name</b>: <span id="file-upload-name">None</span></p>
+        <p><b>Size</b>: <span id="file-upload-size">None</span></p>
+        <p><b>Progress</b>: <span id="file-upload-progress">Not started</span></p>
     </form>
+    <button type="button" class="btn btn-primary" id="file_upload_btn">Upload</button>
+    <script>
+        const upload_url = "{% url "wargame-admin:challenge-file-upload" view.challenge.id %}";
+        const upload_complete_url = "{% url 'wargame-admin:challenge-file-upload-complete' view.challenge.id %}";
+    </script>
 {% endblock %}

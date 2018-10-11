@@ -10,6 +10,7 @@ pytz = "*"
 django-search-views = "*"
 Django = "*"
 django-registration = "*"
+django-chunked-upload = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

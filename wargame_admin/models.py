@@ -1,7 +1,8 @@
 import json
 from fractions import Fraction
 
-from django.db.models import Model, CharField, Manager
+from chunked_upload.models import ChunkedUpload
+from django.db.models import Model, CharField, Manager, BooleanField
 
 
 # noinspection PyMethodMayBeStatic
@@ -55,3 +56,7 @@ class Config(Model):
 
     def set_possible_values(self, values):
         self.possible_values = json.dumps(values)
+
+
+class ChallengeFileChunkedUpload(ChunkedUpload):
+    pass

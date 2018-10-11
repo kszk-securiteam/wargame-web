@@ -22,3 +22,7 @@ a.btn:not(.btn-link):hover {
 .multiline {
     white-space: pre-wrap;
 }
+
+.hidden {
+    display: none;
+}

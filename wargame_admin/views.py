@@ -1,5 +1,10 @@
+import os
 from abc import ABCMeta, abstractmethod
 
+from chunked_upload.constants import http_status
+from chunked_upload.exceptions import ChunkedUploadError
+from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
+from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.urls import reverse_lazy
@@ -14,7 +19,7 @@ from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
     UserImportForm
-from wargame_admin.models import Config
+from wargame_admin.models import Config, ChallengeFileChunkedUpload
 
 
 class ChallengeListView(TemplateView):
@@ -79,19 +84,9 @@ class ChallengeFilesView(TemplateView):
         return self.file_form_set(instance=self.challenge())
 
     def post(self, request, *args, **kwargs):
-        # If a new file was uploaded
-        if request.FILES:
-            form = FileUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                file = form.save(commit=False)
-                file.challenge_id = kwargs['pk']
-                file.save()
-
-        # If the set of existing files was edited
-        else:
-            formset = self.file_form_set(request.POST, request.FILES, instance=self.challenge())
-            if formset.is_valid():
-                formset.save()
+        formset = self.file_form_set(request.POST, request.FILES, instance=self.challenge())
+        if formset.is_valid():
+            formset.save()
 
         return HttpResponseRedirect(self.request.path_info)  # Redirect to the same page
 
@@ -364,3 +359,30 @@ class UserImportView(TemplateView):
 def challenge_export_view(request):
     file_name = export_challenges()
     return serve_file(request, "", file_name)
+
+
+class ChallengeFileChunkedUploadView(ChunkedUploadView):
+    model = ChallengeFileChunkedUpload
+    field_name = "file"
+
+    def check_permissions(self, request):
+        if not request.user.is_superuser:
+            raise ChunkedUploadError(status=http_status.HTTP_403_FORBIDDEN)
+
+
+class ChallengeFileChunkedUploadCompleteView(ChunkedUploadCompleteView):
+    model = ChallengeFileChunkedUpload
+
+    def check_permissions(self, request):
+        if not request.user.is_superuser:
+            raise ChunkedUploadError(status=http_status.HTTP_403_FORBIDDEN)
+
+    def on_completion(self, uploaded_file, request):
+        form = FileUploadForm(request.POST, {'file': uploaded_file})
+        if form.is_valid():
+            file = form.save(commit=False)
+            file.challenge_id = self.kwargs['challenge_id']
+            file.save()
+            messages.success(request, "File uploaded.")
+        else:
+            messages.error(request, "Error uploading file:" + form.errors)

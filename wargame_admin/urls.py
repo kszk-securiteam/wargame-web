@@ -5,7 +5,8 @@ from django.views.generic import RedirectView
 from wargame_admin.views import ChallengeListView, ChallengeDetailsView, ChallengeEditView, UserAdminView, \
     ConfigEditorView, ChallengeCreateView, ChallengeDeleteView, ChallengeFilesView, \
     ChallengeFileDeleteView, ChallengeSubmissions, UserSubmissions, UserEdit, ResetHintsView, ClearSubmissionsView, \
-    StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView, ImportView, UserImportView, challenge_export_view
+    StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView, ImportView, UserImportView, \
+    challenge_export_view, ChallengeFileChunkedUploadView, ChallengeFileChunkedUploadCompleteView
 
 app_name = 'wargame-admin'
 urlpatterns = [
@@ -30,5 +31,10 @@ urlpatterns = [
     path('staff/<int:pk>/delete', staff_member_required(StaffDeleteView.as_view()), name='staff-delete'),
     path('import/challenges', staff_member_required(ImportView.as_view()), name='import'),
     path('import/users', staff_member_required(UserImportView.as_view()), name='user-import'),
-    path('export/challenges', staff_member_required(challenge_export_view), name='challenge-export')
+    path('export/challenges', staff_member_required(challenge_export_view), name='challenge-export'),
+    path('challenges/<int:challenge_id>/files/upload', staff_member_required(ChallengeFileChunkedUploadView.as_view()),
+         name='challenge-file-upload'),
+    path('challenges/<int:challenge_id>/files/upload_complete',
+         staff_member_required(ChallengeFileChunkedUploadCompleteView.as_view()),
+         name='challenge-file-upload-complete'),
 ]
