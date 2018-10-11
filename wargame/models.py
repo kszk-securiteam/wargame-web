@@ -126,7 +126,7 @@ class User(AbstractUser):
         query = """SELECT challenge.*, submission.value IS NOT NULL AS solved
                    FROM wargame_challenge challenge
                    LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
-                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND lower(submission.value) == lower(challenge.flag_qpa)
+                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND lower(submission.value) == lower(challenge.flag_hacktivity)
                    WHERE challenge.level <= %s
                    ORDER BY level, title"""
 
