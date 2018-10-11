@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import shutil
@@ -9,6 +10,7 @@ from django.db import transaction
 
 from wargame.models import Challenge, Tag, File as ChallengeFile
 from wargame_web.settings.base import MEDIA_ROOT
+from export_challenges import export_keys
 
 messages = []
 
@@ -35,8 +37,6 @@ def do_challenge_import(file):
         messages.append((MessageType.ERROR, 'Uploaded file does not contain challenges directory'))
         return messages
 
-    challenge_names = remove_imported(challenge_names)
-
     for challenge_name in challenge_names:
         # noinspection PyBroadException
         try:
@@ -54,17 +54,19 @@ def import_challenge(challenge_dir, challenge_name):
     messages.append((MessageType.INFO, F"Importing challenge {challenge_name}..."))
     challenge_path = os.path.join(challenge_dir, challenge_name)
 
-    valid, import_setup, public_files, private_files = validate_challenge(challenge_path)
+    valid, import_setup, files = validate_challenge_structure(challenge_path)
 
     if not valid:
         return
 
-    challenge = Challenge()
-    challenge.import_name = challenge_name
+    # Get or create challenge
+    challenge = Challenge.objects.get(import_name=challenge_name)
+    if challenge is None:
+        challenge = Challenge()
+        challenge.import_name = challenge_name
 
-    with open(os.path.join(challenge_path, "challenge.txt"), encoding='utf-8-sig') as file:
-        success, tag_list = import_challenge_txt(file, challenge)
-        if not success:
+    with open(os.path.join(challenge_path, "challenge.json"), encoding='utf-8-sig') as file:
+        if not import_challenge_json(file, challenge):
             return
 
     with open(os.path.join(challenge_path, "description.md"), encoding='utf-8-sig') as file:
@@ -78,9 +80,9 @@ def import_challenge(challenge_dir, challenge_name):
             challenge.setup = file.read()
 
     challenge.save()
-    import_files(challenge, challenge_path, public_files, private=False)
-    import_files(challenge, challenge_path, private_files, private=True)
-    save_tags(challenge, tag_list)
+
+    import_files(challenge, files)
+
     messages.append((MessageType.SUCCESS, F"Challenge imported: {challenge_name}"))
 
 
@@ -90,62 +92,73 @@ def save_tags(challenge, tag_list):
     challenge.save()
 
 
-def import_files(challenge, challenge_path, file_names, private):
-    if private:
-        challenge_path = os.path.join(challenge_path, "private")
+def import_files(challenge, files):
+    for file in files:
+        filename = os.path.basename(file['path'])
 
-    for file in file_names:
-        with open(os.path.join(challenge_path, file), 'rb') as fp:
+        if challenge.files.filter(display_name=filename, private=file['private'], config_name=file['conf']).exists():
+            messages.append((MessageType.WARNING, "Skipping import of file: " + filename))
+            continue
+
+        with open(os.path.join(file['path']), 'rb') as fp:
             challenge_file = ChallengeFile()
             challenge_file.challenge = challenge
-            challenge_file.private = private
-            challenge_file.display_name = file
-            challenge_file.file.save(file, File(fp))
+            challenge_file.private = file['private']
+            challenge_file.display_name = filename
+            challenge_file.config_name = file['conf']
+            challenge_file.file.save(filename, File(fp))
             challenge_file.save()
 
 
-def validate_challenge(challenge_path):
+def validate_challenge_structure(challenge_path):
     valid = True
     import_setup = False
-    public_files = []
-    private_files = []
+    challenge_files = []
 
-    _, dirs, files = os.walk(challenge_path).__next__()
-
-    # Process private files
-    if dirs:
-        if len(dirs) > 1:
-            messages.append((MessageType.ERROR, "Challenge directory contains more than one folder"))
-            valid = False
-        else:
-            private_dir = dirs[0]
-            if private_dir != 'private':
-                messages.append((MessageType.ERROR, "Challenge directory contains directory other than private"))
-                valid = False
-            else:
-                _, private_directories, private_files = os.walk(os.path.join(challenge_path, private_dir)).__next__()
-                if private_directories:
-                    messages.append((MessageType.ERROR, "Private files directory cannot contain directories"))
-                    valid = False
-
-    challenge_txt_found = False
+    challenge_json_found = False
     description_md_found = False
     solution_txt_found = False
 
-    for file in files:
-        if file == "challenge.txt":
-            challenge_txt_found = True
-        elif file == "description.md":
-            description_md_found = True
-        elif file == "solution.txt":
-            solution_txt_found = True
-        elif file == "setup.txt":
-            import_setup = True
+    for root, dirs, files in os.walk(challenge_path):
+        if root == challenge_path:
+            for file in files:
+                if file == "challenge.json":
+                    challenge_json_found = True
+                elif file == "description.md":
+                    description_md_found = True
+                elif file == "solution.txt":
+                    solution_txt_found = True
+                elif file == "setup.txt":
+                    import_setup = True
+                else:
+                    valid = False
+                    messages.append((MessageType.ERROR, "Challenge directory contains unknown file"))
         else:
-            public_files.append(file)
+            private = False
+            config_folder = root
+            if os.path.basename(root) == "private":
+                private = True
+                config_folder = os.path.dirname(root)
 
-    if not challenge_txt_found:
-        messages.append((MessageType.ERROR, "challenge.txt not found"))
+            if os.path.basename(config_folder) == "qpa-files":
+                conf = "qpa"
+            elif os.path.basename(config_folder) == "hacktivity-files":
+                conf = "hacktivity"
+            else:
+                valid = False
+                messages.append((MessageType.ERROR, "Challenge directory structure contain unknown directory: " + os.path.basename(root)))
+                continue
+            for f in files:
+                if f == ".gitkeep":
+                    continue
+                challenge_files.append({
+                    'private': private,
+                    'conf': conf,
+                    'path': os.path.join(root, f)
+                })
+
+    if not challenge_json_found:
+        messages.append((MessageType.ERROR, "challenge.json not found"))
         valid = False
     if not description_md_found:
         messages.append((MessageType.ERROR, "description.md not found"))
@@ -154,62 +167,29 @@ def validate_challenge(challenge_path):
         messages.append((MessageType.ERROR, "solution.txt not found"))
         valid = False
 
-    return valid, import_setup, public_files, private_files
+    return valid, import_setup, challenge_files
 
 
-def import_challenge_txt(file, challenge):
-    tag_list = []
-    for line in file:
-        if line.isspace():
-            continue
-        line = line.strip()
+def import_challenge_json(file, challenge):
+    data = json.load(file)
+    valid = True
 
-        m = re.match(r"(\w+): (\S.*)", line)
-        if not m:
-            messages.append((MessageType.ERROR, F'Cannot parse line "{line}" in challenge.txt'))
-            return False, None
+    if not list(data.keys()) == export_keys:
+        messages.append((MessageType.ERROR, "Error: challenges.json contains invalid keys or does not contain all keys"))
+        return False
 
-        if m.group(1) == "Title":
-            challenge.title = m.group(2)
-        elif m.group(1) == "Level":
-            try:
-                challenge.level = int(m.group(2))
-            except ValueError:
-                messages.append((MessageType.ERROR, "Could not parse level in challenge.txt"))
-                return False, None
-        elif m.group(1) == "Flag":
-            challenge.flag_qpa = m.group(2)
-        elif m.group(1) == "Points":
-            try:
-                challenge.points = int(m.group(2))
-            except ValueError:
-                messages.append((MessageType.ERROR, "Could not parse points in challenge.txt"))
-                return False, None
-        elif m.group(1) == "Hint":
-            challenge.hint = m.group(2)
-        elif m.group(1) == "Tags":
-            for s in m.group(2).split(','):
-                tag, created = Tag.objects.get_or_create(name=s.strip())
-                if created:
-                    messages.append((MessageType.SUCCESS, F"Created new tag: {tag.name}"))
-                    tag.save()
-                tag_list.append(tag)
-        elif m.group(1) == "ShortDesc":
-            challenge.short_description = m.group(2)
-        else:
-            messages.append((MessageType.ERROR, F"Unrecognized variable in challenge.txt: {m.group(1)}"))
-            return False, None
-    return True, tag_list
+    for key, value in data.items():
+        challenge.__setattr__(key, value)
 
+    if not re.match("^SECURITEAM{[a-f0-9]{32}}$", challenge.flag_qpa, re.RegexFlag.IGNORECASE):
+        messages.append((MessageType.ERROR, "Invalid QPA flag format"))
+        valid = False
 
-def remove_imported(challenge_names):
-    imported_challenges = Challenge.objects.filter(import_name__isnull=False).values_list('import_name', flat=True)
-    skipped_challenges = set(imported_challenges).intersection(challenge_names)
+    if not re.match("^SECURITEAM{[a-f0-9]{32}}$", challenge.flag_hacktivity, re.RegexFlag.IGNORECASE):
+        messages.append((MessageType.ERROR, "Invalid hacktivity flag format"))
+        valid = False
 
-    for c in skipped_challenges:
-        messages.append((MessageType.WARNING, F'Challenge "{c}" already imported, skipping...'))
-
-    return [c for c in challenge_names if c not in skipped_challenges]
+    return valid
 
 
 def find_challenge_dir(path):
