@@ -60,8 +60,9 @@ def import_challenge(challenge_dir, challenge_name):
         return
 
     # Get or create challenge
-    challenge = Challenge.objects.get(import_name=challenge_name)
-    if challenge is None:
+    try:
+        challenge = Challenge.objects.get(import_name=challenge_name)
+    except Challenge.DoesNotExist:
         challenge = Challenge()
         challenge.import_name = challenge_name
 
