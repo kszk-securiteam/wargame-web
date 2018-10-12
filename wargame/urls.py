@@ -20,5 +20,6 @@ urlpatterns = [
     path('vpn/', views.VPNView.as_view(), name='vpn-info'),
     path('vpn/key', views.download_vpn_key, name='vpn-key'),
     path('challenge-files/<int:file_id>', views.download_challenge_file, name='challenge-file'),
+    path('user/set-email', views.UserEmailView.as_view(), name="user-set-email"),
 ]
 

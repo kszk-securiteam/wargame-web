@@ -7,13 +7,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.expressions import F
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from django_registration.backends.one_step.views import RegistrationView
 
 from utils.serve_file import serve_file
 from wargame import models
 from wargame.forms import UserRegistrationForm
-from wargame.models import Challenge, UserChallenge, Submission, File
+from wargame.models import Challenge, UserChallenge, Submission, File, User
 from wargame_admin.models import Config
 
 
@@ -149,3 +149,15 @@ def download_challenge_file(request, file_id):
             return HttpResponseForbidden()
 
     return serve_file(request, 'challenge-files', basename(file.file.name))
+
+
+class UserEmailView(LoginRequiredMixin, UpdateView):
+    template_name = "wargame/edit_form.html"
+    fields = ('email',)
+    model = User
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy('index')
