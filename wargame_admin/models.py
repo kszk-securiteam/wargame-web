@@ -28,6 +28,9 @@ class ConfigManager(Manager):
     def qpa_points_multiplier(self):
         return Config.objects.get(key='qpa_points_multiplier').get_float()
 
+    def email_required(self):
+        return Config.objects.get(key='email_required').get_bool()
+
 
 class Config(Model):
     key = CharField(max_length=255, primary_key=True)

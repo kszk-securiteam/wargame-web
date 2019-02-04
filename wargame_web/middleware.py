@@ -26,7 +26,11 @@ class RequireEmailMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.user.is_authenticated and not request.user.email and not request.path.startswith("/user/set-email"):
+        if (Config.objects.email_required() and
+                request.user.is_authenticated and
+                not request.user.email and
+                not request.path.startswith("/user/set-email")):
+
             link = reverse_lazy("user-set-email")
             text = "As you might already know, the best teams get to compete in the Speed Hacking. To allow us to " \
                    "notify you in case you are one of them, please give us your email address, by clicking <a " \

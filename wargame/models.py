@@ -52,16 +52,7 @@ class User(AbstractUser):
         return "Not active"
 
     def get_score(self):
-        # SELECT SUM(challenge.points)
-        # FROM user_challenge
-        #   JOIN challenge ON(challenge.id = user_challenge.challenge_id)
-        #   JOIN submission ON (submission.user_challenge_id = user_challenge.id)
-        #   , meta_config
-        # WHERE ((meta_config.is_qpa = '1' AND submission.value = challenge.flag_qpa)
-        #       OR (meta_config.is_hacktivity = '1' AND submission.value = challenge.flag_hacktivity))
-        #   AND user_challenge.user_id = {self.id}
-
-        if Config.objects.get(key='qpa_hack').value == 'qpa':
+        if Config.objects.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
             flag_field = F('challenge__flag_hacktivity')

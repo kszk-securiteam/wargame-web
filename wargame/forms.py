@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 
 from wargame.models import User
+from wargame_admin.models import Config
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -13,8 +14,12 @@ class UserRegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['email'].required = True
+
+        if Config.objects.email_required():
+            self.fields['email'].required = True
+        else:
+            del self.fields['email']
 
         # Remove default help text
-        for field in self.Meta.fields:
+        for field in self.fields:
             self.fields[field].help_text = None
