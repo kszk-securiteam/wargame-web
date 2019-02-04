@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F, Sum, Max
+from django.db.models import F, Sum, Max, Q
 from django.db.models.expressions import ExpressionWrapper
 from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
@@ -120,27 +120,23 @@ class User(AbstractUser):
         return user_max_level
 
     def get_visible_challenges(self):
-        return self.get_challenges_for_level(self.get_visible_level())
+        level = self.get_visible_level()
 
-    def get_challenges_for_level(self, level):
-        query = """SELECT challenge.*, submission.value IS NOT NULL AS solved
-                   FROM wargame_challenge challenge
-                   LEFT JOIN wargame_userchallenge userchallenge ON challenge.id = userchallenge.challenge_id AND userchallenge.user_id == %s
-                   LEFT JOIN wargame_submission submission ON userchallenge.id = submission.user_challenge_id AND lower(submission.value) == lower(challenge.flag_hacktivity)
-                   WHERE challenge.level <= %s
-                   ORDER BY level, title"""
+        if Config.objects.is_qpa():
+            flag_field = F('flag_qpa')
+        else:
+            flag_field = F('flag_hacktivity')
 
-        # Challenge.objects.filter(
-        #     userchallenge__user=self,
-        #     userchallenge__submission__value__iexact=F("flag_qpa"),
-        #     level__lte=level
-        # ).order_by(
-        #     'level', 'title'
-        # ).annotate(
-        #     solved=False
-        # )
-
-        return Challenge.objects.raw(query, [self.id, level])
+        return Challenge.objects.filter(
+            Q(userchallenge__user=self) | Q(userchallenge__user__isnull=True),
+            level__lte=level
+        ).annotate(
+            solved=Sum(
+                ExpressionWrapper(Q(userchallenge__submission__value__iexact=flag_field), output_field=IntegerField())
+            )
+        ).order_by(
+            'level', 'title'
+        )
 
     def is_challenge_visible(self, challenge):
         return challenge.level <= self.get_visible_level()
