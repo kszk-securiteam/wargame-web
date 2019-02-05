@@ -1,6 +1,7 @@
 from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
 
 from wargame.models import File, Challenge, User
+from wargame_admin.models import StaticContent
 
 
 class FileForm(ModelForm):
@@ -63,3 +64,12 @@ class ImportForm(Form):
 
 class UserImportForm(Form):
     file = FileField(widget=FileInput(attrs={'accept': '.csv'}))
+
+
+class StaticContentForm(ModelForm):
+    class Meta:
+        model = StaticContent
+        fields = ['html']
+        labels = {
+            'html': 'Text'
+        }

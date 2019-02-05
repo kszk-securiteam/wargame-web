@@ -6,7 +6,8 @@ from wargame_admin.views import ChallengeListView, ChallengeDetailsView, Challen
     ConfigEditorView, ChallengeCreateView, ChallengeDeleteView, ChallengeFilesView, \
     ChallengeFileDeleteView, ChallengeSubmissions, UserSubmissions, UserEdit, ResetHintsView, ClearSubmissionsView, \
     StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView, ImportView, UserImportView, \
-    challenge_export_view, ChallengeFileChunkedUploadView, ChallengeFileChunkedUploadCompleteView
+    challenge_export_view, ChallengeFileChunkedUploadView, ChallengeFileChunkedUploadCompleteView, StaticEditorList, \
+    StaticEditor
 
 app_name = 'wargame-admin'
 urlpatterns = [
@@ -37,4 +38,6 @@ urlpatterns = [
     path('challenges/<int:challenge_id>/files/upload_complete',
          staff_member_required(ChallengeFileChunkedUploadCompleteView.as_view()),
          name='challenge-file-upload-complete'),
+    path('static-editor/', staff_member_required(StaticEditorList.as_view()), name='static-editor-list'),
+    path('static-editor/<str:pk>/', staff_member_required(StaticEditor.as_view()), name='static-editor'),
 ]

@@ -20,6 +20,9 @@ from wargame_admin.models import Config, StaticContent
 class IndexView(TemplateView):
     template_name = 'wargame/index.html'
 
+    def index_content(self):
+        return StaticContent.objects.get(key="index_right").html
+
 
 class ChallengesView(LoginRequiredMixin, TemplateView):
     template_name = 'wargame/challenges.html'

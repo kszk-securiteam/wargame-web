@@ -18,8 +18,8 @@ from utils.export_challenges import export_challenges
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
-    UserImportForm
-from wargame_admin.models import Config, ChallengeFileChunkedUpload
+    UserImportForm, StaticContentForm
+from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent
 
 
 class ChallengeListView(TemplateView):
@@ -386,3 +386,19 @@ class ChallengeFileChunkedUploadCompleteView(ChunkedUploadCompleteView):
             messages.success(request, "File uploaded.")
         else:
             messages.error(request, "Error uploading file:" + form.errors)
+
+
+class StaticEditorList(TemplateView):
+    template_name = "wargame_admin/static_editor.html"
+
+    def content_list(self):
+        return StaticContent.objects.values('key', 'display_name')
+
+
+class StaticEditor(UpdateView):
+    template_name = "wargame_admin/edit_form.html"
+    form_class = StaticContentForm
+    model = StaticContent
+
+    def get_success_url(self):
+        return reverse_lazy('wargame-admin:static-editor-list')

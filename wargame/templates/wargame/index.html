@@ -8,14 +8,7 @@
         <img style="width: 80%" class="p-3 mx-auto d-block" src="{% static "securiteam.png" %}" />
     </div>
     <div class="col-lg-6">
-        <p style="background-color: red; color: white; padding: 1em; border-radius: 5px;"><b>Notice:</b> the game has ended for this year but we have re-opened it upon several user requests. <b>The game comes with absolutely no support, just as is!</b> In case something gets broken, remains broken.</p>
-        <h3>Welcome every hacker at this year's Wargame!</h3>
-        <p>Every new stage is unlocked by solving 3 challenges on the previous stage. The solution of every assignment is a 32 characters long MD5 hash wrapped into "SECURITEAM{...}" (e.g. "SECURITEAM{0123456789abcdef0123456789abcdef}"). If you find the hash without the pre- and postfixes, then you should wrap it in yourself.</p>
-        <p>The hint button gives you some help but will halve the score of the challenge.</p>
-        <p style="font-weight: bold;">To reach the *.wargame sites, see the instructions in the VPN menu.</p>
-        <p style="text-align: center">Questions/Info: <code>---</code></p>
-        <h3 style="text-align: center">There are more challenges, too!</h3>
-        <p>As this game is co-organized by the Hackerspace Szeged, you can solve multiple challenges created by them. <b>The ones marked with #HackespaceSzeged# do NOT use our flag format!</b></p>
+        {{ view.index_content | safe }}
     </div>
     </div>
 {% endblock %}
