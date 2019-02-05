@@ -11,6 +11,7 @@ django-search-views = "*"
 Django = "*"
 django-registration = "*"
 django-chunked-upload = "*"
+djangocodemirror = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

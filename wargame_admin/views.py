@@ -396,7 +396,7 @@ class StaticEditorList(TemplateView):
 
 
 class StaticEditor(UpdateView):
-    template_name = "wargame_admin/edit_form.html"
+    template_name = "wargame_admin/code_edit_form.html"
     form_class = StaticContentForm
     model = StaticContent
 

@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.contrib import messages
+from djangocodemirror.settings import *
 
 DEBUG = None
 
@@ -38,7 +39,8 @@ INSTALLED_APPS = [
     'markdownx',
     'wargame_admin',
     'django_registration',
-    'chunked_upload'
+    'chunked_upload',
+    'djangocodemirror',
 ]
 
 MIDDLEWARE = [

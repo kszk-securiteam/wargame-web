@@ -1,0 +1,23 @@
+{% extends 'wargame_admin/admin_base.html' %}
+{% load djangocodemirror_tags %}
+{% load bootstrap4 %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+            <input type="submit" value="Save" class="btn btn-primary float-right" />
+        {% endbuttons %}
+    </form>
+
+    {% codemirror_field_css_assets form.html %}
+    {% codemirror_field_js_assets form.html %}
+
+    <script>
+        CodeMirror.fromTextArea(
+            document.getElementById("id_html"),
+            {{ form.html | codemirror_parameters }}
+        );
+    </script>
+{% endblock %}

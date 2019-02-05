@@ -1,4 +1,5 @@
 from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
+from djangocodemirror.fields import CodeMirrorField
 
 from wargame.models import File, Challenge, User
 from wargame_admin.models import StaticContent
@@ -67,9 +68,8 @@ class UserImportForm(Form):
 
 
 class StaticContentForm(ModelForm):
+    html = CodeMirrorField(label="Text", config_name="html")
+
     class Meta:
         model = StaticContent
         fields = ['html']
-        labels = {
-            'html': 'Text'
-        }
