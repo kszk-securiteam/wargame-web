@@ -35,6 +35,15 @@ class RequireEmailMiddleware:
             text = "As you might already know, the best teams get to compete in the Speed Hacking. To allow us to " \
                    "notify you in case you are one of them, please give us your email address, by clicking <a " \
                    F"href='{link}'>here</a>. "
+
+            storage = messages.get_messages(request)
+            for message in storage:
+                if message.message == text:
+                    storage.used = False
+                    return self.get_response(request)
+
+            storage.used = False
+
             messages.warning(request, mark_safe(text))
 
         return self.get_response(request)
