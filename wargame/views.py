@@ -14,7 +14,7 @@ from utils.serve_file import serve_file
 from wargame import models
 from wargame.forms import UserRegistrationForm
 from wargame.models import Challenge, UserChallenge, Submission, File, User
-from wargame_admin.models import Config
+from wargame_admin.models import Config, StaticContent
 
 
 class IndexView(TemplateView):
@@ -45,6 +45,9 @@ class ScoreboardView(TemplateView):
 class RulesView(TemplateView):
     template_name = 'wargame/rules.html'
 
+    def rules_content(self):
+        return StaticContent.objects.get(key="rules").html
+
 
 class AboutUsView(TemplateView):
     template_name = 'wargame/about_us.html'
@@ -56,6 +59,9 @@ class AboutUsView(TemplateView):
 
 class LinksView(TemplateView):
     template_name = 'wargame/links.html'
+
+    def links_content(self):
+        return StaticContent.objects.get(key="links").html
 
 
 class UserRegistrationView(RegistrationView):
@@ -133,6 +139,9 @@ def reveal_hint(request, challenge_id):
 
 class VPNView(LoginRequiredMixin, TemplateView):
     template_name = "wargame/vpn.html"
+
+    def vpn_content(self):
+        return StaticContent.objects.get(key="vpn").html
 
 
 @login_required()

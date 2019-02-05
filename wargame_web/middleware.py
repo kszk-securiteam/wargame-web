@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 
-from wargame_admin.models import Config
+from wargame_admin.models import Config, StaticContent
 
 
 class DisableSiteMiddleware:
@@ -31,10 +31,7 @@ class RequireEmailMiddleware:
                 not request.user.email and
                 not request.path.startswith("/user/set-email")):
 
-            link = reverse_lazy("user-set-email")
-            text = "As you might already know, the best teams get to compete in the Speed Hacking. To allow us to " \
-                   "notify you in case you are one of them, please give us your email address, by clicking <a " \
-                   F"href='{link}'>here</a>. "
+            text = StaticContent.objects.get(key="email_notification").html
 
             storage = messages.get_messages(request)
             for message in storage:

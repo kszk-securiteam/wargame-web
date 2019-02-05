@@ -1,10 +1,5 @@
 {% extends 'wargame/base.html' %}
 {% block content %}
     <h1 class="mb-4">Rules</h1>
-    <ol>
-        <li>Attacking the scoring, or handling system is strictly probihited, and will result in the cancellation of your account</li>
-        <li>The wargame is open during the Hacktivity.</li>
-        <li>Players can get a hint for each challenge but doing so will halve the available score of the challenge.</li>
-        <li>For further rules, please refer to the organizers of the Hacktivity.</li>
-    </ol>
+    {{ view.rules_content | safe }}
 {% endblock %}

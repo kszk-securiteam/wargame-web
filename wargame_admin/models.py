@@ -2,7 +2,7 @@ import json
 from fractions import Fraction
 
 from chunked_upload.models import ChunkedUpload
-from django.db.models import Model, CharField, Manager, BooleanField
+from django.db.models import Model, CharField, Manager, BooleanField, TextField
 
 
 # noinspection PyMethodMayBeStatic
@@ -63,3 +63,9 @@ class Config(Model):
 
 class ChallengeFileChunkedUpload(ChunkedUpload):
     pass
+
+
+class StaticContent(Model):
+    key = CharField(max_length=255, primary_key=True)
+    display_name = CharField(max_length=255)
+    html = TextField()
