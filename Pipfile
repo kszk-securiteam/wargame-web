@@ -12,6 +12,7 @@ Django = "*"
 django-registration = "*"
 django-chunked-upload = "*"
 djangocodemirror = "*"
+django-taggit = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

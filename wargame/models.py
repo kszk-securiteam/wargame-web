@@ -10,6 +10,7 @@ from django.db.models.fields import IntegerField
 from django.db.models.functions import Coalesce
 from django.dispatch import receiver
 from markdownx.models import MarkdownxField
+from taggit.managers import TaggableManager
 
 import wargame_web.settings.base as settings
 from wargame_admin.models import Config
@@ -139,10 +140,6 @@ def generate_vpn_key(sender, instance, created, *args, **kwargs):
         os.system(F"sudo getcert.sh '{instance.username}'")
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=64, primary_key=True)
-
-
 class Challenge(models.Model):
     title = models.CharField(max_length=256)
     creation_dt = models.DateTimeField(auto_now_add=True)
@@ -153,10 +150,10 @@ class Challenge(models.Model):
     flag_hacktivity = models.CharField(max_length=256, null=True, verbose_name='Flag (Hacktivity)')
     points = models.IntegerField()
     hint = models.CharField(max_length=8192, null=True)
-    tags = models.ManyToManyField(Tag)
     solution = models.CharField(max_length=8192, null=True)
     setup = models.CharField(max_length=8192, null=True)
     import_name = models.CharField(max_length=64, null=True)
+    tags = TaggableManager()
 
     def __str__(self):
         return self.title

@@ -8,7 +8,7 @@ from zipfile import ZipFile
 from django.core.files import File
 from django.db import transaction
 
-from wargame.models import Challenge, Tag, File as ChallengeFile
+from wargame.models import Challenge, File as ChallengeFile
 from wargame_web.settings.base import MEDIA_ROOT
 from utils.export_challenges import export_keys
 
