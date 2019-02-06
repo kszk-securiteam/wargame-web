@@ -110,13 +110,13 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
         if userchallenge.solved():
             return HttpResponseRedirect(self.request.path)
 
-        submission = Submission()
-        submission.user_challenge = userchallenge
-        submission.value = self.request.POST.get('flag')
+        flag = self.request.POST.get('flag')
 
-        if submission.value is None:
+        if flag is None:
             return HttpResponseRedirect(self.request.path)
 
+        submission = Submission.get_or_create(userchallenge, flag)
+        submission.times += 1
         submission.save()
 
         if userchallenge.solved():

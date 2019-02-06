@@ -216,6 +216,21 @@ class Submission(models.Model):
     creation_dt = models.DateTimeField(auto_now_add=True)
     value = models.CharField(max_length=256)
     user_challenge = models.ForeignKey(UserChallenge, on_delete=models.CASCADE)
+    times = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('user_challenge', 'value')
+
+    @staticmethod
+    def get_or_create(userchallenge, value):
+        try:
+            ret = userchallenge.submission_set.get(value=value)
+        except Submission.DoesNotExist:
+            ret = Submission()
+            ret.user_challenge = userchallenge
+            ret.value = value
+            ret.save()
+        return ret
 
 
 class StaffMember(models.Model):

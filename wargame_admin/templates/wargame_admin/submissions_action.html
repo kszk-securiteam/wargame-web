@@ -15,7 +15,7 @@
     ?
     <form method="post" class="my-3">
         {% csrf_token %}
-        <button class="btn btn-danger" type="submit">Reset</button>
+        <button class="btn btn-danger" type="submit">{{ view.action_string }}</button>
         <a class="btn btn-link" href="{{ view.return_url }}">Cancel</a>
     </form>
 {% endblock %}

@@ -2,7 +2,6 @@
 {% load wargame_admin_tags %}
 {% block content %}
     <h1 xmlns="http://www.w3.org/1999/html">Submissions</h1>
-    {# TODO: Add all option -> handle empty query parameter #}
     <div class="float-right">
         <a class="btn btn-info text-white" href="{{ view.reset_hint_url }}">Reset hint for all</a>
         <a class="btn btn-danger text-white" href="{{ view.clear_submissions_url }}">Clear submissions for all</a>
@@ -29,7 +28,7 @@
         <span><b>Submitted guesses:</b></span>
         <ul>
             {% for submission in userchallenge.submission_set.all %}
-                <li>{{ submission.value }}</li>
+                <li>{{ submission.value }} ({{ submission.times }} times)</li>
             {% endfor %}
         </ul>
         <hr />
