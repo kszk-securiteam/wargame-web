@@ -33,9 +33,6 @@ class FileUploadForm(ModelForm):
 
 
 class ChallengeForm(ModelForm):
-    setup = CharField(widget=Textarea)
-    solution = CharField(widget=Textarea)
-
     class Meta:
         model = Challenge
         fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint',
