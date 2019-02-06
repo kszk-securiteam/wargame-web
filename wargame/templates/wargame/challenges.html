@@ -15,6 +15,11 @@
                             <p>
                                 {{ challenge.short_description }}
                             </p>
+                            <div>
+                                {% for tag in challenge.tags.names %}
+                                    <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
                         </div>
                         <div class="col-sm-4 challenge-points-container">
                             <span>${{ challenge.points }}</span>

@@ -8,6 +8,11 @@
             <i class="fas fa-check text-success" style="font-size: 48px"></i>
         {% endif %}
     </div>
+    <div>
+        {% for tag in view.challenge.tags.names %}
+            <span class="tag">{{ tag }}</span>
+        {% endfor %}
+    </div>
     <div class="bg-light px-5 py-1 my-3">
         <p>{{ view.challenge.description|markdown }}</p>
     </div>

@@ -26,3 +26,12 @@
 #challenge-list a.challenge-card:hover {
     background-color: #e8ffe8;
 }
+
+.tag {
+    font-size: 12px;
+    background-color: #e1ecf4;
+    color: #39739d;
+    padding: 4px;
+    margin: 2px;
+    border-radius: 4px;
+}
