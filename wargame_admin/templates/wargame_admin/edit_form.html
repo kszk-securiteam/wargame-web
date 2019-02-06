@@ -5,7 +5,9 @@
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
-            <input type="submit" value="Save" class="btn btn-primary float-right" />
+            <div class="text-right">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
         {% endbuttons %}
     </form>
 {% endblock %}
