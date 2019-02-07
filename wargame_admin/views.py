@@ -52,6 +52,7 @@ class ChallengeEditView(UpdateView):
     form_class = ChallengeForm
 
     def get_success_url(self):
+        messages.success(self.request, "Challenge saved.")
         return reverse_lazy('wargame-admin:challenge-details', kwargs={'pk': self.object.id})
 
 
@@ -61,6 +62,7 @@ class ChallengeCreateView(CreateView):
     form_class = ChallengeForm
 
     def get_success_url(self):
+        messages.success(self.request, "Challenge created.")
         return reverse_lazy('wargame-admin:challenge-details', kwargs={'pk': self.object.id})
 
 
@@ -69,6 +71,7 @@ class ChallengeDeleteView(DeleteView):
     model = Challenge
 
     def get_success_url(self):
+        messages.success(self.request, "Challenge deleted.")
         return reverse_lazy('wargame-admin:challenges')
 
 
@@ -90,6 +93,7 @@ class ChallengeFilesView(TemplateView):
         formset = self.file_form_set(request.POST, request.FILES, instance=self.challenge())
         if formset.is_valid():
             formset.save()
+            messages.success(self.request, "Files saved.")
 
         return HttpResponseRedirect(self.request.path_info)  # Redirect to the same page
 
@@ -99,6 +103,7 @@ class ChallengeFileDeleteView(DeleteView):
     model = File
 
     def get_success_url(self):
+        messages.success(self.request, "File deleted.")
         return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
 
 
@@ -251,6 +256,7 @@ class SubmissionActionView(TemplateView, metaclass=ABCMeta):
 class ResetHintsView(SubmissionActionView):
     def do_action(self, userchallenge):
         userchallenge.hint_used = False
+        messages.success(self.request, "Hints reset.")
 
     def action_string(self):
         return "reset hints"
@@ -259,6 +265,7 @@ class ResetHintsView(SubmissionActionView):
 class ClearSubmissionsView(SubmissionActionView):
     def do_action(self, userchallenge):
         userchallenge.submission_set.all().delete()
+        messages.success(self.request, "Submissions cleared.")
 
     def action_string(self):
         return "clear submissions"
@@ -272,6 +279,7 @@ class UserEdit(UpdateView):
     def get_success_url(self):
         self.object.is_staff = self.object.is_superuser
         self.object.save()
+        messages.success(self.request, "User saved.")
         return reverse_lazy('wargame-admin:users')
 
 
@@ -289,6 +297,7 @@ class ConfigEditorView(TemplateView):
             config = Config.objects.get(key=key)
             config.value = value
             config.save()
+        messages.success(self.request, "Configuration saved.")
         return HttpResponseRedirect(self.request.path_info)
 
 
@@ -306,6 +315,7 @@ class StaffEditView(UpdateView):
     model = StaffMember
 
     def get_success_url(self):
+        messages.success(self.request, "Staff member saved.")
         return reverse_lazy('wargame-admin:staff-admin')
 
 
@@ -315,6 +325,7 @@ class StaffCreateView(CreateView):
     model = StaffMember
 
     def get_success_url(self):
+        messages.success(self.request, "Staff member created.")
         return reverse_lazy('wargame-admin:staff-admin')
 
 
@@ -323,6 +334,7 @@ class StaffDeleteView(DeleteView):
     model = StaffMember
 
     def get_success_url(self):
+        messages.success(self.request, "Staff member deleted.")
         return reverse_lazy('wargame-admin:staff-admin')
 
 
@@ -404,4 +416,5 @@ class StaticEditor(UpdateView):
     model = StaticContent
 
     def get_success_url(self):
+        messages.success(self.request, "Content saved.")
         return reverse_lazy('wargame-admin:static-editor-list')
