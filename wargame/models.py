@@ -124,7 +124,7 @@ class User(AbstractUser):
             level__lte=level
         ).annotate(
             solved=Sum(
-                ExpressionWrapper(Q(userchallenge__submission__value__iexact=flag_field), output_field=IntegerField())
+                Cast(Q(userchallenge__submission__value__iexact=flag_field), IntegerField())
             )
         ).order_by(
             'level', 'title'
