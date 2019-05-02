@@ -149,7 +149,7 @@ class VPNView(LoginRequiredMixin, TemplateView):
 
 @login_required()
 def download_vpn_key(request):
-    return serve_file(request, "vpn-keys", F"{request.user.username}.zip")
+    return serve_file(request, "", F"vpn.zip")
 
 
 @login_required()
