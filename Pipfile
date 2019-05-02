@@ -14,6 +14,8 @@ django-chunked-upload = "*"
 djangocodemirror = "*"
 django-taggit = "*"
 pyyaml = ">=4.2b1"
+psycopg2 = "*"
+gunicorn = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
