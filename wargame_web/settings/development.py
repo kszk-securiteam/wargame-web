@@ -1,12 +1,11 @@
-import wargame_web.settings.base as base
-
-# Overwrite the DEBUG variable
-base.DEBUG = True
-
-# Import all variables from the base settings
 from .base import *
 
-SECRET_KEY = 'j0s5#e@upiqv=anz8brrdwp&*1&s&z@i-usvdwo=m$kk!t3j8!'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 INSTALLED_APPS += [
     'debug_toolbar',

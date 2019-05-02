@@ -1,0 +1,15 @@
+secret_key: 'j0s5#e@upiqv=anz8brrdwp&*1&s&z@i-usvdwo=m$kk!t3j8!'  # WARNING: Do not use this key in production.
+debug: True
+database: # The details of the postgresql database used in production. In development, an sqlite database is used.
+  user: 'postgres'
+  password: ''
+  host: ''
+  port: 5432
+  name: ''
+email:  # The details of the email server used to send user invites.
+  host: ''
+  port: 465
+  use_ssl: True
+  user: ''
+  password: ''
+allowed_hosts: []

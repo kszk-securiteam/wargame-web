@@ -13,6 +13,7 @@ django-registration = "*"
 django-chunked-upload = "*"
 djangocodemirror = "*"
 django-taggit = "*"
+pyyaml = ">=4.2b1"
 
 [dev-packages]
 django-debug-toolbar = "*"

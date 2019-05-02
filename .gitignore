@@ -112,3 +112,6 @@ ENV/
 
 # Ignore uploaded files
 /media/
+
+# Ignore actual config file
+config.yaml

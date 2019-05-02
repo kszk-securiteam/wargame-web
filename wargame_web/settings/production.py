@@ -1,10 +1,12 @@
-import wargame_web.settings.base as base
-
-# Overwrite the DEBUG variable
-base.DEBUG = False
-
-# Import all variables from the base settings
 from .base import *
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
-ALLOWED_HOSTS = ['wargame.sch.bme.hu']
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': YAML_SETTINGS.get('database').get('name'),
+        'USER': YAML_SETTINGS.get('database').get('user'),
+        'PASSWORD': YAML_SETTINGS.get('database').get('password'),
+        'HOST': YAML_SETTINGS.get('database').get('host'),
+        'PORT': YAML_SETTINGS.get('database').get('port'),
+    }
+}
