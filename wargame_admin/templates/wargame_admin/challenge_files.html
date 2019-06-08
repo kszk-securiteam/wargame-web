@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+    <a class="btn btn-link" href="{% url 'wargame-admin:challenge-details' view.challenge.id %}">< Back to challenge</a>
     <h3>Files</h3>
     <form method="post">
         {% csrf_token %}
@@ -20,7 +21,7 @@
             {% for form in view.formset %}
                 <div class="card col-sm-5 m-3">
                     <div class="card-body">
-                        <h5 class="card-title">{{ form.instance.file.name|filename }}</h5>
+                        <h5 class="card-title">{{ form.instance.filename }}</h5>
                         {% bootstrap_form form %}
                         <a href="{% url 'wargame-admin:challenge-file-delete' form.instance.id %}" class="btn btn-danger">Delete</a>
                     </div>

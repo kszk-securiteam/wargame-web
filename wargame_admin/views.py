@@ -373,7 +373,7 @@ class UserImportView(TemplateView):
 
 def challenge_export_view(request):
     file_name = export_challenges()
-    return serve_file(request, "", file_name)
+    return serve_file(request, file_name)
 
 
 class ChallengeFileChunkedUploadView(ChunkedUploadView):
@@ -397,6 +397,7 @@ class ChallengeFileChunkedUploadCompleteView(ChunkedUploadCompleteView):
         if form.is_valid():
             file = form.save(commit=False)
             file.challenge_id = self.kwargs['challenge_id']
+            file.filename = uploaded_file.name
             file.save()
             messages.success(request, "File uploaded.")
         else:

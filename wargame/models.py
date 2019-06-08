@@ -120,11 +120,10 @@ class User(AbstractUser):
             flag_field = F('flag_hacktivity')
 
         return Challenge.objects.filter(
-            Q(userchallenge__user=self) | Q(userchallenge__user__isnull=True),
             level__lte=level
         ).annotate(
             solved=Sum(
-                Cast(Q(userchallenge__submission__value__iexact=flag_field), IntegerField())
+                Cast(Q(userchallenge__submission__value__iexact=flag_field, userchallenge__user=self), IntegerField())
             )
         ).order_by(
             'level', 'title'
@@ -169,6 +168,7 @@ class File(models.Model):
     )
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(upload_to='challenge-files/')
+    filename = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256)
     private = models.BooleanField(default=False)
     config_name = models.CharField(max_length=20, null=False, blank=False, choices=CONFIG_CHOICES)
