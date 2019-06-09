@@ -160,6 +160,15 @@ class Challenge(models.Model):
     def get_files(self):
         return self.files.filter(config_name=Config.objects.config_name().value)
 
+    def tag_list(self):
+        return ', '.join(self.tags.names())
+
+    def users_attempted(self):
+        return self.userchallenge_set.count()
+
+    def users_solved(self):
+        return self.userchallenge_set.filter(submission__value__iexact=self.get_flag()).count()
+
 
 class File(models.Model):
     CONFIG_CHOICES = (

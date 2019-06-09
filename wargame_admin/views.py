@@ -42,9 +42,6 @@ class ChallengeDetailsView(TemplateView):
     def hacktivity_files(self):
         return self.challenge().files.filter(config_name='hacktivity').all()
 
-    def tag_list(self):
-        return ', '.join(self.challenge().tags.names())
-
 
 class ChallengeEditView(UpdateView):
     template_name = "wargame_admin/edit_form.html"
