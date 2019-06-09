@@ -145,7 +145,7 @@ class Challenge(models.Model):
     hint = models.CharField(max_length=8192, null=True)
     solution = models.CharField(max_length=8192, null=True)
     setup = models.CharField(max_length=8192, null=True, blank=True)
-    import_name = models.CharField(max_length=64, null=True, blank=True)
+    import_name = models.CharField(max_length=64, verbose_name='Internal name', unique=True)
     tags = TaggableManager()
 
     def __str__(self):

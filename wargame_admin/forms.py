@@ -35,8 +35,11 @@ class FileUploadForm(ModelForm):
 class ChallengeForm(ModelForm):
     class Meta:
         model = Challenge
-        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint',
-                  'setup', 'solution', 'tags']
+        fields = ['title', 'import_name', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity',
+                  'points', 'hint', 'setup', 'solution', 'tags']
+        help_texts = {
+            'import_name': 'A unique identifier that is a valid directory name'
+        }
 
 
 class UserSearchForm(Form):
