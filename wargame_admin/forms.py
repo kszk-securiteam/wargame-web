@@ -59,12 +59,12 @@ class UserEditForm(ModelForm):
         }
 
 
-class ImportForm(Form):
-    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}))
+class ChallengeImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}), label='')
 
 
 class UserImportForm(Form):
-    file = FileField(widget=FileInput(attrs={'accept': '.csv'}))
+    file = FileField(widget=FileInput(attrs={'accept': '.csv'}), label='')
 
 
 class StaticContentForm(ModelForm):

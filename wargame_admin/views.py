@@ -17,7 +17,8 @@ from utils.serve_file import serve_file
 from utils.export_challenges import export_challenges
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, \
+    ChallengeImportForm, \
     UserImportForm, StaticContentForm
 from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent
 
@@ -335,37 +336,36 @@ class StaffDeleteView(DeleteView):
         return reverse_lazy('wargame-admin:staff-admin')
 
 
-class ImportView(TemplateView):
+class ImportExportView(TemplateView):
     template_name = "wargame_admin/import.html"
     import_messages = []
 
     def messages(self):
         return self.import_messages
 
-    def form(self):
-        return ImportForm()
+    def challenge_import_form(self):
+        return ChallengeImportForm()
 
-    def post(self, request, *args, **kwargs):
-        form = ImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            self.import_messages = do_challenge_import(form.files['file'])
-
-        return super().get(request, *args, **kwargs)
-
-
-class UserImportView(TemplateView):
-    template_name = "wargame_admin/user_import.html"
-
-    # noinspection PyMethodMayBeStatic
-    def form(self):
+    def user_import_form(self):
         return UserImportForm()
 
     def post(self, request, *args, **kwargs):
-        form = ImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            do_user_import(form.files['file'])
+        if 'type' not in request.POST:
+            raise HttpResponseBadRequest
 
-        return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
+        if request.POST['type'] == 'challenge':
+            form = ChallengeImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                self.import_messages = do_challenge_import(form.files['file'])
+
+            return super().get(request, *args, **kwargs)
+
+        if request.POST['type'] == 'user':
+            form = UserImportForm(request.POST, request.FILES)
+            if form.is_valid():
+                do_user_import(form.files['file'])
+
+            return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
 
 
 def challenge_export_view(request):

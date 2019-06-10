@@ -13,12 +13,26 @@
         </div>
         <hr />
     {% endif %}
-    <h2>Import challenges</h2>
-    <form method="post" enctype="multipart/form-data" class="form">
-        {% csrf_token %}
-        {% bootstrap_form view.form %}
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Import challenges</h2>
+            <form method="post" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
+                {% bootstrap_form view.challenge_import_form %}
+                <input type="hidden" name="type" value="challenge" />
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Import users</h2>
+            <form method="post" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
+                {% bootstrap_form view.user_import_form %}
+                <input type="hidden" name="type" value="user">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
     <hr />
     <h2>Export challenges</h2>
     <a href="{% url 'wargame-admin:challenge-export' %}">Export</a>
