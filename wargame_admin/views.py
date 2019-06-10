@@ -356,14 +356,14 @@ class ImportExportView(TemplateView):
         if request.POST['type'] == 'challenge':
             form = ChallengeImportForm(request.POST, request.FILES)
             if form.is_valid():
-                self.import_messages = do_challenge_import(form.files['file'])
+                self.import_messages = do_challenge_import(form.files['file'], form.data['dry_run'])
 
             return super().get(request, *args, **kwargs)
 
         if request.POST['type'] == 'user':
             form = UserImportForm(request.POST, request.FILES)
             if form.is_valid():
-                do_user_import(form.files['file'])
+                do_user_import(form.files['file'], form.data['dry_run'])
 
             return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
 

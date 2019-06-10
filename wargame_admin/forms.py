@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
+from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea, BooleanField
 from djangocodemirror.fields import CodeMirrorField
 
 from wargame.models import File, Challenge, User
@@ -61,10 +61,12 @@ class UserEditForm(ModelForm):
 
 class ChallengeImportForm(Form):
     file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}), label='')
+    dry_run = BooleanField(required=False)
 
 
 class UserImportForm(Form):
     file = FileField(widget=FileInput(attrs={'accept': '.csv'}), label='')
+    dry_run = BooleanField(required=False)
 
 
 class StaticContentForm(ModelForm):

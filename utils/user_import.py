@@ -6,7 +6,7 @@ from wargame.models import User
 from django.utils.crypto import get_random_string
 
 
-def do_user_import(file):
+def do_user_import(file, dry_run):
     path = file.temporary_file_path()
 
     messages = []
@@ -18,7 +18,8 @@ def do_user_import(file):
             email = row[1]
             password = get_random_string(16)
 
-            User.objects.create_user(team_name, email, password)
+            if not dry_run:
+                User.objects.create_user(team_name, email, password)
 
             message = F"""Kedves Csapatkapitány!
 Elindult a SecurITeam által szervezett Wargame, ahol további értékes pontokat szerezhettek a Schönherz QPA-ra! 
@@ -29,4 +30,5 @@ Jó szórakozást!"""
             subject = "Elindult a Wargame!"
             messages.append((subject, message, "SecurITeam Wargame <securiteam.wargame2018@gmail.com>", [email]))
 
-    send_mass_mail(messages)
+    if not dry_run:
+        send_mass_mail(messages)

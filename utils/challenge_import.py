@@ -22,7 +22,7 @@ class MessageType(Enum):
     SUCCESS = 3
 
 
-def do_challenge_import(file):
+def do_challenge_import(file, dry_run):
     global messages
     messages = []  # Clear message list
 
@@ -41,7 +41,7 @@ def do_challenge_import(file):
         # noinspection PyBroadException
         try:
             with transaction.atomic():
-                import_challenge(challenge_dir, challenge_name)
+                import_challenge(challenge_dir, challenge_name, dry_run)
         except Exception as e:
             messages.append((MessageType.ERROR, F"Exception during challenge import: {e}"))
 
@@ -50,7 +50,7 @@ def do_challenge_import(file):
     return messages
 
 
-def import_challenge(challenge_dir, challenge_name):
+def import_challenge(challenge_dir, challenge_name, dry_run):
     messages.append((MessageType.INFO, F"Importing challenge {challenge_name}..."))
     challenge_path = os.path.join(challenge_dir, challenge_name)
 
@@ -82,9 +82,10 @@ def import_challenge(challenge_dir, challenge_name):
         with open(os.path.join(challenge_path, "setup.txt"), encoding='utf-8-sig') as file:
             challenge.setup = file.read()
 
-    challenge.save()
+    if not dry_run:
+        challenge.save()
 
-    import_files(challenge, files)
+    import_files(challenge, files, dry_run)
 
     messages.append((MessageType.SUCCESS, F"Challenge imported: {challenge_name}"))
 
@@ -95,7 +96,7 @@ def save_tags(challenge, tag_list):
     challenge.save()
 
 
-def import_files(challenge, files):
+def import_files(challenge, files, dry_run):
     for file in files:
         filename = os.path.basename(file['path'])
 
@@ -110,7 +111,8 @@ def import_files(challenge, files):
             challenge_file.display_name = filename
             challenge_file.config_name = file['conf']
             challenge_file.file.save(filename, File(fp))
-            challenge_file.save()
+            if not dry_run:
+                challenge_file.save()
 
 
 def validate_challenge_structure(challenge_path):
