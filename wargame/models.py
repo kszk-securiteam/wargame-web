@@ -94,6 +94,9 @@ class User(AbstractUser):
         ).order_by('-total_points')[:40]
 
     def get_visible_level(self):
+        if Config.objects.stage_tasks() == 0:
+            return Challenge.objects.aggregate(Max('level'))['level__max']
+
         if Config.objects.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
