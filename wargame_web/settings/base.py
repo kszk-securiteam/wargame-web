@@ -24,6 +24,7 @@ CHANNEL_LAYERS = {
     }
 }
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
 
 INSTALLED_APPS = [
     'django.contrib.admin',

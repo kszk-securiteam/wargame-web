@@ -1,5 +1,7 @@
 import os
 from abc import ABCMeta, abstractmethod
+from shutil import copyfile
+from threading import Thread
 
 from chunked_upload.constants import http_status
 from chunked_upload.exceptions import ChunkedUploadError
@@ -7,7 +9,9 @@ from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
 from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.crypto import get_random_string
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
 from search_views.views import SearchListView
 
@@ -21,6 +25,7 @@ from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSea
     ChallengeImportForm, \
     UserImportForm, StaticContentForm
 from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent
+from wargame_web.settings import base
 
 
 class ChallengeListView(TemplateView):
@@ -353,19 +358,33 @@ class ImportExportView(TemplateView):
         if 'type' not in request.POST:
             raise HttpResponseBadRequest
 
+        log_var = get_random_string()
+
         if request.POST['type'] == 'challenge':
             form = ChallengeImportForm(request.POST, request.FILES)
             if form.is_valid():
-                self.import_messages = do_challenge_import(form.files['file'], form.data['dry_run'])
+                old_path = form.files['file'].temporary_file_path()
+                new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
+                copyfile(old_path, new_path)
 
-            return super().get(request, *args, **kwargs)
+                thread = Thread(target=do_challenge_import,
+                                args=(new_path, form.data['dry_run'], log_var),
+                                kwargs={})
+                thread.setDaemon(True)
+                thread.start()
+
+            return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
 
         if request.POST['type'] == 'user':
             form = UserImportForm(request.POST, request.FILES)
             if form.is_valid():
                 do_user_import(form.files['file'], form.data['dry_run'])
 
-            return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
+            return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
+
+
+def log_view(request, log_var):
+    return render(request, 'wargame_admin/import_log.html', {'log_var': log_var})
 
 
 def challenge_export_view(request):

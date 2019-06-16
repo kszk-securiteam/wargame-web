@@ -1,0 +1,44 @@
+{% extends "wargame_admin/admin_base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+    <h2>Import log</h2>
+    <div id="log_div" class="border p-2 my-4" style="max-height: 500px; overflow: auto; min-height: 500px">
+
+    </div>
+    <script>
+        const log_var = "{{ log_var }}";
+
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host +
+            '/ws/log/' + log_var + '/');
+
+        chatSocket.onmessage = function(e) {
+            let data = JSON.parse(e.data);
+            let node = document.createElement('code');
+
+            let cls = "";
+            switch (data.level) {
+                case "INFO":
+                    cls = "text-info";
+                    break;
+                case "SUCCESS":
+                    cls = "text-success";
+                    break;
+                case "WARNING":
+                    cls = "text-warning";
+                    break;
+                case "ERROR":
+                    cls = "text-danger";
+                    break;
+            }
+            node.classList.add(cls);
+
+            let text = document.createTextNode(data.message + '\n');
+            node.appendChild(text);
+            let log_div = document.querySelector('#log_div');
+            log_div.appendChild(node);
+            log_div.appendChild(document.createElement('br'));
+            log_div.scrollTop = log_div.scrollHeight;
+        };
+    </script>
+{% endblock %}
