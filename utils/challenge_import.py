@@ -102,9 +102,11 @@ def save_tags(challenge, tag_list):
 def import_files(challenge, files, dry_run, log_var):
     for file in files:
         filename = os.path.basename(file['path'])
-
-        if challenge.files.filter(display_name=filename, private=file['private'], config_name=file['conf']).exists():
-            log(F"Skipping import of file: {filename}", log_var, MessageType.WARNING)
+        file = challenge.files.filter(filename=filename, private=file['private'], config_name=file['conf'])
+        if file.exists():
+            log(F"{filename} already exists, deleting...", log_var, MessageType.WARNING)
+            if not dry_run:
+                file.delete()
             continue
 
         with open(os.path.join(file['path']), 'rb') as fp:
@@ -113,6 +115,7 @@ def import_files(challenge, files, dry_run, log_var):
             challenge_file.private = file['private']
             challenge_file.display_name = filename
             challenge_file.config_name = file['conf']
+            challenge_file.filename = filename
             if not dry_run:
                 challenge_file.file.save(filename, File(fp))
                 challenge_file.save()
