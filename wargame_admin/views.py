@@ -8,7 +8,7 @@ from chunked_upload.exceptions import ChunkedUploadError
 from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
 from django.contrib import messages
 from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
@@ -24,7 +24,7 @@ from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, \
     ChallengeImportForm, \
     UserImportForm, StaticContentForm
-from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent
+from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent, Export
 from wargame_web.settings import base
 
 
@@ -345,14 +345,17 @@ class ImportExportView(TemplateView):
     template_name = "wargame_admin/import.html"
     import_messages = []
 
+    def exports(self):
+        return Export.objects.all()
+
     def messages(self):
         return self.import_messages
 
     def challenge_import_form(self):
-        return ChallengeImportForm()
+        return ChallengeImportForm(prefix='challenge')
 
     def user_import_form(self):
-        return UserImportForm()
+        return UserImportForm(prefix='user')
 
     def post(self, request, *args, **kwargs):
         if 'type' not in request.POST:
@@ -388,8 +391,29 @@ def log_view(request, log_var):
 
 
 def challenge_export_view(request):
-    file_name = export_challenges()
-    return serve_file(request, file_name)
+    thread = Thread(target=export_challenges, args=(), kwargs={})
+    thread.setDaemon(True)
+    thread.start()
+    messages.success(request, "Export started")
+    return HttpResponseRedirect(reverse_lazy('wargame-admin:import-export'))
+
+
+def export_download(request, pk):
+    export = Export.objects.get(pk=pk)
+
+    if not export:
+        raise HttpResponseNotFound
+
+    return serve_file(request, export.file.path)
+
+
+class ExportDeleteView(DeleteView):
+    template_name = "wargame_admin/export_delete.html"
+    model = Export
+
+    def get_success_url(self):
+        messages.success(self.request, "Export deleted")
+        return reverse_lazy('wargame-admin:import-export')
 
 
 class ChallengeFileChunkedUploadView(ChunkedUploadView):

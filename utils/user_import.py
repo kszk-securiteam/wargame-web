@@ -1,4 +1,5 @@
 import csv
+import os
 import time
 
 from django.core.mail import send_mass_mail
@@ -43,4 +44,5 @@ def do_user_import(path, dry_run, log_var):
     if not dry_run:
         send_mass_mail(messages)
 
+    os.remove(path)
     log("User import complete", log_var, MessageType.SUCCESS)

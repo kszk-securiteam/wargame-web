@@ -35,5 +35,33 @@
     </div>
     <hr />
     <h2>Export challenges</h2>
-    <a href="{% url 'wargame-admin:challenge-export' %}">Export</a>
+    <a class="btn btn-link my-2" href="{% url 'wargame-admin:challenge-export' %}">Export</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Export time</th>
+                <th>Export status</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for export in view.exports %}
+                <tr>
+                    <td>{{ export.started_at|date:'Y-m-d H:i' }}</td>
+                    <td>{{ export.status }}</td>
+                    {% if export.status == "ERROR" %}
+                        <td><a href="{% url 'wargame-admin:export-download' export.pk %}">Error log</a></td>
+                        <td><a class="btn btn-danger" href="{% url 'wargame-admin:export-delete' export.pk %}">Delete</a></td>
+                    {% elif export.status == "DONE" %}
+                        <td><a href="{% url 'wargame-admin:export-download' export.pk %}">Download</a></td>
+                        <td><a class="btn btn-danger" href="{% url 'wargame-admin:export-delete' export.pk %}">Delete</a></td>
+                    {% else %}
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
