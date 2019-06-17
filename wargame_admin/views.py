@@ -362,25 +362,25 @@ class ImportExportView(TemplateView):
 
         if request.POST['type'] == 'challenge':
             form = ChallengeImportForm(request.POST, request.FILES)
-            if form.is_valid():
-                old_path = form.files['file'].temporary_file_path()
-                new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
-                copyfile(old_path, new_path)
-
-                thread = Thread(target=do_challenge_import,
-                                args=(new_path, form.data['dry_run'], log_var),
-                                kwargs={})
-                thread.setDaemon(True)
-                thread.start()
-
-            return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
-
-        if request.POST['type'] == 'user':
+            target = do_challenge_import
+        elif request.POST['type'] == 'user':
             form = UserImportForm(request.POST, request.FILES)
-            if form.is_valid():
-                do_user_import(form.files['file'], form.data['dry_run'])
+            target = do_user_import
+        else:
+            raise HttpResponseBadRequest
 
-            return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
+        if not form.is_valid():
+            raise HttpResponseBadRequest
+
+        old_path = form.files['file'].temporary_file_path()
+        new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
+        copyfile(old_path, new_path)
+
+        thread = Thread(target=target, args=(new_path, form.data['dry_run'], log_var), kwargs={})
+        thread.setDaemon(True)
+        thread.start()
+
+        return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
 
 
 def log_view(request, log_var):

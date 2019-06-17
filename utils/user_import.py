@@ -1,13 +1,20 @@
 import csv
+import time
 
 from django.core.mail import send_mass_mail
 
 from wargame.models import User
 from django.utils.crypto import get_random_string
 
+from wargame_admin.consumers import log, MessageType
 
-def do_user_import(file, dry_run):
-    path = file.temporary_file_path()
+
+def do_user_import(path, dry_run, log_var):
+    time.sleep(5)  # Wait for client to connect
+    log("Starting user import", log_var, MessageType.INFO)
+
+    if dry_run:
+        log("Dry run: no changes will be saved or emails sent", log_var, MessageType.WARNING)
 
     messages = []
 
@@ -29,6 +36,11 @@ A csapatod felhasználóneve: {team_name}
 Jó szórakozást!"""
             subject = "Elindult a Wargame!"
             messages.append((subject, message, "SecurITeam Wargame <securiteam.wargame2018@gmail.com>", [email]))
+            log(F"Imported {team_name}", log_var, MessageType.SUCCESS)
+
+    log("Sending emails...", log_var, MessageType.INFO)
 
     if not dry_run:
         send_mass_mail(messages)
+
+    log("User import complete", log_var, MessageType.SUCCESS)

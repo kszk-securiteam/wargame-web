@@ -5,20 +5,13 @@ import shutil
 import time
 from zipfile import ZipFile
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.core.files import File
 from django.db import transaction
 
-from wargame.models import Challenge, File as ChallengeFile
-from wargame_admin.consumers import MessageType
-from wargame_web.settings.base import MEDIA_ROOT
 from utils.export_challenges import export_keys
-
-
-def log(message, log_var, log_level):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(log_var, {"type": 'log_event', "message": message, 'level': log_level.name})
+from wargame.models import Challenge, File as ChallengeFile
+from wargame_admin.consumers import MessageType, log
+from wargame_web.settings.base import MEDIA_ROOT
 
 
 def do_challenge_import(file, dry_run, log_var):
@@ -102,11 +95,11 @@ def save_tags(challenge, tag_list):
 def import_files(challenge, files, dry_run, log_var):
     for file in files:
         filename = os.path.basename(file['path'])
-        file = challenge.files.filter(filename=filename, private=file['private'], config_name=file['conf'])
-        if file.exists():
+        file_entity = challenge.files.filter(filename=filename, private=file['private'], config_name=file['conf'])
+        if file_entity.exists():
             log(F"{filename} already exists, deleting...", log_var, MessageType.WARNING)
             if not dry_run:
-                file.delete()
+                file_entity.delete()
             continue
 
         with open(os.path.join(file['path']), 'rb') as fp:

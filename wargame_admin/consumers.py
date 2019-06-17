@@ -3,6 +3,7 @@ from enum import Enum
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from channels.layers import get_channel_layer
 
 
 class MessageType(Enum):
@@ -10,6 +11,11 @@ class MessageType(Enum):
     WARNING = 1,
     INFO = 2,
     SUCCESS = 3
+
+
+def log(message, log_var, log_level):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(log_var, {"type": 'log_event', "message": message, 'level': log_level.name})
 
 
 class LogConsumer(WebsocketConsumer):
