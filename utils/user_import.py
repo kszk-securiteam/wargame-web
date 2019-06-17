@@ -7,6 +7,7 @@ from wargame.models import User
 from django.utils.crypto import get_random_string
 
 from wargame_admin.consumers import log, MessageType
+from wargame_admin.models import StaticContent
 from wargame_web.settings import base
 
 
@@ -19,6 +20,9 @@ def do_user_import(path, dry_run, log_var):
 
     messages = []
 
+    subject = StaticContent.objects.get(key='email_subject').html
+    email_template = StaticContent.objects.get(key='email_text').html
+
     with open(path, 'r', encoding='utf-8-sig') as fp:
         reader = csv.reader(fp, delimiter=",")
         for row in reader:
@@ -29,13 +33,7 @@ def do_user_import(path, dry_run, log_var):
             if not dry_run:
                 User.objects.create_user(team_name, email, password)
 
-            message = F"""Kedves Csapatkapitány!
-Elindult a SecurITeam által szervezett Wargame, ahol további értékes pontokat szerezhettek a Schönherz QPA-ra! 
-A feladatokat a https://wargame.sch.bme.hu/ oldalon érhetitek el.
-A csapatod felhasználóneve: {team_name}
-És jelszava: {password}
-Jó szórakozást!"""
-            subject = "Elindult a Wargame!"
+            message = email_template.replace("%TEAM%", team_name).replace("%PASSWORD%", password)
             messages.append((subject, message, base.EMAIL_FROM, [email]))
 
             log(F"Imported {team_name}", log_var, MessageType.SUCCESS)

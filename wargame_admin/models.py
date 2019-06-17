@@ -72,6 +72,7 @@ class ChallengeFileChunkedUpload(ChunkedUpload):
 class StaticContent(Model):
     key = CharField(max_length=255, primary_key=True)
     display_name = CharField(max_length=255)
+    note = CharField(max_length=255, default='')
     html = TextField()
 
 
