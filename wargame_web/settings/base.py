@@ -119,5 +119,6 @@ EMAIL_PORT = YAML_SETTINGS.get('email').get('port')
 EMAIL_USE_SSL = YAML_SETTINGS.get('email').get('use_ssl')
 EMAIL_HOST_USER = YAML_SETTINGS.get('email').get('user')
 EMAIL_HOST_PASSWORD = YAML_SETTINGS.get('email').get('password')
+EMAIL_FROM = YAML_SETTINGS.get('email').get('from')
 
 TAGGIT_CASE_INSENSITIVE = True

@@ -12,4 +12,5 @@ email:  # The details of the email server used to send user invites.
   use_ssl: True
   user: ''
   password: ''
+  from: 'Wargame Example <wargame@example.com>'
 allowed_hosts: []

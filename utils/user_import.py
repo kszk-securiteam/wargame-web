@@ -7,6 +7,7 @@ from wargame.models import User
 from django.utils.crypto import get_random_string
 
 from wargame_admin.consumers import log, MessageType
+from wargame_web.settings import base
 
 
 def do_user_import(path, dry_run, log_var):
@@ -35,7 +36,8 @@ A csapatod felhasználóneve: {team_name}
 És jelszava: {password}
 Jó szórakozást!"""
             subject = "Elindult a Wargame!"
-            messages.append((subject, message, "SecurITeam Wargame <securiteam.wargame2018@gmail.com>", [email]))
+            messages.append((subject, message, base.EMAIL_FROM, [email]))
+
             log(F"Imported {team_name}", log_var, MessageType.SUCCESS)
 
     log("Sending emails...", log_var, MessageType.INFO)
