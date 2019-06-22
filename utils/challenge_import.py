@@ -63,9 +63,12 @@ def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
         challenge.import_name = challenge_name
         challenge.level = 1
         challenge.points = 0
+    else:
+        log("Challenge already exists, replacng values", log_var, MessageType.WARNING)
 
     with open(os.path.join(challenge_path, "challenge.json"), encoding='utf-8-sig') as file:
-        if not import_challenge_json(file, challenge, log_var):
+        valid, tags = import_challenge_json(file, challenge, log_var)
+        if not valid:
             return
 
     with open(os.path.join(challenge_path, "description.md"), encoding='utf-8-sig') as file:
@@ -80,16 +83,12 @@ def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
 
     if not dry_run:
         challenge.save()
+        challenge.tags.add(*tags)
+        challenge.save()
 
     import_files(challenge, files, dry_run, log_var)
 
     log(F"Challenge imported: {challenge_name}", log_var, MessageType.SUCCESS)
-
-
-def save_tags(challenge, tag_list):
-    for tag in tag_list:
-        challenge.tags.add(tag)
-    challenge.save()
 
 
 def import_files(challenge, files, dry_run, log_var):
@@ -177,13 +176,17 @@ def validate_challenge_structure(challenge_path, log_var):
 def import_challenge_json(file, challenge, log_var):
     data = json.load(file)
     valid = True
+    tags = []
 
     if not list(data.keys()) == export_keys:
         log("Error: challenges.json contains invalid keys or does not contain all keys", log_var, MessageType.ERROR)
         return False
 
     for key, value in data.items():
-        challenge.__setattr__(key, value)
+        if key == "tags":
+            tags = value
+        else:
+            challenge.__setattr__(key, value)
 
     if not re.match("^SECURITEAM{[a-f0-9]{32}}$", challenge.flag_qpa, re.RegexFlag.IGNORECASE):
         log("Invalid QPA flag format", log_var, MessageType.ERROR)
@@ -193,7 +196,7 @@ def import_challenge_json(file, challenge, log_var):
         log("Invalid hacktivity flag format", log_var, MessageType.ERROR)
         valid = False
 
-    return valid
+    return valid, tags
 
 
 def find_challenge_dir(path, log_var):

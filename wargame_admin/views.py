@@ -364,22 +364,22 @@ class ImportExportView(TemplateView):
         log_var = get_random_string()
 
         if request.POST['type'] == 'challenge':
-            form = ChallengeImportForm(request.POST, request.FILES)
+            form = ChallengeImportForm(request.POST, request.FILES, prefix='challenge')
             target = do_challenge_import
         elif request.POST['type'] == 'user':
-            form = UserImportForm(request.POST, request.FILES)
+            form = UserImportForm(request.POST, request.FILES, prefix='user')
             target = do_user_import
         else:
-            raise HttpResponseBadRequest
+            return HttpResponseBadRequest
 
         if not form.is_valid():
-            raise HttpResponseBadRequest
+            return HttpResponseBadRequest()
 
-        old_path = form.files['file'].temporary_file_path()
+        old_path = form.cleaned_data['file'].temporary_file_path()
         new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
         copyfile(old_path, new_path)
 
-        thread = Thread(target=target, args=(new_path, form.data['dry_run'], log_var), kwargs={})
+        thread = Thread(target=target, args=(new_path, form.cleaned_data['dry_run'], log_var), kwargs={})
         thread.setDaemon(True)
         thread.start()
 

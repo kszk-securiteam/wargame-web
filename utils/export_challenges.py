@@ -7,7 +7,7 @@ from wargame.models import Challenge
 from wargame_admin.models import Export
 from wargame_web.settings import base
 
-export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_description"]
+export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_description", "tags"]
 
 
 def export_challenges():
@@ -23,6 +23,9 @@ def export_challenges():
         os.mkdir(export_folder)
 
         for c in Challenge.objects.all():
+            # Load tags
+            c.tags = list(c.tags.names())
+
             # Calculate directories
             challenge_folder = os.path.join(export_folder, "challenges",
                                             c.import_name or c.title.replace(" ", "_").encode('ascii', 'ignore').decode("ascii"))
