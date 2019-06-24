@@ -42,10 +42,6 @@ class ChallengeForm(ModelForm):
         }
 
 
-class UserSearchForm(Form):
-    name = CharField(required=False, label='', widget=TextInput(attrs={'placeholder': 'Username'}))
-
-
 class UserEditForm(ModelForm):
     class Meta:
         model = User

@@ -13,15 +13,13 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
-from search_views.views import SearchListView
 
 from utils.challenge_import import do_challenge_import
-from utils.user_import import do_user_import
-from utils.serve_file import serve_file
 from utils.export_challenges import export_challenges
+from utils.serve_file import serve_file
+from utils.user_import import do_user_import
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
-from wargame_admin.filters import UserFilter
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, \
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserEditForm, \
     ChallengeImportForm, \
     UserImportForm, StaticContentForm
 from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent, Export
@@ -110,12 +108,9 @@ class ChallengeFileDeleteView(DeleteView):
         return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
 
 
-class UserAdminView(SearchListView):
+class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
     model = User
-    paginate_by = 300
-    form_class = UserSearchForm
-    filter_class = UserFilter
 
     # noinspection PyMethodMayBeStatic
     def users(self):
