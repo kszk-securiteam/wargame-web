@@ -72,3 +72,9 @@ class StaticContentForm(ModelForm):
     class Meta:
         model = StaticContent
         fields = ['html']
+
+
+class RebalanceChallengeForm(ModelForm):
+    class Meta:
+        model = Challenge
+        fields = ['level', 'points']

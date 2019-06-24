@@ -8,7 +8,7 @@ from chunked_upload.exceptions import ChunkedUploadError
 from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -23,7 +23,7 @@ from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserEditForm, \
     ChallengeImportForm, \
-    UserImportForm, StaticContentForm
+    UserImportForm, StaticContentForm, RebalanceChallengeForm
 from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent, Export
 from wargame_web.settings import base
 
@@ -459,3 +459,23 @@ class StaticEditor(UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Content saved.")
         return reverse_lazy('wargame-admin:static-editor-list')
+
+
+class RebalanceView(TemplateView):
+    template_name = "wargame_admin/rebalance.html"
+    RebalanceChallengeFormset = modelformset_factory(Challenge, form=RebalanceChallengeForm, extra=0, can_delete=False,
+                                                     can_order=False)
+
+    def queryset(self):
+        return Challenge.objects.order_by('level', 'points')
+
+    def formset(self):
+        return self.RebalanceChallengeFormset(queryset=self.queryset())
+
+    def post(self, request, *args, **kwargs):
+        formset = self.RebalanceChallengeFormset(request.POST, request.FILES, queryset=self.queryset())
+        if formset.is_valid():
+            formset.save()
+            messages.success(self.request, "Challenges saved")
+
+        return HttpResponseRedirect(self.request.path_info)  # Redirect to the same page
