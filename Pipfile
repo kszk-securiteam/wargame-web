@@ -15,7 +15,7 @@ django-taggit = "*"
 pyyaml = ">=4.2b1"
 psycopg2 = "*"
 channels = "*"
-pypiwin32 = "*"
+pypiwin32 = {version = "*", sys_platform = "== 'win32'"}
 channels-redis = "*"
 django-filter = "*"
 django-bootstrap-pagination = "*"
