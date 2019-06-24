@@ -1,7 +1,12 @@
-from search_views.filters import BaseFilter
+from django.forms import TextInput
+from django_filters import FilterSet, CharFilter
+
+from wargame.models import User
 
 
-class UserFilter(BaseFilter):
-    search_fields = {
-        'name': ['username']
-    }
+class UserFilter(FilterSet):
+    username = CharFilter(label='', lookup_expr='contains', widget=TextInput(attrs={'placeholder': 'Username'}))
+
+    class Meta:
+        model = User
+        fields = {}

@@ -1,0 +1,35 @@
+{% extends "wargame_admin/admin_base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+    <h1>Rebalance</h1>
+    <form method="post">
+        {{ view.formset.management_form }}
+        {% csrf_token %}
+        {% bootstrap_formset_errors view.formset %}
+        <table class="table">
+            {% for form in view.formset %}
+                {% if forloop.first %}
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Internal name</th>
+                            <th>Level</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                {% endif %}
+                <tr>
+                    {% for field in form.hidden_fields %}
+                        {{ field }}
+                    {% endfor %}
+                    <td>{{ form.instance.title }}</td>
+                    <td>{{ form.instance.import_name }}</td>
+                    {% for field in form.visible_fields %}
+                       <td>{% bootstrap_field field show_label=False %}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+{% endblock %}

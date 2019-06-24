@@ -13,13 +13,55 @@
         </div>
         <hr />
     {% endif %}
-    <h2>Import challenges</h2>
-    <form method="post" enctype="multipart/form-data" class="form">
-        {% csrf_token %}
-        {% bootstrap_form view.form %}
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Import challenges</h2>
+            <form method="post" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
+                {% bootstrap_form view.challenge_import_form %}
+                <input type="hidden" name="type" value="challenge" />
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Import users</h2>
+            <form method="post" enctype="multipart/form-data" class="form">
+                {% csrf_token %}
+                {% bootstrap_form view.user_import_form %}
+                <input type="hidden" name="type" value="user">
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+        </div>
+    </div>
     <hr />
     <h2>Export challenges</h2>
-    <a href="{% url 'wargame-admin:challenge-export' %}">Export</a>
+    <a class="btn btn-link my-2" href="{% url 'wargame-admin:challenge-export' %}">Export</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Export time</th>
+                <th>Export status</th>
+                <th>Download</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for export in view.exports %}
+                <tr>
+                    <td>{{ export.started_at|date:'Y-m-d H:i' }}</td>
+                    <td>{{ export.status }}</td>
+                    {% if export.status == "ERROR" %}
+                        <td><a href="{% url 'wargame-admin:export-download' export.pk %}">Error log</a></td>
+                        <td><a class="btn btn-danger" href="{% url 'wargame-admin:export-delete' export.pk %}">Delete</a></td>
+                    {% elif export.status == "DONE" %}
+                        <td><a href="{% url 'wargame-admin:export-download' export.pk %}">Download</a></td>
+                        <td><a class="btn btn-danger" href="{% url 'wargame-admin:export-delete' export.pk %}">Delete</a></td>
+                    {% else %}
+                        <td></td>
+                        <td></td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

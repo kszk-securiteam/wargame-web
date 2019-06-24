@@ -2,6 +2,10 @@
 {% load bootstrap4 %}
 {% block content %}
     <h3>{{ object.username }} - ${{ object.get_score }}</h3>
+    <div class="my-3">
+        <p>Email: <a href="mailto:{{ user.email }}" target="_blank">{{ user.email }}</a></p>
+        <p>Date joined: {{ user.date_joined | date:'Y-m-d H:i' }}</p>
+    </div>
     <div>
         <a class="btn btn-info text-white" href="{% url 'admin:auth_user_password_change' object.id %}">Change password</a>
     </div>

@@ -65,7 +65,8 @@ class User(AbstractUser):
 
         return UserChallenge.objects.filter(
             user=self,
-            submission__value__iexact=flag_field
+            submission__value__iexact=flag_field,
+            challenge__hidden=False
         ).annotate(
             points_with_hint=user_points
         ).aggregate(
@@ -86,6 +87,7 @@ class User(AbstractUser):
 
         return User.objects.filter(
             userchallenge__submission__value__iexact=flag_field,
+            userchallenge__challenge__hidden=False,
             hidden=False
         ).values(
             'username'
@@ -94,6 +96,9 @@ class User(AbstractUser):
         ).order_by('-total_points')[:40]
 
     def get_visible_level(self):
+        if Config.objects.stage_tasks() == 0:
+            return Challenge.objects.aggregate(Max('level'))['level__max']
+
         if Config.objects.is_qpa():
             flag_field = F('challenge__flag_qpa')
         else:
@@ -102,6 +107,7 @@ class User(AbstractUser):
         user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))[
             'max_level']
         solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
+                                                                      challenge__hidden=False,
                                                                       user=self,
                                                                       submission__value__iexact=flag_field
                                                                       ).count()
@@ -120,18 +126,18 @@ class User(AbstractUser):
             flag_field = F('flag_hacktivity')
 
         return Challenge.objects.filter(
-            Q(userchallenge__user=self) | Q(userchallenge__user__isnull=True),
-            level__lte=level
+            level__lte=level,
+            hidden=False
         ).annotate(
             solved=Sum(
-                Cast(Q(userchallenge__submission__value__iexact=flag_field), IntegerField())
+                Cast(Q(userchallenge__submission__value__iexact=flag_field, userchallenge__user=self), IntegerField())
             )
         ).order_by(
             'level', 'title'
         )
 
     def is_challenge_visible(self, challenge):
-        return challenge.level <= self.get_visible_level()
+        return challenge.level <= self.get_visible_level() and not challenge.hidden
 
 
 class Challenge(models.Model):
@@ -146,8 +152,9 @@ class Challenge(models.Model):
     hint = models.CharField(max_length=8192, null=True)
     solution = models.CharField(max_length=8192, null=True)
     setup = models.CharField(max_length=8192, null=True, blank=True)
-    import_name = models.CharField(max_length=64, null=True, blank=True)
+    import_name = models.CharField(max_length=64, verbose_name='Internal name', unique=True)
     tags = TaggableManager()
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -161,6 +168,20 @@ class Challenge(models.Model):
     def get_files(self):
         return self.files.filter(config_name=Config.objects.config_name().value)
 
+    def tag_list(self):
+        return ', '.join(self.tags.names())
+
+    def users_attempted(self):
+        return self.userchallenge_set.count()
+
+    def users_solved(self):
+        return self.userchallenge_set.filter(submission__value__iexact=self.get_flag()).count()
+
+    def hidden_str(self):
+        if self.hidden:
+            return 'Hidden'
+        return 'Visible'
+
 
 class File(models.Model):
     CONFIG_CHOICES = (
@@ -169,6 +190,7 @@ class File(models.Model):
     )
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='files')
     file = models.FileField(upload_to='challenge-files/')
+    filename = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256)
     private = models.BooleanField(default=False)
     config_name = models.CharField(max_length=20, null=False, blank=False, choices=CONFIG_CHOICES)

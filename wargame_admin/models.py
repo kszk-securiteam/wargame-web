@@ -1,11 +1,15 @@
 import json
+import os
 from fractions import Fraction
 
 from chunked_upload.models import ChunkedUpload
-from django.db.models import Model, CharField, Manager, BooleanField, TextField
-
+from django.db import models
+from django.db.models import Model, CharField, Manager, BooleanField, TextField, signals
 
 # noinspection PyMethodMayBeStatic
+from django.dispatch import receiver
+
+
 class ConfigManager(Manager):
     def is_qpa(self):
         return Config.objects.get(key='qpa_hack').value == 'qpa'
@@ -68,4 +72,23 @@ class ChallengeFileChunkedUpload(ChunkedUpload):
 class StaticContent(Model):
     key = CharField(max_length=255, primary_key=True)
     display_name = CharField(max_length=255)
+    note = CharField(max_length=255, default='')
     html = TextField()
+
+
+class Export(Model):
+    EXPORT_STATUS = (
+        ('IN_PROGRESS', "In progress"),
+        ('DONE', "Done"),
+        ('FAILED', "Failed")
+    )
+    started_at = models.DateTimeField(auto_now_add=True)
+    file = models.FileField(upload_to='exports/', null=True)
+    status = models.CharField(max_length=20, choices=EXPORT_STATUS, default='IN_PROGRESS')
+
+# Deletes file from filesystem when File object is deleted.
+@receiver(signals.post_delete, sender=Export)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)

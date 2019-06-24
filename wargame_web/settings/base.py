@@ -13,6 +13,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 ALLOWED_HOSTS = YAML_SETTINGS.get('allowed_hosts')
 
+
+ASGI_APPLICATION = 'wargame_web.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    }
+}
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = None
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -28,6 +41,9 @@ INSTALLED_APPS = [
     'chunked_upload',
     'djangocodemirror',
     'taggit',
+    'channels',
+    'django_filters',
+    'bootstrap_pagination',
 ]
 
 MIDDLEWARE = [
@@ -105,5 +121,6 @@ EMAIL_PORT = YAML_SETTINGS.get('email').get('port')
 EMAIL_USE_SSL = YAML_SETTINGS.get('email').get('use_ssl')
 EMAIL_HOST_USER = YAML_SETTINGS.get('email').get('user')
 EMAIL_HOST_PASSWORD = YAML_SETTINGS.get('email').get('password')
+EMAIL_FROM = YAML_SETTINGS.get('email').get('from')
 
 TAGGIT_CASE_INSENSITIVE = True

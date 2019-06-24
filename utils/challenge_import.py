@@ -2,59 +2,55 @@ import json
 import os
 import re
 import shutil
-from enum import Enum
+import time
 from zipfile import ZipFile
 
 from django.core.files import File
 from django.db import transaction
 
-from wargame.models import Challenge, File as ChallengeFile
-from wargame_web.settings.base import MEDIA_ROOT
 from utils.export_challenges import export_keys
-
-messages = []
-
-
-class MessageType(Enum):
-    ERROR = 0,
-    WARNING = 1,
-    INFO = 2,
-    SUCCESS = 3
+from wargame.models import Challenge, File as ChallengeFile
+from wargame_admin.consumers import MessageType, log
+from wargame_web.settings.base import MEDIA_ROOT
 
 
-def do_challenge_import(file):
-    global messages
-    messages = []  # Clear message list
+def do_challenge_import(file, dry_run, log_var):
+    time.sleep(5)  # Wait for client to connect
+    log("Staring challenge import", log_var, MessageType.INFO)
 
-    path = extract_zip(file)
+    if dry_run:
+        log("Dry run: no changes will be saved", log_var, MessageType.WARNING)
+
+    path = extract_zip(file, log_var)
 
     if path is None:
-        return messages
+        return
 
-    challenge_dir, challenge_names = find_challenge_dir(path)
+    challenge_dir, challenge_names = find_challenge_dir(path, log_var)
 
     if not challenge_dir:
-        messages.append((MessageType.ERROR, 'Uploaded file does not contain challenges directory'))
-        return messages
+        log("Uploaded file does not contain challenges directory", log_var, MessageType.ERROR)
+        return
 
     for challenge_name in challenge_names:
         # noinspection PyBroadException
         try:
             with transaction.atomic():
-                import_challenge(challenge_dir, challenge_name)
+                import_challenge(challenge_dir, challenge_name, dry_run, log_var)
         except Exception as e:
-            messages.append((MessageType.ERROR, F"Exception during challenge import: {e}"))
+            log(F"Exception during challenge import: {e}", log_var, MessageType.ERROR)
 
     # Cleanup: delete folder where the zip was extracted
     shutil.rmtree(path)
-    return messages
+    os.remove(file)
+    log("Challenge import completed", log_var, MessageType.SUCCESS)
 
 
-def import_challenge(challenge_dir, challenge_name):
-    messages.append((MessageType.INFO, F"Importing challenge {challenge_name}..."))
+def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
+    log(F"Importing challenge {challenge_name}", log_var, MessageType.INFO)
     challenge_path = os.path.join(challenge_dir, challenge_name)
 
-    valid, import_setup, files = validate_challenge_structure(challenge_path)
+    valid, import_setup, files = validate_challenge_structure(challenge_path, log_var)
 
     if not valid:
         return
@@ -67,9 +63,12 @@ def import_challenge(challenge_dir, challenge_name):
         challenge.import_name = challenge_name
         challenge.level = 1
         challenge.points = 0
+    else:
+        log("Challenge already exists, replacng values", log_var, MessageType.WARNING)
 
     with open(os.path.join(challenge_path, "challenge.json"), encoding='utf-8-sig') as file:
-        if not import_challenge_json(file, challenge):
+        valid, tags = import_challenge_json(file, challenge, log_var)
+        if not valid:
             return
 
     with open(os.path.join(challenge_path, "description.md"), encoding='utf-8-sig') as file:
@@ -82,25 +81,24 @@ def import_challenge(challenge_dir, challenge_name):
         with open(os.path.join(challenge_path, "setup.txt"), encoding='utf-8-sig') as file:
             challenge.setup = file.read()
 
-    challenge.save()
+    if not dry_run:
+        challenge.save()
+        challenge.tags.add(*tags)
+        challenge.save()
 
-    import_files(challenge, files)
+    import_files(challenge, files, dry_run, log_var)
 
-    messages.append((MessageType.SUCCESS, F"Challenge imported: {challenge_name}"))
-
-
-def save_tags(challenge, tag_list):
-    for tag in tag_list:
-        challenge.tags.add(tag)
-    challenge.save()
+    log(F"Challenge imported: {challenge_name}", log_var, MessageType.SUCCESS)
 
 
-def import_files(challenge, files):
+def import_files(challenge, files, dry_run, log_var):
     for file in files:
         filename = os.path.basename(file['path'])
-
-        if challenge.files.filter(display_name=filename, private=file['private'], config_name=file['conf']).exists():
-            messages.append((MessageType.WARNING, "Skipping import of file: " + filename))
+        file_entity = challenge.files.filter(filename=filename, private=file['private'], config_name=file['conf'])
+        if file_entity.exists():
+            log(F"{filename} already exists, deleting...", log_var, MessageType.WARNING)
+            if not dry_run:
+                file_entity.delete()
             continue
 
         with open(os.path.join(file['path']), 'rb') as fp:
@@ -109,11 +107,13 @@ def import_files(challenge, files):
             challenge_file.private = file['private']
             challenge_file.display_name = filename
             challenge_file.config_name = file['conf']
-            challenge_file.file.save(filename, File(fp))
-            challenge_file.save()
+            challenge_file.filename = filename
+            if not dry_run:
+                challenge_file.file.save(filename, File(fp))
+                challenge_file.save()
 
 
-def validate_challenge_structure(challenge_path):
+def validate_challenge_structure(challenge_path, log_var):
     valid = True
     import_setup = False
     challenge_files = []
@@ -135,7 +135,7 @@ def validate_challenge_structure(challenge_path):
                     import_setup = True
                 else:
                     valid = False
-                    messages.append((MessageType.ERROR, "Challenge directory contains unknown file"))
+                    log(F"Challenge directory contains unknown file: {file}", log_var, MessageType.ERROR)
         else:
             private = False
             config_folder = root
@@ -149,7 +149,7 @@ def validate_challenge_structure(challenge_path):
                 conf = "hacktivity"
             else:
                 valid = False
-                messages.append((MessageType.ERROR, "Challenge directory structure contain unknown directory: " + os.path.basename(root)))
+                log(F"Challenge directory contains unknown directory: {os.path.basename(root)}", log_var, MessageType.ERROR)
                 continue
             for f in files:
                 if f == ".gitkeep":
@@ -161,56 +161,59 @@ def validate_challenge_structure(challenge_path):
                 })
 
     if not challenge_json_found:
-        messages.append((MessageType.ERROR, "challenge.json not found"))
+        log("challenge.json not found", log_var, MessageType.ERROR)
         valid = False
     if not description_md_found:
-        messages.append((MessageType.ERROR, "description.md not found"))
+        log(F"description.md not found", log_var, MessageType.ERROR)
         valid = False
     if not solution_txt_found:
-        messages.append((MessageType.ERROR, "solution.txt not found"))
+        log(F"solution.txt not found", log_var, MessageType.ERROR)
         valid = False
 
     return valid, import_setup, challenge_files
 
 
-def import_challenge_json(file, challenge):
+def import_challenge_json(file, challenge, log_var):
     data = json.load(file)
     valid = True
+    tags = []
 
     if not list(data.keys()) == export_keys:
-        messages.append((MessageType.ERROR, "Error: challenges.json contains invalid keys or does not contain all keys"))
+        log("Error: challenges.json contains invalid keys or does not contain all keys", log_var, MessageType.ERROR)
         return False
 
     for key, value in data.items():
-        challenge.__setattr__(key, value)
+        if key == "tags":
+            tags = value
+        else:
+            challenge.__setattr__(key, value)
 
     if not re.match("^SECURITEAM{[a-f0-9]{32}}$", challenge.flag_qpa, re.RegexFlag.IGNORECASE):
-        messages.append((MessageType.ERROR, "Invalid QPA flag format"))
+        log("Invalid QPA flag format", log_var, MessageType.ERROR)
         valid = False
 
     if not re.match("^SECURITEAM{[a-f0-9]{32}}$", challenge.flag_hacktivity, re.RegexFlag.IGNORECASE):
-        messages.append((MessageType.ERROR, "Invalid hacktivity flag format"))
+        log("Invalid hacktivity flag format", log_var, MessageType.ERROR)
         valid = False
 
-    return valid
+    return valid, tags
 
 
-def find_challenge_dir(path):
+def find_challenge_dir(path, log_var):
     for root, dirs, _ in os.walk(path):
         if os.path.basename(root) == "challenges":
-            messages.append((MessageType.INFO, F'{len(dirs)} challenges found'))
+            log(F"{len(dirs)} challenges found", log_var, MessageType.INFO)
             return root, dirs
     return None, None
 
 
-def extract_zip(file):
+def extract_zip(file, log_var):
     # noinspection PyBroadException
     try:
-        zip_path = file.temporary_file_path()
         path = os.path.join(MEDIA_ROOT, 'challenge-temp')
-        with ZipFile(zip_path) as archive:
+        with ZipFile(file) as archive:
             archive.extractall(path=path)
         return path
     except Exception as e:
-        messages.append((MessageType.ERROR, F"Error during zip extraction: {e}"))
+        log(F"Error during zip extraction: {e}", log_var, MessageType.ERROR)
         return None

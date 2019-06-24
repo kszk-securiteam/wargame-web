@@ -1,4 +1,4 @@
-from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea
+from django.forms import ModelForm, Form, CharField, TextInput, FileField, FileInput, Textarea, BooleanField
 from djangocodemirror.fields import CodeMirrorField
 
 from wargame.models import File, Challenge, User
@@ -35,12 +35,12 @@ class FileUploadForm(ModelForm):
 class ChallengeForm(ModelForm):
     class Meta:
         model = Challenge
-        fields = ['title', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity', 'points', 'hint',
-                  'setup', 'solution', 'tags']
-
-
-class UserSearchForm(Form):
-    name = CharField(required=False, label='', widget=TextInput(attrs={'placeholder': 'Username'}))
+        fields = ['title', 'import_name', 'hidden', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity',
+                  'points', 'hint', 'setup', 'solution', 'tags']
+        help_texts = {
+            'import_name': 'A unique identifier that is a valid directory name',
+            'hidden': 'Hidden challenges do not contribute to users\'s score and cannot be accessed'
+        }
 
 
 class UserEditForm(ModelForm):
@@ -56,12 +56,14 @@ class UserEditForm(ModelForm):
         }
 
 
-class ImportForm(Form):
-    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}))
+class ChallengeImportForm(Form):
+    file = FileField(widget=FileInput(attrs={'accept': 'application/zip'}), label='')
+    dry_run = BooleanField(required=False)
 
 
 class UserImportForm(Form):
-    file = FileField(widget=FileInput(attrs={'accept': '.csv'}))
+    file = FileField(widget=FileInput(attrs={'accept': '.csv'}), label='')
+    dry_run = BooleanField(required=False)
 
 
 class StaticContentForm(ModelForm):
@@ -70,3 +72,9 @@ class StaticContentForm(ModelForm):
     class Meta:
         model = StaticContent
         fields = ['html']
+
+
+class RebalanceChallengeForm(ModelForm):
+    class Meta:
+        model = Challenge
+        fields = ['level', 'points']

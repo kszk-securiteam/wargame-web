@@ -1,25 +1,31 @@
 import os
 from abc import ABCMeta, abstractmethod
+from shutil import copyfile
+from threading import Thread
 
 from chunked_upload.constants import http_status
 from chunked_upload.exceptions import ChunkedUploadError
 from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
 from django.contrib import messages
-from django.forms import inlineformset_factory
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.core.paginator import Paginator
+from django.forms import inlineformset_factory, formset_factory, modelformset_factory
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
+from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils.crypto import get_random_string
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView
-from search_views.views import SearchListView
 
 from utils.challenge_import import do_challenge_import
-from utils.user_import import do_user_import
-from utils.serve_file import serve_file
 from utils.export_challenges import export_challenges
+from utils.serve_file import serve_file
+from utils.user_import import do_user_import
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserSearchForm, UserEditForm, ImportForm, \
-    UserImportForm, StaticContentForm
-from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent
+from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserEditForm, \
+    ChallengeImportForm, \
+    UserImportForm, StaticContentForm, RebalanceChallengeForm
+from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent, Export
+from wargame_web.settings import base
 
 
 class ChallengeListView(TemplateView):
@@ -41,9 +47,6 @@ class ChallengeDetailsView(TemplateView):
 
     def hacktivity_files(self):
         return self.challenge().files.filter(config_name='hacktivity').all()
-
-    def tag_list(self):
-        return ', '.join(self.challenge().tags.names())
 
 
 class ChallengeEditView(UpdateView):
@@ -107,16 +110,16 @@ class ChallengeFileDeleteView(DeleteView):
         return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
 
 
-class UserAdminView(SearchListView):
+class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
     model = User
-    paginate_by = 300
-    form_class = UserSearchForm
-    filter_class = UserFilter
 
-    # noinspection PyMethodMayBeStatic
+    def filter(self):
+        return UserFilter(self.request.GET, queryset=User.objects.order_by('-is_staff').all())
+
     def users(self):
-        return User.objects.order_by('-is_staff').all()
+        page = self.request.GET.get('page', 1)
+        return Paginator(self.filter().qs, 25).get_page(page)
 
 
 class SubmissionsView(TemplateView, metaclass=ABCMeta):
@@ -338,42 +341,79 @@ class StaffDeleteView(DeleteView):
         return reverse_lazy('wargame-admin:staff-admin')
 
 
-class ImportView(TemplateView):
+class ImportExportView(TemplateView):
     template_name = "wargame_admin/import.html"
     import_messages = []
+
+    def exports(self):
+        return Export.objects.all()
 
     def messages(self):
         return self.import_messages
 
-    def form(self):
-        return ImportForm()
+    def challenge_import_form(self):
+        return ChallengeImportForm(prefix='challenge')
+
+    def user_import_form(self):
+        return UserImportForm(prefix='user')
 
     def post(self, request, *args, **kwargs):
-        form = ImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            self.import_messages = do_challenge_import(form.files['file'])
+        if 'type' not in request.POST:
+            raise HttpResponseBadRequest
 
-        return super().get(request, *args, **kwargs)
+        log_var = get_random_string()
+
+        if request.POST['type'] == 'challenge':
+            form = ChallengeImportForm(request.POST, request.FILES, prefix='challenge')
+            target = do_challenge_import
+        elif request.POST['type'] == 'user':
+            form = UserImportForm(request.POST, request.FILES, prefix='user')
+            target = do_user_import
+        else:
+            return HttpResponseBadRequest
+
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+
+        old_path = form.cleaned_data['file'].temporary_file_path()
+        new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
+        copyfile(old_path, new_path)
+
+        thread = Thread(target=target, args=(new_path, form.cleaned_data['dry_run'], log_var), kwargs={})
+        thread.setDaemon(True)
+        thread.start()
+
+        return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
 
 
-class UserImportView(TemplateView):
-    template_name = "wargame_admin/user_import.html"
-
-    # noinspection PyMethodMayBeStatic
-    def form(self):
-        return UserImportForm()
-
-    def post(self, request, *args, **kwargs):
-        form = ImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            do_user_import(form.files['file'])
-
-        return HttpResponseRedirect(reverse_lazy('wargame-admin:users'))
+def log_view(request, log_var):
+    return render(request, 'wargame_admin/import_log.html', {'log_var': log_var})
 
 
 def challenge_export_view(request):
-    file_name = export_challenges()
-    return serve_file(request, "", file_name)
+    thread = Thread(target=export_challenges, args=(), kwargs={})
+    thread.setDaemon(True)
+    thread.start()
+    messages.success(request, "Export started")
+    return HttpResponseRedirect(reverse_lazy('wargame-admin:import-export'))
+
+
+def export_download(request, pk):
+    export = Export.objects.get(pk=pk)
+
+    if not export:
+        raise HttpResponseNotFound
+
+    return serve_file(request, export.file.path)
+
+
+class ExportDeleteView(DeleteView):
+    template_name = "wargame_admin/export_delete.html"
+    model = Export
+
+    def get_success_url(self):
+        messages.success(self.request, "Export deleted")
+        return reverse_lazy('wargame-admin:import-export')
 
 
 class ChallengeFileChunkedUploadView(ChunkedUploadView):
@@ -397,6 +437,7 @@ class ChallengeFileChunkedUploadCompleteView(ChunkedUploadCompleteView):
         if form.is_valid():
             file = form.save(commit=False)
             file.challenge_id = self.kwargs['challenge_id']
+            file.filename = uploaded_file.name
             file.save()
             messages.success(request, "File uploaded.")
         else:
@@ -418,3 +459,23 @@ class StaticEditor(UpdateView):
     def get_success_url(self):
         messages.success(self.request, "Content saved.")
         return reverse_lazy('wargame-admin:static-editor-list')
+
+
+class RebalanceView(TemplateView):
+    template_name = "wargame_admin/rebalance.html"
+    RebalanceChallengeFormset = modelformset_factory(Challenge, form=RebalanceChallengeForm, extra=0, can_delete=False,
+                                                     can_order=False)
+
+    def queryset(self):
+        return Challenge.objects.order_by('level', 'points')
+
+    def formset(self):
+        return self.RebalanceChallengeFormset(queryset=self.queryset())
+
+    def post(self, request, *args, **kwargs):
+        formset = self.RebalanceChallengeFormset(request.POST, request.FILES, queryset=self.queryset())
+        if formset.is_valid():
+            formset.save()
+            messages.success(self.request, "Challenges saved")
+
+        return HttpResponseRedirect(self.request.path_info)  # Redirect to the same page

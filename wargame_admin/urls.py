@@ -5,9 +5,9 @@ from django.views.generic import RedirectView
 from wargame_admin.views import ChallengeListView, ChallengeDetailsView, ChallengeEditView, UserAdminView, \
     ConfigEditorView, ChallengeCreateView, ChallengeDeleteView, ChallengeFilesView, \
     ChallengeFileDeleteView, ChallengeSubmissions, UserSubmissions, UserEdit, ResetHintsView, ClearSubmissionsView, \
-    StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView, ImportView, UserImportView, \
+    StaffMemberAdmin, StaffEditView, StaffCreateView, StaffDeleteView, \
     challenge_export_view, ChallengeFileChunkedUploadView, ChallengeFileChunkedUploadCompleteView, StaticEditorList, \
-    StaticEditor
+    StaticEditor, ImportExportView, log_view, export_download, ExportDeleteView, RebalanceView
 
 app_name = 'wargame-admin'
 urlpatterns = [
@@ -30,9 +30,6 @@ urlpatterns = [
     path('staff/<int:pk>/', staff_member_required(StaffEditView.as_view()), name='staff-edit'),
     path('staff/new', staff_member_required(StaffCreateView.as_view()), name='staff-create'),
     path('staff/<int:pk>/delete', staff_member_required(StaffDeleteView.as_view()), name='staff-delete'),
-    path('import/challenges', staff_member_required(ImportView.as_view()), name='import'),
-    path('import/users', staff_member_required(UserImportView.as_view()), name='user-import'),
-    path('export/challenges', staff_member_required(challenge_export_view), name='challenge-export'),
     path('challenges/<int:challenge_id>/files/upload', staff_member_required(ChallengeFileChunkedUploadView.as_view()),
          name='challenge-file-upload'),
     path('challenges/<int:challenge_id>/files/upload_complete',
@@ -40,4 +37,10 @@ urlpatterns = [
          name='challenge-file-upload-complete'),
     path('static-editor/', staff_member_required(StaticEditorList.as_view()), name='static-editor-list'),
     path('static-editor/<str:pk>/', staff_member_required(StaticEditor.as_view()), name='static-editor'),
+    path('import-export/', ImportExportView.as_view(), name='import-export'),
+    path('export/challenges', staff_member_required(challenge_export_view), name='challenge-export'),
+    path('import-export/<log_var>/', staff_member_required(log_view), name='log-view'),
+    path('export-files/<int:pk>', staff_member_required(export_download), name='export-download'),
+    path('delete-export/<int:pk>', staff_member_required(ExportDeleteView.as_view()), name='export-delete'),
+    path('rebalance/', staff_member_required(RebalanceView.as_view()), name='rebalance'),
 ]

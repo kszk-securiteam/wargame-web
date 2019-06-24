@@ -12,14 +12,16 @@
     </div>
     <hr />
     <h3>Properties</h3>
+    <b>Internal name:</b> {{ view.challenge.import_name }}<br />
     <b>Created:</b> {{ view.challenge.creation_dt }}<br/>
+    <b>Hidden:</b> {{ view.challenge.hidden_str }}<br />
     <b>Short description:</b> {{ view.challenge.short_description }}<br/>
     <b>Level:</b> {{ view.challenge.level }}<br/>
     <b>Flag (QPA):</b> {{ view.challenge.flag_qpa }}<br/>
     <b>Flag (Hacktivity):</b> {{ view.challenge.flag_hacktivity }}<br/>
     <b>Points:</b> {{ view.challenge.points }}<br/>
     <b>Hint:</b> {{ view.challenge.hint }}<br/>
-    <b>Tags:</b> {{ view.tag_list }}
+    <b>Tags:</b> {{ view.challenge.tag_list }}
     <hr/>
     <h3 class="admin-header">
         <span>Files</span>

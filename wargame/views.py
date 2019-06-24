@@ -149,7 +149,7 @@ class VPNView(LoginRequiredMixin, TemplateView):
 
 @login_required()
 def download_vpn_key(request):
-    return serve_file(request, "", F"vpn.zip")
+    return serve_file(request, "vpn.zip")
 
 
 @login_required()
@@ -160,7 +160,7 @@ def download_challenge_file(request, file_id):
         if file.private or not request.user.is_challenge_visible(file.challenge):
             return HttpResponseForbidden()
 
-    return serve_file(request, 'challenge-files', basename(file.file.name))
+    return serve_file(request, file.file.name, file.filename)
 
 
 class UserEmailView(LoginRequiredMixin, UpdateView):
