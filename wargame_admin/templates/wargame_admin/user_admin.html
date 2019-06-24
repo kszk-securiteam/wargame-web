@@ -20,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for user in view.filter.qs %}
+        {% for user in view.users %}
             <tr>
                 <td class="align-middle">{{ user.username }}</td>
                 <td class="align-middle">{{ user.get_score }}</td>

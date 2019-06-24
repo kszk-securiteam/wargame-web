@@ -7,6 +7,7 @@ from chunked_upload.constants import http_status
 from chunked_upload.exceptions import ChunkedUploadError
 from chunked_upload.views import ChunkedUploadView, ChunkedUploadCompleteView
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render
@@ -115,6 +116,10 @@ class UserAdminView(TemplateView):
 
     def filter(self):
         return UserFilter(self.request.GET, queryset=User.objects.order_by('-is_staff').all())
+
+    def users(self):
+        page = self.request.GET.get('page', 1)
+        return Paginator(self.filter().qs, 25).get_page(page)
 
 
 class SubmissionsView(TemplateView, metaclass=ABCMeta):
