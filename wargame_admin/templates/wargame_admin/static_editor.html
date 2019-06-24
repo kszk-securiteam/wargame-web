@@ -1,6 +1,7 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% block content %}
     <h2>Static content editor</h2>
+    <a href="{% url "wargame-admin:staff-admin" %}">Staff members</a><br />
     {% for item in view.content_list %}
         <a href="{% url "wargame-admin:static-editor" item.key %}">{{ item.display_name }}</a><br/>
     {% endfor %}
