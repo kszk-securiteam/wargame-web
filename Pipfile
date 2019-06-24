@@ -17,6 +17,7 @@ psycopg2 = "*"
 channels = "*"
 pypiwin32 = "*"
 channels-redis = "*"
+django-filter = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"

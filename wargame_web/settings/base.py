@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'djangocodemirror',
     'taggit',
     'channels',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

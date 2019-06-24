@@ -3,11 +3,10 @@
 {% load static %}
 {% block content %}
     <h1>Users</h1>
-{#    <form class="form-inline mb-3 mt-3">#}
-{#        {% bootstrap_form form %}#}
-{#        <button type="submit" class="btn btn-primary ml-3">Search</button>#}
-{#    </form>#}
-    {# TODO: Add more search parameters #}
+    <form class="form-inline mb-3 mt-3">
+        {% bootstrap_form view.filter.form %}
+        <button type="submit" class="btn btn-primary ml-3">Search</button>
+    </form>
     <table class="table">
         <thead>
             <tr>
@@ -21,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for user in view.users %}
+        {% for user in view.filter.qs %}
             <tr>
                 <td class="align-middle">{{ user.username }}</td>
                 <td class="align-middle">{{ user.get_score }}</td>

@@ -19,6 +19,7 @@ from utils.export_challenges import export_challenges
 from utils.serve_file import serve_file
 from utils.user_import import do_user_import
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
+from wargame_admin.filters import UserFilter
 from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserEditForm, \
     ChallengeImportForm, \
     UserImportForm, StaticContentForm
@@ -112,9 +113,8 @@ class UserAdminView(TemplateView):
     template_name = "wargame_admin/user_admin.html"
     model = User
 
-    # noinspection PyMethodMayBeStatic
-    def users(self):
-        return User.objects.order_by('-is_staff').all()
+    def filter(self):
+        return UserFilter(self.request.GET, queryset=User.objects.order_by('-is_staff').all())
 
 
 class SubmissionsView(TemplateView, metaclass=ABCMeta):
