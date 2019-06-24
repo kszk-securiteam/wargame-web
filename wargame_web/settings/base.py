@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'taggit',
     'channels',
     'django_filters',
+    'bootstrap_pagination',
 ]
 
 MIDDLEWARE = [

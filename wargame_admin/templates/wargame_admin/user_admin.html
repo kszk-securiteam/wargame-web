@@ -1,5 +1,6 @@
 {% extends 'wargame_admin/admin_base.html' %}
 {% load bootstrap4 %}
+{% load bootstrap_pagination %}
 {% load static %}
 {% block content %}
     <h1>Users</h1>
@@ -33,4 +34,5 @@
         {% endfor %}
         </tbody>
     </table>
+    {% bootstrap_paginate view.users extra_pagination_classes="justify-content-center" previous_label="Previous" next_label="Next" %}
 {% endblock %}

@@ -18,6 +18,7 @@ channels = "*"
 pypiwin32 = "*"
 channels-redis = "*"
 django-filter = "*"
+django-bootstrap-pagination = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
