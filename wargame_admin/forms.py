@@ -35,10 +35,11 @@ class FileUploadForm(ModelForm):
 class ChallengeForm(ModelForm):
     class Meta:
         model = Challenge
-        fields = ['title', 'import_name', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity',
+        fields = ['title', 'import_name', 'hidden', 'description', 'short_description', 'level', 'flag_qpa', 'flag_hacktivity',
                   'points', 'hint', 'setup', 'solution', 'tags']
         help_texts = {
-            'import_name': 'A unique identifier that is a valid directory name'
+            'import_name': 'A unique identifier that is a valid directory name',
+            'hidden': 'Hidden challenges do not contribute to users\'s score and cannot be accessed'
         }
 
 

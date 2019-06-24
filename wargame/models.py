@@ -65,7 +65,8 @@ class User(AbstractUser):
 
         return UserChallenge.objects.filter(
             user=self,
-            submission__value__iexact=flag_field
+            submission__value__iexact=flag_field,
+            challenge__hidden=False
         ).annotate(
             points_with_hint=user_points
         ).aggregate(
@@ -86,6 +87,7 @@ class User(AbstractUser):
 
         return User.objects.filter(
             userchallenge__submission__value__iexact=flag_field,
+            userchallenge__challenge__hidden=False,
             hidden=False
         ).values(
             'username'
@@ -105,6 +107,7 @@ class User(AbstractUser):
         user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))[
             'max_level']
         solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
+                                                                      challenge__hidden=False,
                                                                       user=self,
                                                                       submission__value__iexact=flag_field
                                                                       ).count()
@@ -123,7 +126,8 @@ class User(AbstractUser):
             flag_field = F('flag_hacktivity')
 
         return Challenge.objects.filter(
-            level__lte=level
+            level__lte=level,
+            hidden=False
         ).annotate(
             solved=Sum(
                 Cast(Q(userchallenge__submission__value__iexact=flag_field, userchallenge__user=self), IntegerField())
@@ -133,7 +137,7 @@ class User(AbstractUser):
         )
 
     def is_challenge_visible(self, challenge):
-        return challenge.level <= self.get_visible_level()
+        return challenge.level <= self.get_visible_level() and not challenge.hidden
 
 
 class Challenge(models.Model):
@@ -150,6 +154,7 @@ class Challenge(models.Model):
     setup = models.CharField(max_length=8192, null=True, blank=True)
     import_name = models.CharField(max_length=64, verbose_name='Internal name', unique=True)
     tags = TaggableManager()
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -171,6 +176,11 @@ class Challenge(models.Model):
 
     def users_solved(self):
         return self.userchallenge_set.filter(submission__value__iexact=self.get_flag()).count()
+
+    def hidden_str(self):
+        if self.hidden:
+            return 'Hidden'
+        return 'Visible'
 
 
 class File(models.Model):
