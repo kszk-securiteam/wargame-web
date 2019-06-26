@@ -61,8 +61,6 @@ def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
     except Challenge.DoesNotExist:
         challenge = Challenge()
         challenge.import_name = challenge_name
-        challenge.level = 1
-        challenge.points = 0
     else:
         log("Challenge already exists, replacng values", log_var, MessageType.WARNING)
 

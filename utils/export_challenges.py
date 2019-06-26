@@ -7,7 +7,7 @@ from wargame.models import Challenge
 from wargame_admin.models import Export
 from wargame_web.settings import base
 
-export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_description", "tags"]
+export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_description", "tags", "level", "points"]
 
 
 def export_challenges():
