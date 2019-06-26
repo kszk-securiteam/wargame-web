@@ -7,9 +7,10 @@
     </div>
     <script>
         const log_var = "{{ log_var }}";
+        const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
 
         const chatSocket = new WebSocket(
-            'ws://' + window.location.host +
+            ws_scheme + '://' + window.location.host +
             '/ws/log/' + log_var + '/');
 
         chatSocket.onmessage = function(e) {
