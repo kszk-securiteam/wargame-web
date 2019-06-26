@@ -404,7 +404,7 @@ def export_download(request, pk):
     if not export:
         raise HttpResponseNotFound
 
-    return serve_file(request, export.file.path)
+    return serve_file(request, export.file.name)
 
 
 class ExportDeleteView(DeleteView):

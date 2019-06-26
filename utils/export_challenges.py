@@ -90,7 +90,7 @@ def export_challenges():
 
         # Update the export entry in the database
         export.status = 'DONE'
-        export.file.name = os.path.join(base.MEDIA_ROOT, "exports", archive_path)
+        export.file.name = os.path.join("exports", archive_path)
         export.save()
 
     except Exception:
