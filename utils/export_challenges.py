@@ -79,19 +79,18 @@ def export_challenges():
         # Archive the export folder
         archive_path = shutil.make_archive(os.path.join(base.MEDIA_ROOT, export_folder_name), 'zip', export_folder)
 
-        # Create media/exports/ folder
-        os.makedirs(os.path.join(base.MEDIA_ROOT, "exports"), exist_ok=True)
-
-        # Move the archive into the media/exports/ folder
-        archive_path = shutil.move(archive_path, os.path.join(base.MEDIA_ROOT, "exports"))
-
         # Delete the export folder
         shutil.rmtree(export_folder)
 
         # Update the export entry in the database
         export.status = 'DONE'
-        export.file.name = os.path.join("exports", archive_path)
+
+        with open(archive_path, 'rb') as archive:
+            export.file.save(os.path.basename(archive_path), archive)
+
         export.save()
+
+        os.remove(archive_path)
 
     except Exception:
         log_path = os.path.join(base.MEDIA_ROOT, "exports", export_folder_name + "-log.txt")
