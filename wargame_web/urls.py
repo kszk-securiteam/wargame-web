@@ -20,14 +20,13 @@ from markdownx import urls as markdownx_urls
 import wargame_web.settings.base as settings
 
 urlpatterns = [
-    path('', include('wargame.urls')),
-    path('django-admin/', admin.site.urls, name='django-admin'),
-    path('markdownx/', include(markdownx_urls)),
-    path('admin/', include('wargame_admin.urls'))
+    path("", include("wargame.urls")),
+    path("django-admin/", admin.site.urls, name="django-admin"),
+    path("markdownx/", include(markdownx_urls)),
+    path("admin/", include("wargame_admin.urls")),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-                      path('__debug__/', include(debug_toolbar.urls)),
-                  ] + urlpatterns
+
+    urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns

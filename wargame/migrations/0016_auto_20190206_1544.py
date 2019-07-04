@@ -5,13 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0015_auto_20190206_1538'),
-    ]
+    dependencies = [("wargame", "0015_auto_20190206_1538")]
 
-    operations = [
-        migrations.AlterUniqueTogether(
-            name='submission',
-            unique_together={('user_challenge', 'value')},
-        ),
-    ]
+    operations = [migrations.AlterUniqueTogether(name="submission", unique_together={("user_challenge", "value")})]

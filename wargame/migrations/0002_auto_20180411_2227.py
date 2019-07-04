@@ -6,14 +6,6 @@ import markdownx.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0001_initial'),
-    ]
+    dependencies = [("wargame", "0001_initial")]
 
-    operations = [
-        migrations.AlterField(
-            model_name='challenge',
-            name='description',
-            field=markdownx.models.MarkdownxField(),
-        ),
-    ]
+    operations = [migrations.AlterField(model_name="challenge", name="description", field=markdownx.models.MarkdownxField())]

@@ -5,17 +5,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame_admin', '0010_auto_20190204_2340'),
-    ]
+    dependencies = [("wargame_admin", "0010_auto_20190204_2340")]
 
     operations = [
         migrations.CreateModel(
-            name='StaticContent',
+            name="StaticContent",
             fields=[
-                ('key', models.CharField(max_length=255, primary_key=True, serialize=False)),
-                ('display_name', models.CharField(max_length=255)),
-                ('html', models.TextField()),
+                ("key", models.CharField(max_length=255, primary_key=True, serialize=False)),
+                ("display_name", models.CharField(max_length=255)),
+                ("html", models.TextField()),
             ],
-        ),
+        )
     ]

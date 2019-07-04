@@ -22,11 +22,11 @@ def get_messagetype_class(instance):
         MessageType.ERROR: "text-danger",
         MessageType.WARNING: "text-warning",
         MessageType.INFO: "text-info",
-        MessageType.SUCCESS: "text-success"
+        MessageType.SUCCESS: "text-success",
     }.get(instance, "")
 
 
 @register.simple_tag
 def render_message(message):
     message_type, string = message
-    return F'<code class="{get_messagetype_class(message_type)}">{string}</code>'
+    return f'<code class="{get_messagetype_class(message_type)}">{string}</code>'

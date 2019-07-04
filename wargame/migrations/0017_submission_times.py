@@ -5,14 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0016_auto_20190206_1544'),
-    ]
+    dependencies = [("wargame", "0016_auto_20190206_1544")]
 
-    operations = [
-        migrations.AddField(
-            model_name='submission',
-            name='times',
-            field=models.IntegerField(default=0),
-        ),
-    ]
+    operations = [migrations.AddField(model_name="submission", name="times", field=models.IntegerField(default=0))]

@@ -5,24 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0008_user_hidden'),
-    ]
+    dependencies = [("wargame", "0008_user_hidden")]
 
     operations = [
-        migrations.AddField(
-            model_name='challenge',
-            name='import_name',
-            field=models.CharField(max_length=64, null=True),
-        ),
-        migrations.AddField(
-            model_name='challenge',
-            name='setup',
-            field=models.CharField(max_length=8192, null=True),
-        ),
-        migrations.AddField(
-            model_name='challenge',
-            name='solution',
-            field=models.CharField(max_length=8192, null=True),
-        ),
+        migrations.AddField(model_name="challenge", name="import_name", field=models.CharField(max_length=64, null=True)),
+        migrations.AddField(model_name="challenge", name="setup", field=models.CharField(max_length=8192, null=True)),
+        migrations.AddField(model_name="challenge", name="solution", field=models.CharField(max_length=8192, null=True)),
     ]

@@ -5,14 +5,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0019_auto_20190609_1408'),
-    ]
+    dependencies = [("wargame", "0019_auto_20190609_1408")]
 
-    operations = [
-        migrations.AddField(
-            model_name='challenge',
-            name='hidden',
-            field=models.BooleanField(default=False),
-        ),
-    ]
+    operations = [migrations.AddField(model_name="challenge", name="hidden", field=models.BooleanField(default=False))]

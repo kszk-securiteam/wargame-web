@@ -13,7 +13,7 @@ export_keys = ["title", "flag_qpa", "flag_hacktivity", "hint", "short_descriptio
 def export_challenges():
     export = Export()
     export.save()
-    export_folder_name = F"challenge-export-{export.started_at.strftime('%Y%m%d-%H%M%S')}"
+    export_folder_name = f"challenge-export-{export.started_at.strftime('%Y%m%d-%H%M%S')}"
     export_folder = None
     archive_path = None
 
@@ -27,8 +27,11 @@ def export_challenges():
             c.tags = list(c.tags.names())
 
             # Calculate directories
-            challenge_folder = os.path.join(export_folder, "challenges",
-                                            c.import_name or c.title.replace(" ", "_").encode('ascii', 'ignore').decode("ascii"))
+            challenge_folder = os.path.join(
+                export_folder,
+                "challenges",
+                c.import_name or c.title.replace(" ", "_").encode("ascii", "ignore").decode("ascii"),
+            )
 
             qpa_folder = os.path.join(challenge_folder, "qpa-files")
             private_qpa_folder = os.path.join(qpa_folder, "private")
@@ -46,24 +49,24 @@ def export_challenges():
 
             # Export setup file, if it exists
             if c.setup:
-                with open(os.path.join(challenge_folder, "setup.txt"), "w", encoding='utf-8-sig') as setup_file:
+                with open(os.path.join(challenge_folder, "setup.txt"), "w", encoding="utf-8-sig") as setup_file:
                     setup_file.write(c.setup)
 
             # Export solution file
-            with open(os.path.join(challenge_folder, "solution.txt"), "w", encoding='utf-8-sig') as solution_file:
+            with open(os.path.join(challenge_folder, "solution.txt"), "w", encoding="utf-8-sig") as solution_file:
                 solution_file.write(c.solution)
 
             # Export description file
-            with open(os.path.join(challenge_folder, "description.md"), "w", encoding='utf-8-sig') as description_file:
+            with open(os.path.join(challenge_folder, "description.md"), "w", encoding="utf-8-sig") as description_file:
                 description_file.write(c.description)
 
             # Export challenge metadata file
-            with open(os.path.join(challenge_folder, "challenge.json"), "w", encoding='utf-8-sig') as challenge_file:
+            with open(os.path.join(challenge_folder, "challenge.json"), "w", encoding="utf-8-sig") as challenge_file:
                 challenge_file.write(json.dumps({key: c.__dict__[key] for key in export_keys}))
 
             # Copy challenge files to appropriate directories
             for f in c.files.all():
-                if f.config_name == 'qpa':
+                if f.config_name == "qpa":
                     if f.private:
                         destination_path = private_qpa_folder
                     else:
@@ -77,15 +80,15 @@ def export_challenges():
                 shutil.copy2(f.file.path, os.path.join(destination_path, f.filename))  # keep the original file name
 
         # Archive the export folder
-        archive_path = shutil.make_archive(os.path.join(base.MEDIA_ROOT, export_folder_name), 'zip', export_folder)
+        archive_path = shutil.make_archive(os.path.join(base.MEDIA_ROOT, export_folder_name), "zip", export_folder)
 
         # Delete the export folder
         shutil.rmtree(export_folder)
 
         # Update the export entry in the database
-        export.status = 'DONE'
+        export.status = "DONE"
 
-        with open(archive_path, 'rb') as archive:
+        with open(archive_path, "rb") as archive:
             export.file.save(os.path.basename(archive_path), archive)
 
         export.save()
@@ -95,10 +98,10 @@ def export_challenges():
     except Exception:
         log_path = os.path.join(base.MEDIA_ROOT, "exports", export_folder_name + "-log.txt")
 
-        with open(log_path, 'w') as text_file:
+        with open(log_path, "w") as text_file:
             text_file.write(traceback.format_exc())
 
-        export.status = 'ERROR'
+        export.status = "ERROR"
         export.file.name = log_path
         export.save()
 

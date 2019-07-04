@@ -13,7 +13,8 @@ class DisableSiteMiddleware:
     def __call__(self, request):
         if not Config.objects.wargame_active():
             if request.path.startswith("/challenges") or (
-                    request.path.startswith("/challenge-files") and not request.user.is_staff):
+                request.path.startswith("/challenge-files") and not request.user.is_staff
+            ):
 
                 messages.warning(request, "The wargame is not running, you can't view the challenges.")
                 return HttpResponseRedirect(reverse_lazy("scoreboard"))
@@ -26,10 +27,12 @@ class RequireEmailMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if (Config.objects.email_required() and
-                request.user.is_authenticated and
-                not request.user.email and
-                not request.path.startswith("/user/set-email")):
+        if (
+            Config.objects.email_required()
+            and request.user.is_authenticated
+            and not request.user.email
+            and not request.path.startswith("/user/set-email")
+        ):
 
             text = StaticContent.objects.get(key="email_notification").html
 

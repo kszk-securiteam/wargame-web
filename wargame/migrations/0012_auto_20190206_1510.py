@@ -5,16 +5,6 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0011_file_config_name'),
-    ]
+    dependencies = [("wargame", "0011_file_config_name")]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='challenge',
-            name='tags',
-        ),
-        migrations.DeleteModel(
-            name='Tag',
-        ),
-    ]
+    operations = [migrations.RemoveField(model_name="challenge", name="tags"), migrations.DeleteModel(name="Tag")]

@@ -18,14 +18,14 @@ from wargame_admin.models import Config, StaticContent
 
 
 class IndexView(TemplateView):
-    template_name = 'wargame/index.html'
+    template_name = "wargame/index.html"
 
     def index_content(self):
         return StaticContent.objects.get(key="index_right").html
 
 
 class ChallengesView(LoginRequiredMixin, TemplateView):
-    template_name = 'wargame/challenges.html'
+    template_name = "wargame/challenges.html"
 
     def challenges_by_level(self):
         challenges = self.request.user.get_visible_challenges()
@@ -36,7 +36,7 @@ class ChallengesView(LoginRequiredMixin, TemplateView):
 
 
 class ScoreboardView(TemplateView):
-    template_name = 'wargame/scoreboard.html'
+    template_name = "wargame/scoreboard.html"
 
     def scores(self):
         return models.User.get_top_40_by_score()
@@ -46,22 +46,22 @@ class ScoreboardView(TemplateView):
 
 
 class RulesView(TemplateView):
-    template_name = 'wargame/rules.html'
+    template_name = "wargame/rules.html"
 
     def rules_content(self):
         return StaticContent.objects.get(key="rules").html
 
 
 class AboutUsView(TemplateView):
-    template_name = 'wargame/about_us.html'
+    template_name = "wargame/about_us.html"
 
     # noinspection PyMethodMayBeStatic
     def get_people(self):
-        return models.StaffMember.objects.order_by(F('name')).all()
+        return models.StaffMember.objects.order_by(F("name")).all()
 
 
 class LinksView(TemplateView):
-    template_name = 'wargame/links.html'
+    template_name = "wargame/links.html"
 
     def links_content(self):
         return StaticContent.objects.get(key="links").html
@@ -69,20 +69,20 @@ class LinksView(TemplateView):
 
 class UserRegistrationView(RegistrationView):
     form_class = UserRegistrationForm
-    template_name = 'wargame/registration.html'
+    template_name = "wargame/registration.html"
 
     def registration_allowed(self):
         return not Config.objects.registration_disabled()
 
     def get_success_url(self, user=None):
-        return reverse_lazy('index')
+        return reverse_lazy("index")
 
 
 class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
-    template_name = 'wargame/challenge_details.html'
+    template_name = "wargame/challenge_details.html"
 
     def challenge(self):
-        return Challenge.objects.get(pk=self.kwargs['id'])
+        return Challenge.objects.get(pk=self.kwargs["id"])
 
     def files(self):
         return self.challenge().get_files().filter(private=False).all()
@@ -102,7 +102,7 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         if not self.request.user.is_challenge_visible(self.challenge()):
-            return HttpResponseRedirect(reverse_lazy('challenges'))
+            return HttpResponseRedirect(reverse_lazy("challenges"))
         return super(ChallengeDetailsView, self).get(request, args, kwargs)
 
     def post(self, *args, **kwargs):
@@ -110,7 +110,7 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
         if userchallenge.solved():
             return HttpResponseRedirect(self.request.path)
 
-        flag = self.request.POST.get('flag')
+        flag = self.request.POST.get("flag")
 
         if flag is None:
             return HttpResponseRedirect(self.request.path)
@@ -120,16 +120,16 @@ class ChallengeDetailsView(LoginRequiredMixin, TemplateView):
         submission.save()
 
         if userchallenge.solved():
-            messages.success(self.request, 'Congratulations! You have successfully solved this challenge!')
+            messages.success(self.request, "Congratulations! You have successfully solved this challenge!")
         else:
-            messages.error(self.request, 'Your answer was incorrect. Try again!')
+            messages.error(self.request, "Your answer was incorrect. Try again!")
 
         return HttpResponseRedirect(self.request.path)
 
 
 @login_required()
 def reveal_hint(request, challenge_id):
-    if request.method != 'POST':
+    if request.method != "POST":
         return HttpResponseBadRequest()
 
     challenge = Challenge.objects.get(pk=challenge_id)
@@ -137,7 +137,7 @@ def reveal_hint(request, challenge_id):
     if not userchallenge.solved():
         userchallenge.hint_used = True
         userchallenge.save()
-    return HttpResponseRedirect(reverse_lazy('challenge-details', kwargs={'id': challenge_id}))
+    return HttpResponseRedirect(reverse_lazy("challenge-details", kwargs={"id": challenge_id}))
 
 
 class VPNView(LoginRequiredMixin, TemplateView):
@@ -165,11 +165,11 @@ def download_challenge_file(request, file_id):
 
 class UserEmailView(LoginRequiredMixin, UpdateView):
     template_name = "wargame/edit_form.html"
-    fields = ('email',)
+    fields = ("email",)
     model = User
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('index')
+        return reverse_lazy("index")

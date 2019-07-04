@@ -5,15 +5,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0006_file'),
-    ]
+    dependencies = [("wargame", "0006_file")]
 
     operations = [
         migrations.AddField(
-            model_name='file',
-            name='display_name',
-            field=models.CharField(default='', max_length=256),
+            model_name="file",
+            name="display_name",
+            field=models.CharField(default="", max_length=256),
             preserve_default=False,
-        ),
+        )
     ]

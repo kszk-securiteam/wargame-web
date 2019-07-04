@@ -5,7 +5,7 @@ from wargame.models import User
 
 
 class UserFilter(FilterSet):
-    username = CharFilter(label='', lookup_expr='contains', widget=TextInput(attrs={'placeholder': 'Username'}))
+    username = CharFilter(label="", lookup_expr="contains", widget=TextInput(attrs={"placeholder": "Username"}))
 
     class Meta:
         model = User

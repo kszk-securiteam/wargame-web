@@ -5,14 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0014_auto_20190206_1537'),
-    ]
+    dependencies = [("wargame", "0014_auto_20190206_1537")]
 
     operations = [
-        migrations.AlterField(
-            model_name='challenge',
-            name='solution',
-            field=models.CharField(max_length=8192, null=True),
-        ),
+        migrations.AlterField(model_name="challenge", name="solution", field=models.CharField(max_length=8192, null=True))
     ]

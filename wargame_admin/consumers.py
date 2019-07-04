@@ -7,23 +7,23 @@ from channels.layers import get_channel_layer
 
 
 class MessageType(Enum):
-    ERROR = 0,
-    WARNING = 1,
-    INFO = 2,
+    ERROR = (0,)
+    WARNING = (1,)
+    INFO = (2,)
     SUCCESS = 3
 
 
 def log(message, log_var, log_level):
     channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(log_var, {"type": 'log_event', "message": message, 'level': log_level.name})
+    async_to_sync(channel_layer.group_send)(log_var, {"type": "log_event", "message": message, "level": log_level.name})
 
 
 class LogConsumer(WebsocketConsumer):
     def connect(self):
-        if not self.scope['user'].is_superuser:
+        if not self.scope["user"].is_superuser:
             return
 
-        self.log_var = self.scope['url_route']['kwargs']['log_var']
+        self.log_var = self.scope["url_route"]["kwargs"]["log_var"]
         async_to_sync(self.channel_layer.group_add)(self.log_var, self.channel_name)
         self.accept()
 
@@ -34,4 +34,4 @@ class LogConsumer(WebsocketConsumer):
         pass
 
     def log_event(self, event):
-        self.send(json.dumps({'level': event['level'], 'message': event['message']}))
+        self.send(json.dumps({"level": event["level"], "message": event["message"]}))

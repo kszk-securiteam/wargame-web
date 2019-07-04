@@ -5,14 +5,8 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame_admin', '0013_export'),
-    ]
+    dependencies = [("wargame_admin", "0013_export")]
 
     operations = [
-        migrations.AddField(
-            model_name='staticcontent',
-            name='note',
-            field=models.CharField(default='', max_length=255),
-        ),
+        migrations.AddField(model_name="staticcontent", name="note", field=models.CharField(default="", max_length=255))
     ]

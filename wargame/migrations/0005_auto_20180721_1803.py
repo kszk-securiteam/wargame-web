@@ -5,22 +5,18 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0004_staffmember'),
-    ]
+    dependencies = [("wargame", "0004_staffmember")]
 
     operations = [
-        migrations.DeleteModel(
-            name='File',
+        migrations.DeleteModel(name="File"),
+        migrations.AlterField(
+            model_name="challenge",
+            name="flag_hacktivity",
+            field=models.CharField(max_length=256, null=True, verbose_name="Flag (Hacktivity)"),
         ),
         migrations.AlterField(
-            model_name='challenge',
-            name='flag_hacktivity',
-            field=models.CharField(max_length=256, null=True, verbose_name='Flag (Hacktivity)'),
-        ),
-        migrations.AlterField(
-            model_name='challenge',
-            name='flag_qpa',
-            field=models.CharField(max_length=256, null=True, verbose_name='Flag (QPA)'),
+            model_name="challenge",
+            name="flag_qpa",
+            field=models.CharField(max_length=256, null=True, verbose_name="Flag (QPA)"),
         ),
     ]

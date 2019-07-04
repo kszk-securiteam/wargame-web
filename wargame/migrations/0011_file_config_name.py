@@ -5,15 +5,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0010_auto_20180920_1617'),
-    ]
+    dependencies = [("wargame", "0010_auto_20180920_1617")]
 
     operations = [
         migrations.AddField(
-            model_name='file',
-            name='config_name',
-            field=models.CharField(choices=[('qpa', 'qpa'), ('hacktivity', 'hacktivity')], default='qpa', max_length=20),
+            model_name="file",
+            name="config_name",
+            field=models.CharField(choices=[("qpa", "qpa"), ("hacktivity", "hacktivity")], default="qpa", max_length=20),
             preserve_default=False,
-        ),
+        )
     ]

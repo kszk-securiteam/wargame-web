@@ -12,28 +12,28 @@ from django.dispatch import receiver
 
 class ConfigManager(Manager):
     def is_qpa(self):
-        return Config.objects.get(key='qpa_hack').value == 'qpa'
+        return Config.objects.get(key="qpa_hack").value == "qpa"
 
     def config_name(self):
-        return Config.objects.get(key='qpa_hack')
+        return Config.objects.get(key="qpa_hack")
 
     def stage_tasks(self):
-        return Config.objects.get(key='stage_tasks').get_int()
+        return Config.objects.get(key="stage_tasks").get_int()
 
     def registration_disabled(self):
-        return Config.objects.get(key='disable_registration').get_bool()
+        return Config.objects.get(key="disable_registration").get_bool()
 
     def wargame_active(self):
-        return Config.objects.get(key='wargame_active').get_bool()
+        return Config.objects.get(key="wargame_active").get_bool()
 
     def show_qpa_points(self):
-        return Config.objects.get(key='show_qpa_points').get_bool()
+        return Config.objects.get(key="show_qpa_points").get_bool()
 
     def qpa_points_multiplier(self):
-        return Config.objects.get(key='qpa_points_multiplier').get_float()
+        return Config.objects.get(key="qpa_points_multiplier").get_float()
 
     def email_required(self):
-        return Config.objects.get(key='email_required').get_bool()
+        return Config.objects.get(key="email_required").get_bool()
 
 
 class Config(Model):
@@ -72,19 +72,16 @@ class ChallengeFileChunkedUpload(ChunkedUpload):
 class StaticContent(Model):
     key = CharField(max_length=255, primary_key=True)
     display_name = CharField(max_length=255)
-    note = CharField(max_length=255, default='')
+    note = CharField(max_length=255, default="")
     html = TextField()
 
 
 class Export(Model):
-    EXPORT_STATUS = (
-        ('IN_PROGRESS', "In progress"),
-        ('DONE', "Done"),
-        ('FAILED', "Failed")
-    )
+    EXPORT_STATUS = (("IN_PROGRESS", "In progress"), ("DONE", "Done"), ("FAILED", "Failed"))
     started_at = models.DateTimeField(auto_now_add=True)
-    file = models.FileField(upload_to='exports/', null=True)
-    status = models.CharField(max_length=20, choices=EXPORT_STATUS, default='IN_PROGRESS')
+    file = models.FileField(upload_to="exports/", null=True)
+    status = models.CharField(max_length=20, choices=EXPORT_STATUS, default="IN_PROGRESS")
+
 
 # Deletes file from filesystem when File object is deleted.
 @receiver(signals.post_delete, sender=Export)

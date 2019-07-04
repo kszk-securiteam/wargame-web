@@ -21,9 +21,16 @@ from utils.serve_file import serve_file
 from utils.user_import import do_user_import
 from wargame.models import Challenge, File, UserChallenge, User, StaffMember
 from wargame_admin.filters import UserFilter
-from wargame_admin.forms import ChallengeForm, FileForm, FileUploadForm, UserEditForm, \
-    ChallengeImportForm, \
-    UserImportForm, StaticContentForm, RebalanceChallengeForm
+from wargame_admin.forms import (
+    ChallengeForm,
+    FileForm,
+    FileUploadForm,
+    UserEditForm,
+    ChallengeImportForm,
+    UserImportForm,
+    StaticContentForm,
+    RebalanceChallengeForm,
+)
 from wargame_admin.models import Config, ChallengeFileChunkedUpload, StaticContent, Export
 from wargame_web.settings import base
 
@@ -33,20 +40,20 @@ class ChallengeListView(TemplateView):
 
     # noinspection PyMethodMayBeStatic
     def challenges(self):
-        return Challenge.objects.all().order_by('level')
+        return Challenge.objects.all().order_by("level")
 
 
 class ChallengeDetailsView(TemplateView):
     template_name = "wargame_admin/challenge_details.html"
 
     def challenge(self):
-        return Challenge.objects.get(pk=self.kwargs['pk'])
+        return Challenge.objects.get(pk=self.kwargs["pk"])
 
     def qpa_files(self):
-        return self.challenge().files.filter(config_name='qpa').all()
+        return self.challenge().files.filter(config_name="qpa").all()
 
     def hacktivity_files(self):
-        return self.challenge().files.filter(config_name='hacktivity').all()
+        return self.challenge().files.filter(config_name="hacktivity").all()
 
 
 class ChallengeEditView(UpdateView):
@@ -56,7 +63,7 @@ class ChallengeEditView(UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, "Challenge saved.")
-        return reverse_lazy('wargame-admin:challenge-details', kwargs={'pk': self.object.id})
+        return reverse_lazy("wargame-admin:challenge-details", kwargs={"pk": self.object.id})
 
 
 class ChallengeCreateView(CreateView):
@@ -66,7 +73,7 @@ class ChallengeCreateView(CreateView):
 
     def get_success_url(self):
         messages.success(self.request, "Challenge created.")
-        return reverse_lazy('wargame-admin:challenge-details', kwargs={'pk': self.object.id})
+        return reverse_lazy("wargame-admin:challenge-details", kwargs={"pk": self.object.id})
 
 
 class ChallengeDeleteView(DeleteView):
@@ -75,7 +82,7 @@ class ChallengeDeleteView(DeleteView):
 
     def get_success_url(self):
         messages.success(self.request, "Challenge deleted.")
-        return reverse_lazy('wargame-admin:challenges')
+        return reverse_lazy("wargame-admin:challenges")
 
 
 class ChallengeFilesView(TemplateView):
@@ -83,7 +90,7 @@ class ChallengeFilesView(TemplateView):
     file_form_set = inlineformset_factory(Challenge, File, form=FileForm, extra=0, can_delete=False)
 
     def challenge(self):
-        return Challenge.objects.get(pk=self.kwargs['pk'])
+        return Challenge.objects.get(pk=self.kwargs["pk"])
 
     # noinspection PyMethodMayBeStatic
     def file_upload_form(self):
@@ -102,12 +109,12 @@ class ChallengeFilesView(TemplateView):
 
 
 class ChallengeFileDeleteView(DeleteView):
-    template_name = 'wargame_admin/challenge_file_delete.html'
+    template_name = "wargame_admin/challenge_file_delete.html"
     model = File
 
     def get_success_url(self):
         messages.success(self.request, "File deleted.")
-        return reverse_lazy('wargame-admin:challenge-files', kwargs={'pk': self.object.challenge.id})
+        return reverse_lazy("wargame-admin:challenge-files", kwargs={"pk": self.object.challenge.id})
 
 
 class UserAdminView(TemplateView):
@@ -115,10 +122,10 @@ class UserAdminView(TemplateView):
     model = User
 
     def filter(self):
-        return UserFilter(self.request.GET, queryset=User.objects.order_by('-is_staff').all())
+        return UserFilter(self.request.GET, queryset=User.objects.order_by("-is_staff").all())
 
     def users(self):
-        page = self.request.GET.get('page', 1)
+        page = self.request.GET.get("page", 1)
         return Paginator(self.filter().qs, 25).get_page(page)
 
 
@@ -130,7 +137,7 @@ class SubmissionsView(TemplateView, metaclass=ABCMeta):
         pass
 
     def selected_id(self):
-        arg = self.request.GET.get('id')
+        arg = self.request.GET.get("id")
         if arg is None:
             return None
         return int(arg)
@@ -160,7 +167,7 @@ class ChallengeSubmissions(SubmissionsView):
 
     # noinspection PyMethodMayBeStatic
     def list(self):
-        return Challenge.objects.values_list('id', 'title').all()
+        return Challenge.objects.values_list("id", "title").all()
 
     def userchallenges(self):
         return UserChallenge.objects.filter(challenge_id=self.selected_id()).all()
@@ -185,7 +192,7 @@ class UserSubmissions(SubmissionsView):
 
     # noinspection PyMethodMayBeStatic
     def list(self):
-        return User.objects.values_list('id', 'username').all()
+        return User.objects.values_list("id", "username").all()
 
     def userchallenges(self):
         return UserChallenge.objects.filter(user_id=self.selected_id()).all()
@@ -221,9 +228,9 @@ class SubmissionActionView(TemplateView, metaclass=ABCMeta):
         return Challenge.objects.get(pk=challenge_id)
 
     def return_url(self):
-        if self.request.GET.get('return') == 'challenges':
+        if self.request.GET.get("return") == "challenges":
             return f"{reverse_lazy('wargame-admin:challenge-submissions')}?id={self.challenge().id.__str__()}"
-        if self.request.GET.get('return') == 'users':
+        if self.request.GET.get("return") == "users":
             return f"{reverse_lazy('wargame-admin:user-submissions')}?id={self.user().id.__str__()}"
 
     def userchallenges(self):
@@ -234,7 +241,7 @@ class SubmissionActionView(TemplateView, metaclass=ABCMeta):
         return [UserChallenge.get_or_create(self.user(), self.challenge())]
 
     def get(self, request, *args, **kwargs):
-        if (self.user() is None and self.challenge() is None) or self.request.GET.get('return') is None:
+        if (self.user() is None and self.challenge() is None) or self.request.GET.get("return") is None:
             return HttpResponseBadRequest()
         return super().get(request, *args, **kwargs)
 
@@ -283,7 +290,7 @@ class UserEdit(UpdateView):
         self.object.is_staff = self.object.is_superuser
         self.object.save()
         messages.success(self.request, "User saved.")
-        return reverse_lazy('wargame-admin:users')
+        return reverse_lazy("wargame-admin:users")
 
 
 class ConfigEditorView(TemplateView):
@@ -295,7 +302,7 @@ class ConfigEditorView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         for key, value in request.POST.dict().items():
-            if key == 'csrfmiddlewaretoken':
+            if key == "csrfmiddlewaretoken":
                 continue
             config = Config.objects.get(key=key)
             config.value = value
@@ -305,7 +312,7 @@ class ConfigEditorView(TemplateView):
 
 
 class StaffMemberAdmin(TemplateView):
-    template_name = 'wargame_admin/staff_admin.html'
+    template_name = "wargame_admin/staff_admin.html"
 
     # noinspection PyMethodMayBeStatic
     def staff_members(self):
@@ -314,22 +321,22 @@ class StaffMemberAdmin(TemplateView):
 
 class StaffEditView(UpdateView):
     template_name = "wargame_admin/edit_form.html"
-    fields = ('name',)
+    fields = ("name",)
     model = StaffMember
 
     def get_success_url(self):
         messages.success(self.request, "Staff member saved.")
-        return reverse_lazy('wargame-admin:staff-admin')
+        return reverse_lazy("wargame-admin:staff-admin")
 
 
 class StaffCreateView(CreateView):
     template_name = "wargame_admin/edit_form.html"
-    fields = ('name',)
+    fields = ("name",)
     model = StaffMember
 
     def get_success_url(self):
         messages.success(self.request, "Staff member created.")
-        return reverse_lazy('wargame-admin:staff-admin')
+        return reverse_lazy("wargame-admin:staff-admin")
 
 
 class StaffDeleteView(DeleteView):
@@ -338,7 +345,7 @@ class StaffDeleteView(DeleteView):
 
     def get_success_url(self):
         messages.success(self.request, "Staff member deleted.")
-        return reverse_lazy('wargame-admin:staff-admin')
+        return reverse_lazy("wargame-admin:staff-admin")
 
 
 class ImportExportView(TemplateView):
@@ -352,22 +359,22 @@ class ImportExportView(TemplateView):
         return self.import_messages
 
     def challenge_import_form(self):
-        return ChallengeImportForm(prefix='challenge')
+        return ChallengeImportForm(prefix="challenge")
 
     def user_import_form(self):
-        return UserImportForm(prefix='user')
+        return UserImportForm(prefix="user")
 
     def post(self, request, *args, **kwargs):
-        if 'type' not in request.POST:
+        if "type" not in request.POST:
             raise HttpResponseBadRequest
 
         log_var = get_random_string()
 
-        if request.POST['type'] == 'challenge':
-            form = ChallengeImportForm(request.POST, request.FILES, prefix='challenge')
+        if request.POST["type"] == "challenge":
+            form = ChallengeImportForm(request.POST, request.FILES, prefix="challenge")
             target = do_challenge_import
-        elif request.POST['type'] == 'user':
-            form = UserImportForm(request.POST, request.FILES, prefix='user')
+        elif request.POST["type"] == "user":
+            form = UserImportForm(request.POST, request.FILES, prefix="user")
             target = do_user_import
         else:
             return HttpResponseBadRequest
@@ -375,19 +382,19 @@ class ImportExportView(TemplateView):
         if not form.is_valid():
             return HttpResponseBadRequest()
 
-        old_path = form.cleaned_data['file'].temporary_file_path()
+        old_path = form.cleaned_data["file"].temporary_file_path()
         new_path = os.path.join(base.MEDIA_ROOT, os.path.basename(old_path))
         copyfile(old_path, new_path)
 
-        thread = Thread(target=target, args=(new_path, form.cleaned_data['dry_run'], log_var), kwargs={})
+        thread = Thread(target=target, args=(new_path, form.cleaned_data["dry_run"], log_var), kwargs={})
         thread.setDaemon(True)
         thread.start()
 
-        return HttpResponseRedirect(reverse_lazy('wargame-admin:log-view', kwargs={'log_var': log_var}))
+        return HttpResponseRedirect(reverse_lazy("wargame-admin:log-view", kwargs={"log_var": log_var}))
 
 
 def log_view(request, log_var):
-    return render(request, 'wargame_admin/import_log.html', {'log_var': log_var})
+    return render(request, "wargame_admin/import_log.html", {"log_var": log_var})
 
 
 def challenge_export_view(request):
@@ -395,7 +402,7 @@ def challenge_export_view(request):
     thread.setDaemon(True)
     thread.start()
     messages.success(request, "Export started")
-    return HttpResponseRedirect(reverse_lazy('wargame-admin:import-export'))
+    return HttpResponseRedirect(reverse_lazy("wargame-admin:import-export"))
 
 
 def export_download(request, pk):
@@ -413,7 +420,7 @@ class ExportDeleteView(DeleteView):
 
     def get_success_url(self):
         messages.success(self.request, "Export deleted")
-        return reverse_lazy('wargame-admin:import-export')
+        return reverse_lazy("wargame-admin:import-export")
 
 
 class ChallengeFileChunkedUploadView(ChunkedUploadView):
@@ -433,10 +440,10 @@ class ChallengeFileChunkedUploadCompleteView(ChunkedUploadCompleteView):
             raise ChunkedUploadError(status=http_status.HTTP_403_FORBIDDEN)
 
     def on_completion(self, uploaded_file, request):
-        form = FileUploadForm(request.POST, {'file': uploaded_file})
+        form = FileUploadForm(request.POST, {"file": uploaded_file})
         if form.is_valid():
             file = form.save(commit=False)
-            file.challenge_id = self.kwargs['challenge_id']
+            file.challenge_id = self.kwargs["challenge_id"]
             file.filename = uploaded_file.name
             file.save()
             messages.success(request, "File uploaded.")
@@ -448,7 +455,7 @@ class StaticEditorList(TemplateView):
     template_name = "wargame_admin/static_editor.html"
 
     def content_list(self):
-        return StaticContent.objects.values('key', 'display_name')
+        return StaticContent.objects.values("key", "display_name")
 
 
 class StaticEditor(UpdateView):
@@ -458,16 +465,17 @@ class StaticEditor(UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, "Content saved.")
-        return reverse_lazy('wargame-admin:static-editor-list')
+        return reverse_lazy("wargame-admin:static-editor-list")
 
 
 class RebalanceView(TemplateView):
     template_name = "wargame_admin/rebalance.html"
-    RebalanceChallengeFormset = modelformset_factory(Challenge, form=RebalanceChallengeForm, extra=0, can_delete=False,
-                                                     can_order=False)
+    RebalanceChallengeFormset = modelformset_factory(
+        Challenge, form=RebalanceChallengeForm, extra=0, can_delete=False, can_order=False
+    )
 
     def queryset(self):
-        return Challenge.objects.order_by('level', 'points')
+        return Challenge.objects.order_by("level", "points")
 
     def formset(self):
         return self.RebalanceChallengeFormset(queryset=self.queryset())

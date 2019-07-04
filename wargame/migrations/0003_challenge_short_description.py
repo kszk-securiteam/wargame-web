@@ -5,14 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0002_auto_20180411_2227'),
-    ]
+    dependencies = [("wargame", "0002_auto_20180411_2227")]
 
     operations = [
         migrations.AddField(
-            model_name='challenge',
-            name='short_description',
-            field=models.CharField(default='', max_length=512),
-        ),
+            model_name="challenge", name="short_description", field=models.CharField(default="", max_length=512)
+        )
     ]

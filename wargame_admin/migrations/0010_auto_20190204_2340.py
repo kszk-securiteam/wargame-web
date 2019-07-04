@@ -4,22 +4,20 @@ from django.db import migrations
 
 
 def update_config(apps, schema_editor):
-    Config = apps.get_model('wargame_admin', 'Config')
+    Config = apps.get_model("wargame_admin", "Config")
 
-    require_email = Config(key='email_required',
-                           value='False',
-                           display_name='Email required',
-                           description='Require that the user provide an email address when creating a new account.',
-                           possible_values='["True", "False"]')
+    require_email = Config(
+        key="email_required",
+        value="False",
+        display_name="Email required",
+        description="Require that the user provide an email address when creating a new account.",
+        possible_values='["True", "False"]',
+    )
 
     require_email.save()
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('wargame_admin', '0009_auto_20181011_1350'),
-    ]
+    dependencies = [("wargame_admin", "0009_auto_20181011_1350")]
 
-    operations = [
-        migrations.RunPython(update_config)
-    ]
+    operations = [migrations.RunPython(update_config)]

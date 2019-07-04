@@ -4,35 +4,27 @@ from django.db import migrations
 
 
 def update_static_files(apps, schema_editor):
-    StaticContent = apps.get_model('wargame_admin', 'StaticContent')
+    StaticContent = apps.get_model("wargame_admin", "StaticContent")
 
-    email_subject = StaticContent(
-        key='email_subject',
-        display_name='User import email subject',
-        html='Elindult a wargame!'
-    )
+    email_subject = StaticContent(key="email_subject", display_name="User import email subject", html="Elindult a wargame!")
     email_subject.save()
 
     email_text = StaticContent(
-        key='email_text',
-        display_name='User import email',
-        note='''<code>%TEAM%</code> is replaced by the teams's name.
-<code>%PASSWORD%</code> is replaced by the team's password.''',
-        html='''Kedves Csapatkapitány!
+        key="email_text",
+        display_name="User import email",
+        note="""<code>%TEAM%</code> is replaced by the teams's name.
+<code>%PASSWORD%</code> is replaced by the team's password.""",
+        html="""Kedves Csapatkapitány!
 Elindult a SecurITeam által szervezett Wargame, ahol további értékes pontokat szerezhettek a Schönherz QPA-ra!
 A feladatokat a https://wargame.sch.bme.hu/ oldalon érhetitek el.
 A csapatod felhasználóneve: %TEAM%
 És jelszava: %PASSWORD%
-Jó szórakozást!'''
+Jó szórakozást!""",
     )
     email_text.save()
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('wargame_admin', '0014_staticcontent_note'),
-    ]
+    dependencies = [("wargame_admin", "0014_staticcontent_note")]
 
-    operations = [
-        migrations.RunPython(update_static_files)
-    ]
+    operations = [migrations.RunPython(update_static_files)]

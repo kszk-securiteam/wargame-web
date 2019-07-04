@@ -18,7 +18,7 @@ from wargame_admin.models import Config
 
 def custom_username_validator(username):
     message = "Enter a valid username. This value may contain only letters, numbers, and @/+/-/_ characters."
-    if '~' in username or '/' in username or '.' in username:
+    if "~" in username or "/" in username or "." in username:
         raise ValidationError(message)
     return UnicodeUsernameValidator(message=message).__call__(username)
 
@@ -27,14 +27,12 @@ class User(AbstractUser):
     hidden = models.BooleanField(default=False)
 
     username = models.CharField(
-        'username',
+        "username",
         max_length=150,
         unique=True,
-        help_text='Required. 150 characters or fewer. Letters, digits and @/+/-/_ only.',
+        help_text="Required. 150 characters or fewer. Letters, digits and @/+/-/_ only.",
         validators=[custom_username_validator],
-        error_messages={
-            'unique': "A user with that username already exists.",
-        },
+        error_messages={"unique": "A user with that username already exists."},
     )
 
     def admin_str(self):
@@ -54,63 +52,54 @@ class User(AbstractUser):
 
     def get_score(self):
         if Config.objects.is_qpa():
-            flag_field = F('challenge__flag_qpa')
+            flag_field = F("challenge__flag_qpa")
         else:
-            flag_field = F('challenge__flag_hacktivity')
+            flag_field = F("challenge__flag_hacktivity")
 
-        challenge_points = F('challenge__points')
-        hint_used = Cast('hint_used', IntegerField())
-        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5),
-                                        output_field=IntegerField())
+        challenge_points = F("challenge__points")
+        hint_used = Cast("hint_used", IntegerField())
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
 
-        return UserChallenge.objects.filter(
-            user=self,
-            submission__value__iexact=flag_field,
-            challenge__hidden=False
-        ).annotate(
-            points_with_hint=user_points
-        ).aggregate(
-            total_points=Coalesce(Sum('points_with_hint'), 0)
-        ).get('total_points')
+        return (
+            UserChallenge.objects.filter(user=self, submission__value__iexact=flag_field, challenge__hidden=False)
+            .annotate(points_with_hint=user_points)
+            .aggregate(total_points=Coalesce(Sum("points_with_hint"), 0))
+            .get("total_points")
+        )
 
     @staticmethod
     def get_top_40_by_score():
         if Config.objects.is_qpa():
-            flag_field = F('userchallenge__challenge__flag_qpa')
+            flag_field = F("userchallenge__challenge__flag_qpa")
         else:
-            flag_field = F('userchallenge__challenge__flag_hacktivity')
+            flag_field = F("userchallenge__challenge__flag_hacktivity")
 
-        challenge_points = F('userchallenge__challenge__points')
-        hint_used = Cast('userchallenge__hint_used', IntegerField())
-        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5),
-                                        output_field=IntegerField())
+        challenge_points = F("userchallenge__challenge__points")
+        hint_used = Cast("userchallenge__hint_used", IntegerField())
+        user_points = ExpressionWrapper(challenge_points - (hint_used * challenge_points * 0.5), output_field=IntegerField())
 
-        return User.objects.filter(
-            userchallenge__submission__value__iexact=flag_field,
-            userchallenge__challenge__hidden=False,
-            hidden=False
-        ).values(
-            'username'
-        ).annotate(
-            total_points=Coalesce(Sum(user_points), 0)
-        ).order_by('-total_points')[:40]
+        return (
+            User.objects.filter(
+                userchallenge__submission__value__iexact=flag_field, userchallenge__challenge__hidden=False, hidden=False
+            )
+            .values("username")
+            .annotate(total_points=Coalesce(Sum(user_points), 0))
+            .order_by("-total_points")[:40]
+        )
 
     def get_visible_level(self):
         if Config.objects.stage_tasks() == 0:
-            return Challenge.objects.aggregate(Max('level'))['level__max']
+            return Challenge.objects.aggregate(Max("level"))["level__max"]
 
         if Config.objects.is_qpa():
-            flag_field = F('challenge__flag_qpa')
+            flag_field = F("challenge__flag_qpa")
         else:
-            flag_field = F('challenge__flag_hacktivity')
+            flag_field = F("challenge__flag_hacktivity")
 
-        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max('challenge__level'), 1))[
-            'max_level']
-        solved_challenges_at_max_level = UserChallenge.objects.filter(challenge__level=user_max_level,
-                                                                      challenge__hidden=False,
-                                                                      user=self,
-                                                                      submission__value__iexact=flag_field
-                                                                      ).count()
+        user_max_level = self.userchallenge_set.all().aggregate(max_level=Coalesce(Max("challenge__level"), 1))["max_level"]
+        solved_challenges_at_max_level = UserChallenge.objects.filter(
+            challenge__level=user_max_level, challenge__hidden=False, user=self, submission__value__iexact=flag_field
+        ).count()
 
         if solved_challenges_at_max_level >= Config.objects.stage_tasks():
             user_max_level += 1
@@ -121,19 +110,18 @@ class User(AbstractUser):
         level = self.get_visible_level()
 
         if Config.objects.is_qpa():
-            flag_field = F('flag_qpa')
+            flag_field = F("flag_qpa")
         else:
-            flag_field = F('flag_hacktivity')
+            flag_field = F("flag_hacktivity")
 
-        return Challenge.objects.filter(
-            level__lte=level,
-            hidden=False
-        ).annotate(
-            solved=Sum(
-                Cast(Q(userchallenge__submission__value__iexact=flag_field, userchallenge__user=self), IntegerField())
+        return (
+            Challenge.objects.filter(level__lte=level, hidden=False)
+            .annotate(
+                solved=Sum(
+                    Cast(Q(userchallenge__submission__value__iexact=flag_field, userchallenge__user=self), IntegerField())
+                )
             )
-        ).order_by(
-            'level', 'title'
+            .order_by("level", "title")
         )
 
     def is_challenge_visible(self, challenge):
@@ -146,13 +134,13 @@ class Challenge(models.Model):
     description = MarkdownxField()
     short_description = models.CharField(max_length=512, default="")
     level = models.IntegerField()
-    flag_qpa = models.CharField(max_length=256, null=True, verbose_name='Flag (QPA)')
-    flag_hacktivity = models.CharField(max_length=256, null=True, verbose_name='Flag (Hacktivity)')
+    flag_qpa = models.CharField(max_length=256, null=True, verbose_name="Flag (QPA)")
+    flag_hacktivity = models.CharField(max_length=256, null=True, verbose_name="Flag (Hacktivity)")
     points = models.IntegerField()
     hint = models.CharField(max_length=8192, null=True)
     solution = models.CharField(max_length=8192, null=True)
     setup = models.CharField(max_length=8192, null=True, blank=True)
-    import_name = models.CharField(max_length=64, verbose_name='Internal name', unique=True)
+    import_name = models.CharField(max_length=64, verbose_name="Internal name", unique=True)
     tags = TaggableManager()
     hidden = models.BooleanField(default=False)
 
@@ -169,7 +157,7 @@ class Challenge(models.Model):
         return self.files.filter(config_name=Config.objects.config_name().value)
 
     def tag_list(self):
-        return ', '.join(self.tags.names())
+        return ", ".join(self.tags.names())
 
     def users_attempted(self):
         return self.userchallenge_set.count()
@@ -179,17 +167,14 @@ class Challenge(models.Model):
 
     def hidden_str(self):
         if self.hidden:
-            return 'Hidden'
-        return 'Visible'
+            return "Hidden"
+        return "Visible"
 
 
 class File(models.Model):
-    CONFIG_CHOICES = (
-        ('qpa', 'qpa'),
-        ('hacktivity', 'hacktivity')
-    )
-    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name='files')
-    file = models.FileField(upload_to='challenge-files/')
+    CONFIG_CHOICES = (("qpa", "qpa"), ("hacktivity", "hacktivity"))
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE, related_name="files")
+    file = models.FileField(upload_to="challenge-files/")
     filename = models.CharField(max_length=256)
     display_name = models.CharField(max_length=256)
     private = models.BooleanField(default=False)
@@ -210,7 +195,7 @@ class UserChallenge(models.Model):
     hint_used = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('user', 'challenge'),)
+        unique_together = (("user", "challenge"),)
 
     @staticmethod
     def get_or_create(user, challenge):
@@ -235,7 +220,7 @@ class Submission(models.Model):
     times = models.IntegerField(default=0)
 
     class Meta:
-        unique_together = ('user_challenge', 'value')
+        unique_together = ("user_challenge", "value")
 
     @staticmethod
     def get_or_create(userchallenge, value):

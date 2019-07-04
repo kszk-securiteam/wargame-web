@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0018_file_filename'),
-    ]
+    dependencies = [("wargame", "0018_file_filename")]
 
     operations = [
         migrations.AlterField(
-            model_name='challenge',
-            name='import_name',
-            field=models.CharField(max_length=64, unique=True, verbose_name='Internal name'),
-        ),
+            model_name="challenge",
+            name="import_name",
+            field=models.CharField(max_length=64, unique=True, verbose_name="Internal name"),
+        )
     ]

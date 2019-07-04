@@ -6,18 +6,21 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0005_auto_20180721_1803'),
-    ]
+    dependencies = [("wargame", "0005_auto_20180721_1803")]
 
     operations = [
         migrations.CreateModel(
-            name='File',
+            name="File",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to='challenge-files/')),
-                ('private', models.BooleanField(default=False)),
-                ('challenge', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='wargame.Challenge')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("file", models.FileField(upload_to="challenge-files/")),
+                ("private", models.BooleanField(default=False)),
+                (
+                    "challenge",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="files", to="wargame.Challenge"
+                    ),
+                ),
             ],
-        ),
+        )
     ]

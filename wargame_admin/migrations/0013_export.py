@@ -5,18 +5,23 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame_admin', '0012_auto_20190205_0730'),
-    ]
+    dependencies = [("wargame_admin", "0012_auto_20190205_0730")]
 
     operations = [
         migrations.CreateModel(
-            name='Export',
+            name="Export",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('started_at', models.DateTimeField(auto_now_add=True)),
-                ('file', models.FileField(null=True, upload_to='exports/')),
-                ('status', models.CharField(choices=[('IN_PROGRESS', 'In progress'), ('DONE', 'Done'), ('FAILED', 'Failed')], default='IN_PROGRESS', max_length=20)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("started_at", models.DateTimeField(auto_now_add=True)),
+                ("file", models.FileField(null=True, upload_to="exports/")),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("IN_PROGRESS", "In progress"), ("DONE", "Done"), ("FAILED", "Failed")],
+                        default="IN_PROGRESS",
+                        max_length=20,
+                    ),
+                ),
             ],
-        ),
+        )
     ]

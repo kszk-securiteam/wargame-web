@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 def update_config(apps, schema_editor):
-    StaticContent = apps.get_model('wargame_admin', 'StaticContent')
+    StaticContent = apps.get_model("wargame_admin", "StaticContent")
 
     index_right = StaticContent(
-        key='index_right',
-        display_name='Right side of the homepage',
+        key="index_right",
+        display_name="Right side of the homepage",
         html="""<p style="background-color: red; color: white; padding: 1em; border-radius: 5px;"><b>Notice:</b> the game has ended for this year but we have re-opened it upon several user requests. <b>The game comes with absolutely no support, just as is!</b> In case something gets broken, remains broken.</p>
         <h3>Welcome every hacker at this year's Wargame!</h3>
         <p>Every new stage is unlocked by solving 3 challenges on the previous stage. The solution of every assignment is a 32 characters long MD5 hash wrapped into "SECURITEAM{...}" (e.g. "SECURITEAM{0123456789abcdef0123456789abcdef}"). If you find the hash without the pre- and postfixes, then you should wrap it in yourself.</p>
@@ -16,7 +16,7 @@ def update_config(apps, schema_editor):
         <p style="font-weight: bold;">To reach the *.wargame sites, see the instructions in the VPN menu.</p>
         <p style="text-align: center">Questions/Info: <code>---</code></p>
         <h3 style="text-align: center">There are more challenges, too!</h3>
-        <p>As this game is co-organized by the Hackerspace Szeged, you can solve multiple challenges created by them. <b>The ones marked with #HackespaceSzeged# do NOT use our flag format!</b></p>"""
+        <p>As this game is co-organized by the Hackerspace Szeged, you can solve multiple challenges created by them. <b>The ones marked with #HackespaceSzeged# do NOT use our flag format!</b></p>""",
     )
     index_right.save()
 
@@ -28,7 +28,7 @@ def update_config(apps, schema_editor):
         <li>The wargame is open during the Hacktivity.</li>
         <li>Players can get a hint for each challenge but doing so will halve the available score of the challenge.</li>
         <li>For further rules, please refer to the organizers of the Hacktivity.</li>
-    </ol>"""
+    </ol>""",
     )
     rules.save()
 
@@ -40,7 +40,7 @@ def update_config(apps, schema_editor):
         <li><a href="http://hackthissite.org/">hackthissite.org</a> </li>
         <li><a href="http://try2hack.nl/">try2hack.nl</a> </li>
         <li><a href="http://kszk.sch.bme.hu/">kszk.sch.bme.hu</a> </li>
-    </ul>"""
+    </ul>""",
     )
     links.save()
 
@@ -93,23 +93,19 @@ def update_config(apps, schema_editor):
         <th>story.wargame</th>
         <th>10.13.37.202</th>
     </tr>
-</table>"""
+</table>""",
     )
     vpn.save()
 
     email_notification = StaticContent(
         key="email_notification",
         display_name="Email notification text",
-        html="""As you might already know, the best teams get to compete in the Speed Hacking. To allow us to notify you in case you are one of them, please give us your email address, by clicking <a href='/user/set-email'>here</a>."""
+        html="""As you might already know, the best teams get to compete in the Speed Hacking. To allow us to notify you in case you are one of them, please give us your email address, by clicking <a href='/user/set-email'>here</a>.""",
     )
     email_notification.save()
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('wargame_admin', '0011_staticcontent'),
-    ]
+    dependencies = [("wargame_admin", "0011_staticcontent")]
 
-    operations = [
-        migrations.RunPython(update_config)
-    ]
+    operations = [migrations.RunPython(update_config)]

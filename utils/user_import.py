@@ -21,10 +21,10 @@ def do_user_import(path, dry_run, log_var):
 
     messages = []
 
-    subject = StaticContent.objects.get(key='email_subject').html
-    email_template = StaticContent.objects.get(key='email_text').html
+    subject = StaticContent.objects.get(key="email_subject").html
+    email_template = StaticContent.objects.get(key="email_text").html
 
-    with open(path, 'r', encoding='utf-8-sig') as fp:
+    with open(path, "r", encoding="utf-8-sig") as fp:
         reader = csv.reader(fp, delimiter=",")
         for row in reader:
             team_name = row[0]
@@ -37,7 +37,7 @@ def do_user_import(path, dry_run, log_var):
             message = email_template.replace("%TEAM%", team_name).replace("%PASSWORD%", password)
             messages.append((subject, message, base.EMAIL_FROM, [email]))
 
-            log(F"Imported {team_name}", log_var, MessageType.SUCCESS)
+            log(f"Imported {team_name}", log_var, MessageType.SUCCESS)
 
     log("Sending emails...", log_var, MessageType.INFO)
 

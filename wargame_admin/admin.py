@@ -8,10 +8,10 @@ from wargame_admin.models import StaticContent, Config
 
 
 def custom_logout(request):
-    return redirect(reverse_lazy('logout'))
+    return redirect(reverse_lazy("logout"))
 
 
-admin.site.login = staff_member_required(admin.site.login, login_url=reverse_lazy('login'))
+admin.site.login = staff_member_required(admin.site.login, login_url=reverse_lazy("login"))
 admin.site.logout = custom_logout
 
 # Register your models here.

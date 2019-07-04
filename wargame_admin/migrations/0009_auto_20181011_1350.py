@@ -5,21 +5,10 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame_admin', '0008_challengefilechunkedupload'),
-    ]
+    dependencies = [("wargame_admin", "0008_challengefilechunkedupload")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='challengefilechunkedupload',
-            name='config_name',
-        ),
-        migrations.RemoveField(
-            model_name='challengefilechunkedupload',
-            name='display_name',
-        ),
-        migrations.RemoveField(
-            model_name='challengefilechunkedupload',
-            name='private',
-        ),
+        migrations.RemoveField(model_name="challengefilechunkedupload", name="config_name"),
+        migrations.RemoveField(model_name="challengefilechunkedupload", name="display_name"),
+        migrations.RemoveField(model_name="challengefilechunkedupload", name="private"),
     ]

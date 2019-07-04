@@ -5,16 +5,14 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('wargame', '0003_challenge_short_description'),
-    ]
+    dependencies = [("wargame", "0003_challenge_short_description")]
 
     operations = [
         migrations.CreateModel(
-            name='StaffMember',
+            name="StaffMember",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=256)),
             ],
-        ),
+        )
     ]

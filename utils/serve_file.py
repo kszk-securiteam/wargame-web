@@ -16,9 +16,11 @@ def serve_file(request, file_path, display_name=None):
 
     if not settings.DEBUG:
         response = HttpResponse()
-        response['X-Accel-Redirect'] = urlquote(join(settings.MEDIA_URL, file_path).encode('utf-8'))
+        response["X-Accel-Redirect"] = urlquote(join(settings.MEDIA_URL, file_path).encode("utf-8"))
     else:
         response = serve(request, join("/", file_path), settings.MEDIA_ROOT)
 
-    response["Content-Disposition"] = F"attachment; filename={display_name.encode('ascii', 'ignore').decode()}; filename*=UTF-8''{urlquote(display_name)}"
+    response[
+        "Content-Disposition"
+    ] = f"attachment; filename={display_name.encode('ascii', 'ignore').decode()}; filename*=UTF-8''{urlquote(display_name)}"
     return response
