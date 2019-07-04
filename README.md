@@ -4,7 +4,7 @@
 
 Wargame web application
 
-## Preparing the development environment
+## Setup
 
 Project dependencies are managed using pipenv, which can be installed using pip.
 
@@ -14,16 +14,14 @@ Run manage.py commands using pipenv:
 
 ```pipenv run manage.py migrate```
 
-## Preparing the production environment
-1. Run `pipenv sync` to install the locked dependencies.
-2. Rename `sample.env` to `.env` and fill out the secret key. Pipenv will automatically load the enviroment variables specified in this file.
+Configuration values are loaded from a `config.yaml` file in the project directory. For local development, copy the `example-config-yaml` file.
 
-## Development
-The main 'app' is wargame, thus the module sources are in the wargame directory.
+This project uses `django-channels` for the import log page. This requires a redis database, which is specified in the `settings/base.py` file. If you need to use the import function, you can run redis using docker.
 
-### Add a new model class
+## Deployment
 
-1. Create the class in `wargame/models.py`.
-2. Add the class to `wargame/admin.py` to see it on the admin page.
-3. Generate migrations via `./manage.py makemigrations`
-4. Run migrations on your database via `./manage.py migrate`
+Deployment instructions can be found [here](https://github.com/kszk-securiteam/wargame-web/wiki/Deployment).
+
+## Importing and export challenges
+
+The format used for challenge exports can be found [here](https://github.com/kszk-securiteam/wargame-web/wiki/Challenge-export-format).
