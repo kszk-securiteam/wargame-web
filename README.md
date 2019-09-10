@@ -14,7 +14,7 @@ Run manage.py commands using pipenv:
 
 ```pipenv run manage.py migrate```
 
-Configuration values are loaded from a `config.yaml` file in the project directory. For local development, copy the `example-config-yaml` file.
+Configuration values are loaded from a `config.yaml` file in the project directory. For local development, copy the `example-config.yaml` file.
 
 This project uses `django-channels` for the import log page. This requires a redis database, which is specified in the `settings/base.py` file. If you need to use the import function, you can run redis using docker.
 
