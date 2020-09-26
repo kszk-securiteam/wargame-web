@@ -150,7 +150,7 @@ def validate_challenge_structure(challenge_path, log_var):
                 log(f"Challenge directory contains unknown directory: {os.path.basename(root)}", log_var, MessageType.ERROR)
                 continue
             for f in files:
-                if f == ".gitkeep":
+                if f == ".gitkeep" or f == ".gitignore":
                     continue
                 challenge_files.append({"private": private, "conf": conf, "path": os.path.join(root, f)})
 
