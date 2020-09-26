@@ -62,7 +62,7 @@ def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
         challenge = Challenge()
         challenge.import_name = challenge_name
     else:
-        log("Challenge already exists, replacng values", log_var, MessageType.WARNING)
+        log("Challenge already exists, replacing values", log_var, MessageType.WARNING)
 
     with open(os.path.join(challenge_path, "challenge.json"), encoding="utf-8-sig") as file:
         valid, tags = import_challenge_json(file, challenge, log_var)

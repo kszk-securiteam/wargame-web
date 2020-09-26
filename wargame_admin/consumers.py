@@ -19,18 +19,20 @@ def log(message, log_var, log_level):
 
 
 class LogConsumer(WebsocketConsumer):
+    def log_var(self):
+        return self.scope["url_route"]["kwargs"]["log_var"]
+
     def connect(self):
         if not self.scope["user"].is_superuser:
             return
 
-        self.log_var = self.scope["url_route"]["kwargs"]["log_var"]
-        async_to_sync(self.channel_layer.group_add)(self.log_var, self.channel_name)
+        async_to_sync(self.channel_layer.group_add)(self.log_var(), self.channel_name)
         self.accept()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(self.log_var, self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(self.log_var(), self.channel_name)
 
-    def receive(self, text_data, bytes_data):
+    def receive(self, text_data=None, bytes_data=None):
         pass
 
     def log_event(self, event):
