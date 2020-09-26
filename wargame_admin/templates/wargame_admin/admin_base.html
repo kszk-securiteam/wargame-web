@@ -2,8 +2,9 @@
 {% load static %}
 {% load bootstrap4 %}
 
+{% block bootstrap4_title %}Wargame admin{% endblock %}
+
 {% block bootstrap4_extra_head %}
-    <title>Wargame admin</title>
     <link type="text/css" rel="stylesheet" href="{% static "webfonts/fontawesome-all.min.css" %}" />
     <link type="text/css" rel="stylesheet" href="{% static "admin.css" %}" />
     {% block extra_head %}
