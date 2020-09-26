@@ -131,6 +131,8 @@ def validate_challenge_structure(challenge_path, log_var):
                     solution_txt_found = True
                 elif file == "setup.txt":
                     import_setup = True
+                elif file in [".gitignore", ".gitkeep"]:
+                    continue
                 else:
                     valid = False
                     log(f"Challenge directory contains unknown file: {file}", log_var, MessageType.ERROR)
