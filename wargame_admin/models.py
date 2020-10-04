@@ -4,8 +4,7 @@ from fractions import Fraction
 
 from chunked_upload.models import ChunkedUpload
 from django.db import models
-from django.db.models import Model, CharField, Manager, BooleanField, TextField, signals
-
+from django.db.models import Model, CharField, Manager, TextField, signals
 # noinspection PyMethodMayBeStatic
 from django.dispatch import receiver
 
@@ -34,6 +33,9 @@ class ConfigManager(Manager):
 
     def email_required(self):
         return Config.objects.get(key="email_required").get_bool()
+
+    def private_scoreboard(self):
+        return Config.objects.get(key="private_scoreboard").get_bool()
 
 
 class Config(Model):

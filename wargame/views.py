@@ -1,5 +1,4 @@
 import itertools
-from os.path import basename
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -43,6 +42,9 @@ class ScoreboardView(TemplateView):
 
     def show_qpa_points(self):
         return Config.objects.show_qpa_points()
+
+    def private_scoreboard(self):
+        return Config.objects.private_scoreboard() and not self.request.user.is_staff
 
 
 class RulesView(TemplateView):

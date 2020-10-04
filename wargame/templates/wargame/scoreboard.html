@@ -3,29 +3,35 @@
 {% block content %}
     <h1>Scoreboard</h1>
 
-    <table class="table table-striped">
-    <thead>
-    <tr>
-        <th style="width: 50px;">#</th>
-        <th>Name</th>
-        <th>Score</th>
-        {% if view.show_qpa_points %}
-            <th>QPA points</th>
-        {% endif %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for score in view.scores %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ score.username }}</td>
-        <td>{{ score.total_points }}</td>
-        {% if view.show_qpa_points %}
-            <td>{{ score.total_points | qpa_mul }}</td>
-        {% endif %}
-    </tr>
-    {% endfor %}
+    {% if view.private_scoreboard %}
+        <div class="alert alert-warning">
+            The scoreboard is currently hidden.
+        </div>
+    {% else %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 50px;">#</th>
+                <th>Name</th>
+                <th>Score</th>
+                {% if view.show_qpa_points %}
+                    <th>QPA points</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for score in view.scores %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ score.username }}</td>
+                    <td>{{ score.total_points }}</td>
+                    {% if view.show_qpa_points %}
+                        <td>{{ score.total_points | qpa_mul }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
 
-    </tbody>
-    </table>
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}
