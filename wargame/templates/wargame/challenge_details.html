@@ -4,7 +4,7 @@
 {% block content %}
     <div class="challenge-title-box">
         <h1>{{ view.challenge.title }}</h1>
-        <p>Solved by {% view.challenge.users_solved %} users</p>
+        <p>Solved by {{ view.challenge.users_solved }} users</p>
         {% if view.solved %}
             <i class="fas fa-check text-success" style="font-size: 48px"></i>
         {% endif %}
