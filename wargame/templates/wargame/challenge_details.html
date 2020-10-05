@@ -30,7 +30,7 @@
             <form method="post" action="{% url 'challenge-hint' view.challenge.id %}">
                 {% csrf_token %}
                 Showing the hint will halve the number of points available for this challenge.<br />
-                <button class="btn btn-info" {% if view.solved %}disabled{% endif %}>Show hint</button>
+                <button class="btn btn-info" onclick="return confirm('Are you sure?')" {% if view.solved %}disabled{% endif %}>Show hint</button>
             </form>
         {% endif %}
     </div>
