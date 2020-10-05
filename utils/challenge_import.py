@@ -97,8 +97,6 @@ def import_files(challenge, files, dry_run, log_var):
             log(f"{filename} already exists, deleting...", log_var, MessageType.WARNING)
             if not dry_run:
                 file_entity.delete()
-            continue
-
         with open(os.path.join(file["path"]), "rb") as fp:
             challenge_file = ChallengeFile()
             challenge_file.challenge = challenge
