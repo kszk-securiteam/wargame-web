@@ -90,13 +90,13 @@ def import_challenge(challenge_dir, challenge_name, dry_run, log_var):
 
 
 def import_files(challenge, files, dry_run, log_var):
+    file_entity = challenge.files.all()
+    if file_entity.exists():
+        log(f"Some files already exist, deleting...", log_var, MessageType.WARNING)
+        if not dry_run:
+            file_entity.delete()
     for file in files:
         filename = os.path.basename(file["path"])
-        file_entity = challenge.files.filter(filename=filename, private=file["private"], config_name=file["conf"])
-        if file_entity.exists():
-            log(f"{filename} already exists, deleting...", log_var, MessageType.WARNING)
-            if not dry_run:
-                file_entity.delete()
         with open(os.path.join(file["path"]), "rb") as fp:
             challenge_file = ChallengeFile()
             challenge_file.challenge = challenge
