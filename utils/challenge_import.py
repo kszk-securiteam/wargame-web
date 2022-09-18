@@ -138,8 +138,10 @@ def validate_challenge_structure(challenge_path, log_var):
             private = False
             config_folder = root
             if os.path.basename(root) == "private":
-                private = True
-                config_folder = os.path.dirname(root)
+                #private = True
+                #config_folder = os.path.dirname(root)
+                # Do not register private files -- we use version control (see https://github.com/kszk-securiteam/wargame-web/issues/94 )
+                continue
 
             if os.path.basename(config_folder) == "qpa-files":
                 conf = "qpa"
